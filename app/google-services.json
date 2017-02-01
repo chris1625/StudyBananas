@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "142194287131",
+    "firebase_url": "https://studybananas.firebaseio.com",
+    "project_id": "studybananas",
+    "storage_bucket": "studybananas.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:142194287131:android:43a1fae17da526b5",
+        "android_client_info": {
+          "package_name": "com.bananabanditcrew.studybananas"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "142194287131-vqj7r0k19cfd4hlcsj9h421r91g8aa09.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOhEMZniooyX_j2PZs2aDCGF8hj9XSxaw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "142194287131-vqj7r0k19cfd4hlcsj9h421r91g8aa09.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
