@@ -10,8 +10,15 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.bananabanditcrew.studybananas.MainActivity">
 
-    <TextView
+    <Button
+        android:text="@string/login_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:id="@+id/login"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:minHeight="60dp"
+        android:minWidth="100dip"
+        android:onClick="openLogin"/>
 </RelativeLayout>
