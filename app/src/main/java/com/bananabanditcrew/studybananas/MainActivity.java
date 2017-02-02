@@ -6,9 +6,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import com.unboundid.ldap.sdk.LDAPConnection;
-import com.unboundid.ldap.sdk.LDAPException;
-
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -23,4 +20,3 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 }
-
