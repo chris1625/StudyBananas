@@ -17,6 +17,7 @@
     <string name="edit_name">"Full name"</string>
     <string name="welcome_message">"Welcome! This appears to be your first time logging in. Please enter your full name and we'll get you started."</string>
     <string name="add_name_button">"Let's go!"</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="create_account">"No account? Create one here"</string>
+    <string name="title_activity_signup">Sign up</string>
+    <string name="error_invalid_password">This password is too short</string>
 </resources>
