@@ -21,4 +21,17 @@
         android:minHeight="60dp"
         android:minWidth="100dip"
         android:onClick="openLogin"/>
+
+    <Button
+        android:text="@string/account_creation_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/login"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="18dp"
+        android:id="@+id/account_creation"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:minHeight="60dp"
+        android:minWidth="100dip"
+        android:onClick="showCreationDialogue"/>
 </RelativeLayout>
