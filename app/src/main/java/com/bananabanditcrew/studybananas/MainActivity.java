@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -17,17 +19,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-    /* Opens login activity */
-    public void openLogin(View view) {
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-    }
-
     /* Opens dialogue for the user */
     public void showCreationDialogue(View view) {
         FragmentManager fm = getSupportFragmentManager();
         final CreationDialogFragment creationDialogFragment = CreationDialogFragment.newInstance("Some Title");
         creationDialogFragment.show(fm, "fragment_creation_dialogue");
+    }
+
+    /* Sign out */
+    public void signOut(View view) {
+        FirebaseAuth.getInstance().signOut();
+        Intent myIntent = new Intent(MainActivity.this,LoginActivity.class);
+        MainActivity.this.startActivity(myIntent);
+        finish();
     }
 
     /* Callback method for dialogue */

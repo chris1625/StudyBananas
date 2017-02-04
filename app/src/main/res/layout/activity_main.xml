@@ -11,22 +11,22 @@
     tools:context="com.bananabanditcrew.studybananas.MainActivity">
 
     <Button
-        android:text="@string/login_button"
+        android:text="@string/logout_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/login"
+        android:id="@+id/logout"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         style="@style/Widget.AppCompat.Button.Colored"
         android:minHeight="60dp"
         android:minWidth="100dip"
-        android:onClick="openLogin"/>
+        android:onClick="signOut"/>
 
     <Button
         android:text="@string/account_creation_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/login"
+        android:layout_below="@+id/logout"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="18dp"
         android:id="@+id/account_creation"

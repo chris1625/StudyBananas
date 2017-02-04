@@ -12,7 +12,7 @@
     <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."</string>
-    <string name="login_button">Login</string>
+    <string name="logout_button">Logout</string>
     <string name="account_creation_button">"Create Account"</string>
     <string name="edit_name">"Full name"</string>
     <string name="welcome_message">"Welcome! This appears to be your first time logging in. Please enter your full name and we'll get you started."</string>
