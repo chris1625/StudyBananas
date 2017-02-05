@@ -335,6 +335,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             });
                             AlertDialog dialog = builder.create();
                             dialog.show();
+                            FirebaseAuth.getInstance().signOut();
                         } else {
                             Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
                             LoginActivity.this.startActivity(myIntent);
