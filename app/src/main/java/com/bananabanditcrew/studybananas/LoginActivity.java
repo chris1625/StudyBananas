@@ -1,14 +1,13 @@
 package com.bananabanditcrew.studybananas;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
 
@@ -16,7 +15,6 @@ import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -37,13 +35,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.unboundid.ldap.sdk.LDAPConnection;
-import com.unboundid.ldap.sdk.LDAPException;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,11 +53,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
-
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-    private UserLoginTask mAuthTask = null;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -92,10 +81,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
+            Log.d("Accounts", user.getEmail());
             Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
             LoginActivity.this.startActivity(myIntent);
             finish();
             return;
+        } else {
+            Log.d("Accounts", "No user logged in on start");
         }
 
         setContentView(R.layout.activity_login);
@@ -177,17 +169,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
-
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
-
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
@@ -225,8 +212,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             mProgressView = ProgressDialog.show(this, "Login", "Authenticating...");
-            mAuthTask = new UserLoginTask(email, password, this);
-            mAuthTask.execute((Void) null);
+            signIn(email, password);
         }
     }
 
@@ -291,18 +277,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
-    public void createAccount(String email, String password) {
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d("Accounts", "createUserWithEmail:onComplete:" + task.isSuccessful());
-                    }
-                });
-    }
-
-    // This is confusing, but this method will lead to another activity. Method createAccount will
-    // likely be removed from this activity
+    // Go to account creation page
     public void accountCreation() {
         Intent myIntent = new Intent(LoginActivity.this, SignupActivity.class);
         LoginActivity.this.startActivity(myIntent);
@@ -314,6 +289,45 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d("Accounts", "signInWithEmail:onComplete:" + task.isSuccessful());
+                        mProgressView.dismiss();
+                        // Task unsuccessful
+                        if (!task.isSuccessful()) {
+                            try {
+                                throw task.getException();
+                            } catch(FirebaseAuthInvalidUserException e) {
+                                mEmailView.setError(getString(R.string.error_account_no_exist));
+                                mEmailView.requestFocus();
+                            } catch(FirebaseAuthInvalidCredentialsException e) {
+                                mPasswordView.setError(getString(R.string.error_incorrect_password));
+                                mPasswordView.requestFocus();
+                            } catch(Exception e) {
+                                Log.e("Accounts", e.getMessage());
+                            }
+                            return;
+                        }
+
+                        // Login was successful
+                        // First check for email verification
+                        if (!FirebaseAuth.getInstance().getCurrentUser().isEmailVerified()) {
+                            // Give the user a popup
+                            AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                            builder.setMessage(R.string.email_verification_failure)
+                                   .setTitle(R.string.email_verification_short);
+                            // Add close/ok button
+                            builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // User clicked ok button
+                                    dialog.dismiss();
+                                }
+                            });
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+                        } else {
+                            Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
+                            LoginActivity.this.startActivity(myIntent);
+                            finish();
+                        }
                     }
                 });
     }
@@ -326,82 +340,5 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         int ADDRESS = 0;
         int IS_PRIMARY = 1;
-    }
-
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-
-        private LoginActivity activity;
-        private final String mEmail;
-        private final String mPassword;
-        private final String mDomain = "ad.ucsd.edu";
-        private final String mUser;
-
-        UserLoginTask(String email, String password, LoginActivity activity) {
-            this.activity = activity;
-            mEmail = email;
-            mPassword = password;
-            mUser = mEmail.substring(0,mEmail.indexOf("@"));
-            Log.d("LDAP Auth", "Got " + mUser + " from email.");
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-
-            Log.d("LDAP Auth", "Starting LDAP authentication");
-            LDAPConnection connection;
-            try {
-                String user = mUser + "@" + mDomain;
-                connection = new LDAPConnection(mDomain, 389, user, mPassword);
-                Log.d("LDAP Auth", "Authentication successful");
-            } catch (LDAPException e) {
-                Log.e("LDAP Auth", "Authentication failed");
-                return false;
-            }
-
-            // TODO: register the new account here.
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-
-            if (success) {
-                activity.signIn(mEmail, mPassword);
-
-                // Get the current user to see if the login was successful
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if (user == null) {
-                    // Try to create an account for the user
-                    activity.createAccount(mEmail, mPassword);
-
-                    // Try to sign in again
-                    activity.signIn(mEmail, mPassword);
-                }
-
-                // Studies show that spinning circles are satisfying as hell
-                SystemClock.sleep(2000);
-                // Please don't kill me for this terrible code
-
-                mProgressView.dismiss();
-                Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
-                LoginActivity.this.startActivity(myIntent);
-                finish();
-            } else {
-                mProgressView.dismiss();
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            mProgressView.dismiss();
-        }
     }
 }
