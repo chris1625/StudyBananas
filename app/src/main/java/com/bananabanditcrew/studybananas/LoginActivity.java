@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.renderscript.ScriptGroup;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -19,6 +20,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -32,6 +34,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -120,6 +124,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             @Override
             public void onClick(View v) {
                 accountCreation();
+            }
+        });
+
+        TextView mForgotPasswordText = (TextView) findViewById(R.id.forgot_password);
+        mForgotPasswordText.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resetPassword();
             }
         });
 
@@ -330,6 +342,95 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         }
                     }
                 });
+    }
+
+    public void resetPassword() {
+
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(LoginActivity.this);
+        alertBuilder.setMessage(R.string.password_reset_email)
+                .setTitle(R.string.password_reset_title);
+        final EditText emailInput = new EditText(this);
+        emailInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        emailInput.setHint(R.string.prompt_email);
+        alertBuilder.setView(emailInput, 40, 0, 40, 0);
+
+        // Add close button
+        alertBuilder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // User clicked cancel button
+                dialog.dismiss();
+            }
+        });
+
+        alertBuilder.setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // User clicked send button
+                final String email = emailInput.getText().toString();
+
+                // Perform data verification
+                if (TextUtils.isEmpty(email)) {
+                    emailInput.setError(getString(R.string.error_field_required));
+                    return;
+                } else if (!(email.endsWith("@ucsd.edu")) || email.equals("@ucsd.edu")) {
+                    emailInput.setError(getString(R.string.error_invalid_email));
+                    return;
+                }
+                // Dismiss dialog
+                dialog.dismiss();
+
+                // Start progress dialog
+                mProgressView = ProgressDialog.show(LoginActivity.this, "Reset Password", "Sending email...");
+
+                // Holy mother of nesting (so so sorry)
+                mAuth.sendPasswordResetEmail(email)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                // send email succeeded
+                                mProgressView.dismiss();
+                                AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                                builder.setMessage(R.string.password_reset_success)
+                                        .setTitle(R.string.password_reset_title);
+                                // Add ok button
+                                builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // User clicked ok button
+                                        dialog.dismiss();
+                                    }
+                                });
+                                AlertDialog dialog = builder.create();
+                                dialog.show();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        //  Send email failed
+                        mProgressView.dismiss();
+                        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                        builder.setMessage(R.string.password_reset_failure)
+                                .setTitle(R.string.password_reset_title);
+                        // Add ok button
+                        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // User clicked ok button
+                                dialog.dismiss();
+                            }
+                        });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
+                });
+            }
+        });
+
+        AlertDialog emailDialog = alertBuilder.create();
+        emailDialog.show();
+
+
     }
 
     private interface ProfileQuery {

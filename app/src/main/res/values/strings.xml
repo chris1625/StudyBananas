@@ -30,4 +30,11 @@
     <string name="email_verification_short">Email Verification</string>
     <string name="ok">OK</string>
     <string name="email_verification_failure">Your account has not yet been verified. Please check your email for a verification link.</string>
+    <string name="password_reset_success">The password reset email was successfully sent! Please check your email.</string>
+    <string name="password_reset_failure">The password reset email could not be sent. Please ensure you are connected to the internet, or try again later.</string>
+    <string name="password_reset"><u>Reset your password</u></string>
+    <string name="password_reset_title">Reset Password</string>
+    <string name="password_reset_email">Please enter your email address so we can send you a password reset email.</string>
+    <string name="send">Send</string>
+    <string name="cancel">Cancel</string>
 </resources>

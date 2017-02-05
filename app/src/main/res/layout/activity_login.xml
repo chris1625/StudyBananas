@@ -81,8 +81,17 @@
                 android:text="@string/create_account"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="30dp"
                 android:id="@+id/create_account"
+                android:textAlignment="center"
+                android:textSize="18sp" />
+
+            <TextView
+                android:text="@string/password_reset"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:id="@+id/forgot_password"
                 android:textAlignment="center"
                 android:textSize="18sp" />
 
