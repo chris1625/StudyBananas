@@ -275,6 +275,13 @@ public class SignupActivity extends LoginActivity implements LoaderCallbacks<Cur
         }
     }
 
+    // Override the finish method to provide animation on exit (namely the back button)
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
+    }
+
     public void createAccount(String email, String password) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {

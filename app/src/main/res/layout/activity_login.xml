@@ -30,7 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
-                android:src="@drawable/ic_banana_icon"
+                app:srcCompat="@drawable/ic_banana_icon"
                 android:id="@+id/imageView"
                 android:minHeight="175dp"
                 android:minWidth="175dp" />
@@ -83,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
                 android:id="@+id/create_account"
-                android:textAlignment="center"
+                android:gravity="center"
                 android:textSize="18sp" />
 
             <TextView
@@ -92,7 +92,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:id="@+id/forgot_password"
-                android:textAlignment="center"
+                android:gravity="center"
                 android:textSize="18sp" />
 
         </LinearLayout>

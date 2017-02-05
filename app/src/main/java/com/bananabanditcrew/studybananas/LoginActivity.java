@@ -293,6 +293,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     public void accountCreation() {
         Intent myIntent = new Intent(LoginActivity.this, SignupActivity.class);
         LoginActivity.this.startActivity(myIntent);
+        overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
     }
 
     public void signIn(String email, String password) {
