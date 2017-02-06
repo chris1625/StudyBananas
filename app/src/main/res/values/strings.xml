@@ -37,4 +37,7 @@
     <string name="password_reset_email">Please enter your email address so we can send you a password reset email.</string>
     <string name="send">Send</string>
     <string name="cancel">Cancel</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+
 </resources>
