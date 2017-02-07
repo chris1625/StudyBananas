@@ -2,6 +2,8 @@ package com.bananabanditcrew.studybananas;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -18,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
+    private NavigationView navigation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +32,26 @@ public class MainActivity extends AppCompatActivity {
 
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
+
+        // Create onClick listeners for menu items
+        navigation = (NavigationView) findViewById(R.id.nav_drawer);
+        navigation.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+                item.setChecked(true);
+                switch (id) {
+                    case R.id.nav_account:
+                        // TODO
+                        break;
+                    case R.id.nav_logout:
+                        signOut();
+                        break;
+                }
+                item.setChecked(false);
+                return false;
+            }
+        });
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
@@ -51,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /* Sign out */
-    public void signOut(View view) {
+    public void signOut() {
         FirebaseAuth.getInstance().signOut();
         Intent myIntent = new Intent(MainActivity.this,LoginActivity.class);
         MainActivity.this.startActivity(myIntent);
