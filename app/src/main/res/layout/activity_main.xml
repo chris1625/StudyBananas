@@ -7,10 +7,11 @@
     android:layout_height="match_parent"
     tools:context="com.bananabanditcrew.studybananas.MainActivity">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </LinearLayout>
+        android:layout_height="match_parent"
+        android:id="@+id/fragment_container" >
+    </FrameLayout>
 
     <android.support.design.widget.NavigationView
         android:layout_width="wrap_content"

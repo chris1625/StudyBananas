@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Study Bananas</string>
-    <string name="title_activity_login">Sign in</string>
+    <string name="title_activity_login">Sign In</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">UCSD Email</string>
@@ -39,5 +39,9 @@
     <string name="cancel">Cancel</string>
     <string name="open">Open</string>
     <string name="close">Close</string>
-
+    <string name="create_group">Create Group</string>
+    <string name="join_group">Join Group</string>
+    <string name="main_activity_title">Join or Create a Group</string>
+    <string name="profile">Profile</string>
+    <string name="sign_out">Sign Out</string>
 </resources>

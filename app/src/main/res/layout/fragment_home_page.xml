@@ -1,0 +1,24 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="50dp"
+    android:orientation="vertical"
+    tools:context="com.bananabanditcrew.studybananas.HomePageFragment">
+
+    <Button
+        android:text="@string/join_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp"
+        android:id="@+id/join_group_button"
+        android:layout_weight="1" />
+
+    <Button
+        android:text="@string/create_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:id="@+id/create_group_button"
+        android:layout_weight="1" />
+</LinearLayout>

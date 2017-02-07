@@ -2,6 +2,7 @@ package com.bananabanditcrew.studybananas;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
@@ -16,7 +17,9 @@ import android.widget.Button;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-public class MainActivity extends AppCompatActivity {
+import java.net.URI;
+
+public class MainActivity extends AppCompatActivity implements HomePageFragment.OnFragmentInteractionListener {
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
@@ -39,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
-                item.setChecked(true);
                 switch (id) {
                     case R.id.nav_account:
                         // TODO
@@ -48,12 +50,33 @@ public class MainActivity extends AppCompatActivity {
                         signOut();
                         break;
                 }
-                item.setChecked(false);
                 return false;
             }
         });
 
+        // TODO figure out why it doesn't like this
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // We want to add our initial home page fragment to our frameView
+        // Ensure the fragment container exists
+        if (findViewById(R.id.fragment_container) != null) {
+
+            // If being restored from previous state, don't do anything
+            if (savedInstanceState != null) {
+                return;
+            }
+
+            // Create new Fragment to be placed in the activity layout
+            HomePageFragment homePageFragment = new HomePageFragment();
+
+            // In case this activity was started with special instructions from an Intent, pass the
+            // Intent's extras to the fragment as arguments
+            homePageFragment.setArguments(getIntent().getExtras());
+
+            // Add the fragment to the fragment container
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, homePageFragment).commit();
+        }
     }
 
     @Override
@@ -84,5 +107,11 @@ public class MainActivity extends AppCompatActivity {
     /* Callback method for dialogue */
     public void setName(String name) {
         Log.d("Accounts", name);
+    }
+
+    // Implementation of the onFragmentInteraction method within HomePageFragment
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }
