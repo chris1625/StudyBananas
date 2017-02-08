@@ -19,7 +19,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.net.URI;
 
-public class MainActivity extends AppCompatActivity implements HomePageFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
@@ -89,13 +89,6 @@ public class MainActivity extends AppCompatActivity implements HomePageFragment.
         return super.onOptionsItemSelected(item);
     }
 
-    /* Opens dialogue for the user */
-    public void showCreationDialogue(View view) {
-        FragmentManager fm = getSupportFragmentManager();
-        final CreationDialogFragment creationDialogFragment = CreationDialogFragment.newInstance("Some Title");
-        creationDialogFragment.show(fm, "fragment_creation_dialogue");
-    }
-
     /* Sign out */
     public void signOut() {
         FirebaseAuth.getInstance().signOut();
@@ -107,11 +100,5 @@ public class MainActivity extends AppCompatActivity implements HomePageFragment.
     /* Callback method for dialogue */
     public void setName(String name) {
         Log.d("Accounts", name);
-    }
-
-    // Implementation of the onFragmentInteraction method within HomePageFragment
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
     }
 }
