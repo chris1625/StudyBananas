@@ -1,4 +1,4 @@
-package com.bananabanditcrew.studybananas.home;
+package com.bananabanditcrew.studybananas.ui.home;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,9 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.bananabanditcrew.studybananas.joingroup.JoinGroupFragment;
+import com.bananabanditcrew.studybananas.ui.joingroup.JoinGroupFragment;
 import com.bananabanditcrew.studybananas.R;
-import com.bananabanditcrew.studybananas.creategroup.CreateGroupFragment;
+import com.bananabanditcrew.studybananas.ui.creategroup.CreateGroupFragment;
 
 
 /**

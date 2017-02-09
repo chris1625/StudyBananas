@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:layout_margin="50dp"
     android:orientation="vertical"
-    tools:context="com.bananabanditcrew.studybananas.home.HomeFragment">
+    tools:context=".ui.home.HomeFragment">
 
     <Button
         android:text="@string/join_group"

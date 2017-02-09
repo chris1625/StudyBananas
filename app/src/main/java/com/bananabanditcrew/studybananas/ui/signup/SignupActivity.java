@@ -1,4 +1,4 @@
-package com.bananabanditcrew.studybananas.signup;
+package com.bananabanditcrew.studybananas.ui.signup;
 
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
@@ -30,7 +30,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.bananabanditcrew.studybananas.signin.SignInActivity;
+import com.bananabanditcrew.studybananas.ui.signin.SignInActivity;
 import com.bananabanditcrew.studybananas.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;

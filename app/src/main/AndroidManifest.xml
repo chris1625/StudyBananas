@@ -17,12 +17,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".home.HomeActivity"
+            android:name=".ui.home.HomeActivity"
             android:label="@string/main_activity_title"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".signin.SignInActivity"
+            android:name=".ui.signin.SignInActivity"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,7 +31,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".signup.SignupActivity"
+            android:name=".ui.signup.SignupActivity"
             android:label="@string/title_activity_signup"
             android:screenOrientation="portrait">
         </activity>

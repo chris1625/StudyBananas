@@ -1,10 +1,10 @@
-package com.bananabanditcrew.studybananas.signin;
+package com.bananabanditcrew.studybananas.ui.signin;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import com.bananabanditcrew.studybananas.R;
-import com.bananabanditcrew.studybananas.home.HomeActivity;
+import com.bananabanditcrew.studybananas.ui.home.HomeActivity;
 
 /**
  * A login screen that offers login via email/password.

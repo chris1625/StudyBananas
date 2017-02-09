@@ -1,4 +1,4 @@
-package com.bananabanditcrew.studybananas.joingroup;
+package com.bananabanditcrew.studybananas.ui.creategroup;
 
 
 import android.os.Bundle;
@@ -12,10 +12,10 @@ import com.bananabanditcrew.studybananas.R;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link JoinGroupFragment#newInstance} factory method to
+ * Use the {@link CreateGroupFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class JoinGroupFragment extends Fragment {
+public class CreateGroupFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -26,7 +26,7 @@ public class JoinGroupFragment extends Fragment {
     private String mParam2;
 
 
-    public JoinGroupFragment() {
+    public CreateGroupFragment() {
         // Required empty public constructor
     }
 
@@ -36,11 +36,11 @@ public class JoinGroupFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment JoinGroupFragment.
+     * @return A new instance of fragment CreateGroupFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static JoinGroupFragment newInstance(String param1, String param2) {
-        JoinGroupFragment fragment = new JoinGroupFragment();
+    public static CreateGroupFragment newInstance(String param1, String param2) {
+        CreateGroupFragment fragment = new CreateGroupFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -61,7 +61,6 @@ public class JoinGroupFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_join_group, container, false);
+        return inflater.inflate(R.layout.fragment_create_group, container, false);
     }
-
 }

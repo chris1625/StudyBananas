@@ -1,4 +1,4 @@
-package com.bananabanditcrew.studybananas.signin;
+package com.bananabanditcrew.studybananas.ui.signin;
 
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
