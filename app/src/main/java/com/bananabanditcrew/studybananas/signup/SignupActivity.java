@@ -1,4 +1,4 @@
-package com.bananabanditcrew.studybananas;
+package com.bananabanditcrew.studybananas.signup;
 
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
@@ -30,6 +30,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.bananabanditcrew.studybananas.signin.SignInActivity;
+import com.bananabanditcrew.studybananas.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -46,7 +48,7 @@ import static android.Manifest.permission.READ_CONTACTS;
 /**
  * A login screen that offers login via email/password.
  */
-public class SignupActivity extends LoginActivity implements LoaderCallbacks<Cursor> {
+public class SignupActivity extends SignInActivity implements LoaderCallbacks<Cursor> {
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -321,7 +323,7 @@ public class SignupActivity extends LoginActivity implements LoaderCallbacks<Cur
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 // User clicked OK button
-                                Intent myIntent = new Intent(SignupActivity.this, LoginActivity.class);
+                                Intent myIntent = new Intent(SignupActivity.this, SignInActivity.class);
                                 SignupActivity.this.startActivity(myIntent);
                                 finish();
                                 dialog.dismiss();

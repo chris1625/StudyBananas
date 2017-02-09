@@ -44,4 +44,7 @@
     <string name="main_activity_title">Join or Create a Group</string>
     <string name="profile">Profile</string>
     <string name="sign_out">Sign Out</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -1,25 +1,20 @@
-package com.bananabanditcrew.studybananas;
+package com.bananabanditcrew.studybananas.home;
 
-import android.app.Dialog;
 import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 
+import com.bananabanditcrew.studybananas.R;
+import com.bananabanditcrew.studybananas.signin.SignInActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
-import java.net.URI;
-
-public class MainActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
@@ -67,15 +62,15 @@ public class MainActivity extends AppCompatActivity {
             }
 
             // Create new Fragment to be placed in the activity layout
-            HomePageFragment homePageFragment = new HomePageFragment();
+            HomeFragment homeFragment = new HomeFragment();
 
             // In case this activity was started with special instructions from an Intent, pass the
             // Intent's extras to the fragment as arguments
-            homePageFragment.setArguments(getIntent().getExtras());
+            homeFragment.setArguments(getIntent().getExtras());
 
             // Add the fragment to the fragment container
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, homePageFragment).commit();
+                    .add(R.id.fragment_container, homeFragment).commit();
         }
     }
 
@@ -92,8 +87,8 @@ public class MainActivity extends AppCompatActivity {
     /* Sign out */
     public void signOut() {
         FirebaseAuth.getInstance().signOut();
-        Intent myIntent = new Intent(MainActivity.this,LoginActivity.class);
-        MainActivity.this.startActivity(myIntent);
+        Intent myIntent = new Intent(HomeActivity.this,SignInActivity.class);
+        HomeActivity.this.startActivity(myIntent);
         finish();
     }
 
