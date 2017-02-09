@@ -25,7 +25,7 @@ public class SignUpPresenter implements SignUpContract.Presenter {
     // Reference to our view
     private final SignUpContract.View mSignUpView;
 
-    SignUpPresenter (@NonNull SignUpContract.View signUpView) {
+    public SignUpPresenter (@NonNull SignUpContract.View signUpView) {
         mSignUpView = signUpView;
         mSignUpView.setPresenter(this);
         startFirebaseAuthListener();
@@ -150,6 +150,7 @@ public class SignUpPresenter implements SignUpContract.Presenter {
                                 mSignUpView.setEmailFocus();
                             } catch(FirebaseAuthUserCollisionException e) {
                                 mSignUpView.showAccountExistsError();
+                                mSignUpView.setEmailFocus();
                             } catch(Exception e) {
                                 Log.e("Accounts", e.getMessage());
                             }

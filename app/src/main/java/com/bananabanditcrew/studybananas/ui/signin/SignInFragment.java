@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -21,6 +22,9 @@ import android.widget.TextView;
 
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.ui.home.HomeActivity;
+import com.bananabanditcrew.studybananas.ui.signup.SignUpContract;
+import com.bananabanditcrew.studybananas.ui.signup.SignUpFragment;
+import com.bananabanditcrew.studybananas.ui.signup.SignUpPresenter;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -246,7 +250,17 @@ public class SignInFragment extends Fragment implements SignInContract.View {
 
     @Override
     public void showSignUpView() {
-        // TODO Add signup fragment creation here
+        SignUpFragment signUpFragment = new SignUpFragment();
+        new SignUpPresenter(signUpFragment);
+
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.slide_from_right, R.anim.slide_to_left,
+                R.anim.slide_from_left, R.anim.slide_to_right);
+        transaction.replace(R.id.fragment_container_signin, signUpFragment);
+        transaction.addToBackStack(null);
+
+        // Commit the transaction
+        transaction.commit();
     }
 
     @Override
