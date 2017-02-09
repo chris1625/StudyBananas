@@ -9,6 +9,11 @@ public class Course {
     public String courseName;
     public ArrayList<Group> studyGroups;
 
+    public Course(String courseName){
+        this.courseName = courseName;
+        this.studyGroups = new ArrayList<Group>();
+    }
+
     public void addStudyGroup(Group group) {
         studyGroups.add(group);
     }
