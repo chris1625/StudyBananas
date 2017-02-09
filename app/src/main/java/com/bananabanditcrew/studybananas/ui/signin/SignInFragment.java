@@ -117,6 +117,7 @@ public class SignInFragment extends Fragment implements SignInContract.View {
         mEmailView.setError(null);
         mPasswordView.setError(null);
     }
+
     @Override
     public void showEmailEmptyError() {
         mEmailView.setError(getString(R.string.error_field_required));
