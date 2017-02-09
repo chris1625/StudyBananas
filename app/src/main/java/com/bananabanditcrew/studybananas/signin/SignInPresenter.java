@@ -1,11 +1,13 @@
 package com.bananabanditcrew.studybananas.signin;
 
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -17,7 +19,7 @@ import com.google.firebase.auth.FirebaseUser;
  * Created by chris on 2/8/17.
  */
 
-class SignInPresenter implements SignInContract.Presenter {
+public class SignInPresenter implements SignInContract.Presenter {
 
     // Firebase auth listener stuff
     private FirebaseAuth mAuth;
@@ -79,23 +81,43 @@ class SignInPresenter implements SignInContract.Presenter {
      * @return      Whether email is valid
      */
     private boolean isEmailValid(String email) {
-       return email.endsWith("@ucsd.edu");
+       return (email.endsWith("@ucsd.edu") && !email.equals("@ucsd.edu"));
     }
 
     @Override
-    public void resetPassword(String email) {
-        // TODO finish resetpassword method
-    }
+    public void resetPassword(String email, DialogInterface dialog) {
+        if (TextUtils.isEmpty(email) || !isEmailValid(email)) {
+            Log.d("Password reset", "Email " + email + " is not valid.");
+            dialog.dismiss();
+            return;
+        }
 
-    @Override
-    public void sendPasswordResetEmail(String email) {
+        // Dismiss dialog
+        dialog.dismiss();
 
+        mSignInView.startProgressIndicator("Reset Password", "Sending email...");
+
+        mAuth.sendPasswordResetEmail(email).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                // Send email succeeded
+                mSignInView.stopProgressIndicator();
+                mSignInView.showResetPasswordSuccess();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                // Send email failed
+                mSignInView.stopProgressIndicator();
+                mSignInView.showResetPasswordFailed();
+            }
+        });
     }
 
     @Override
     public void firebaseSignIn(String email, String password) {
         mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(mSignInView.getFragmentActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d("Accounts", "signInWithEmail:onComplete:" + task.isSuccessful());
@@ -117,6 +139,14 @@ class SignInPresenter implements SignInContract.Presenter {
                         }
 
                         // Login was successful
+                        // First check for email verification
+                        if (!FirebaseAuth.getInstance().getCurrentUser().isEmailVerified()) {
+                            // Send the user a notification
+                            mSignInView.showEmailNotVerified();
+                            FirebaseAuth.getInstance().signOut();
+                        } else {
+                            mSignInView.showHomeView();
+                        }
                     }
                 });
     }
@@ -135,5 +165,21 @@ class SignInPresenter implements SignInContract.Presenter {
                 }
             }
         };
+    }
+
+    @Override
+    public void addFirebaseAuthStateListener() {
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void removeFirebaseAuthStateListener() {
+        if (mAuthListener != null)
+            mAuth.removeAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public boolean isUserLoggedIn() {
+        return (FirebaseAuth.getInstance().getCurrentUser() != null);
     }
 }

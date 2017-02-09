@@ -1,5 +1,8 @@
 package com.bananabanditcrew.studybananas.signin;
 
+import android.app.Activity;
+import android.content.DialogInterface;
+
 import com.bananabanditcrew.studybananas.BasePresenter;
 import com.bananabanditcrew.studybananas.BaseView;
 
@@ -44,18 +47,26 @@ public interface SignInContract {
         void showEmailNotVerified();
 
         void showSignUpView();
+
+        void showHomeView();
+
+        Activity getFragmentActivity();
     }
 
     interface Presenter extends BasePresenter {
 
         void attemptLogin();
 
-        void resetPassword(String email);
-
-        void sendPasswordResetEmail(String email);
+        void resetPassword(String email, DialogInterface dialog);
 
         void firebaseSignIn(String email, String password);
 
         void startFirebaseAuthListener();
+
+        void addFirebaseAuthStateListener();
+
+        void removeFirebaseAuthStateListener();
+
+        boolean isUserLoggedIn();
     }
 }

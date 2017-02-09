@@ -1,8 +1,10 @@
 package com.bananabanditcrew.studybananas.signin;
 
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,9 +21,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.bananabanditcrew.studybananas.R;
-import com.bananabanditcrew.studybananas.creategroup.CreateGroupFragment;
-
-import org.w3c.dom.Text;
+import com.bananabanditcrew.studybananas.home.HomeActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -34,7 +34,6 @@ public class SignInFragment extends Fragment implements SignInContract.View {
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private ProgressDialog mProgressView;
-    private View mLoginFormView;
     private Button mEmailSignInButton;
     private TextView mCreateAccountText;
     private TextView mForgotPasswordText;
@@ -187,7 +186,7 @@ public class SignInFragment extends Fragment implements SignInContract.View {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // User clicked send button
-                mPresenter.resetPassword(emailInput.getText().toString());
+                mPresenter.resetPassword(emailInput.getText().toString(), dialog);
                 dialog.dismiss();
             }
         });
@@ -248,5 +247,33 @@ public class SignInFragment extends Fragment implements SignInContract.View {
     @Override
     public void showSignUpView() {
         // TODO Add signup fragment creation here
+    }
+
+    @Override
+    public void showHomeView() {
+        Intent myIntent = new Intent(getActivity(), HomeActivity.class);
+        startActivity(myIntent);
+        getActivity().finish();
+    }
+
+    @Override
+    public Activity getFragmentActivity() {
+        return getActivity();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (mPresenter != null) {
+            mPresenter.addFirebaseAuthStateListener();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mPresenter != null) {
+            mPresenter.removeFirebaseAuthStateListener();
+        }
     }
 }
