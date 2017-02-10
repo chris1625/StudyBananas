@@ -9,6 +9,8 @@ public class Course {
     private String mCourseName;
     private ArrayList<Group> mStudyGroups;
 
+    public Course() {}
+
     public Course(String courseName){
         mCourseName = courseName;
         mStudyGroups = new ArrayList<>();
@@ -24,6 +26,10 @@ public class Course {
 
     public String getCourseName() {
         return mCourseName;
+    }
+
+    public void setcourseName(String courseName) {
+        mCourseName = courseName;
     }
 
 }

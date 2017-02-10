@@ -1,67 +1,115 @@
 package com.bananabanditcrew.studybananas.ui.joingroup;
 
 
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.hardware.input.InputManager;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.bananabanditcrew.studybananas.R;
+import com.bananabanditcrew.studybananas.ui.creategroup.CreateGroupFragment;
 
+import java.util.ArrayList;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link JoinGroupFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class JoinGroupFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class JoinGroupFragment extends Fragment implements JoinGroupContract.View {
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
+    private JoinGroupContract.Presenter mPresenter;
+    private LinearLayout mDummyLayout;
+    private AutoCompleteTextView mCoursesSelect;
+    private ArrayAdapter<String> mCourseList;
+    private ProgressDialog mProgressView;
 
     public JoinGroupFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment JoinGroupFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static JoinGroupFragment newInstance(String param1, String param2) {
-        JoinGroupFragment fragment = new JoinGroupFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    public static JoinGroupFragment newInstance() {
+        return new JoinGroupFragment();
+    }
+
+    @Override
+    public void setPresenter(@NonNull JoinGroupContract.Presenter presenter) {
+        mPresenter = presenter;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mPresenter != null) {
+            mPresenter.start();
+        }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_join_group, container, false);
+        View root = inflater.inflate(R.layout.fragment_join_group, container, false);
+
+        mCoursesSelect = (AutoCompleteTextView) root.findViewById(R.id.course_select);
+        mCoursesSelect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCoursesSelect.showDropDown();
+            }
+        });
+
+        mDummyLayout = (LinearLayout) root.findViewById(R.id.dummy_layout);
+
+        mCoursesSelect.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mDummyLayout.requestFocus();
+                closeKeyboard(getActivity(), mDummyLayout.getWindowToken());
+            }
+        });
+
+        mPresenter.addCoursesToAutoComplete();
+
+        return root;
     }
 
+    @Override
+    public void showProgressView(String title, String body) {
+        mProgressView = ProgressDialog.show(getContext(), title, body);
+    }
+
+    @Override
+    public void hideProgressView() {
+        mProgressView.dismiss();
+    }
+
+    @Override
+    public void setupAutoComplete(ArrayList<String> courses) {
+        mCourseList = new ArrayAdapter<>(
+                getActivity(), android.R.layout.simple_dropdown_item_1line,
+                courses);
+        mCoursesSelect.setAdapter(mCourseList);
+    }
+
+    public static void closeKeyboard(Context c, IBinder windowToken) {
+        InputMethodManager mgr = (InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
+        mgr.hideSoftInputFromWindow(windowToken, 0);
+    }
 }

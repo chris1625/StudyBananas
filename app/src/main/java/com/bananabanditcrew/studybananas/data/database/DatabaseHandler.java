@@ -1,7 +1,6 @@
 package com.bananabanditcrew.studybananas.data.database;
 
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import com.bananabanditcrew.studybananas.data.Course;
 import com.bananabanditcrew.studybananas.data.User;
@@ -17,6 +16,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 /**
  * Created by chris on 2/9/17.
@@ -26,6 +26,7 @@ public class DatabaseHandler {
 
     private DatabaseReference mDatabase;
     private DatabaseCallback mCallback;
+    private ArrayList<String> mCourses;
 
     public DatabaseHandler(DatabaseCallback callback) {
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -56,7 +57,12 @@ public class DatabaseHandler {
             JSONArray m_jArry = obj.getJSONArray("classes");
             for (int i = 0; i < m_jArry.length(); i++) {
                 String courseString = m_jArry.getString(i);
-                Course course = new Course(courseString);
+                int shortNameIndex = ordinalIndexOf(courseString, " ", 2);
+                String shortName = courseString;
+                if (shortNameIndex != -1) {
+                    shortName = courseString.substring(0, shortNameIndex).replace(".","");
+                }
+                Course course = new Course(shortName);
                 mDatabase.child("courses").push().setValue(course);
             }
         } catch (JSONException e) {
@@ -64,15 +70,25 @@ public class DatabaseHandler {
         }
     }
 
-    public void autocompleteClasses(final ArrayAdapter<String> autocomplete) {
-        mDatabase.child("courses").addValueEventListener(new ValueEventListener() {
+    public static int ordinalIndexOf(String str, String substr, int n) {
+        int pos = str.indexOf(substr);
+        while (--n > 0 && pos != -1)
+            pos = str.indexOf(substr, pos + 1);
+        return pos;
+    }
+
+    public void getClassesArray() {
+        mDatabase.child("courses").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot suggestionSnapshot : dataSnapshot.getChildren()) {
-                    String suggestion = suggestionSnapshot.child("courseName").getValue(String.class);
-                    autocomplete.add(suggestion);
-                    Log.d("Autocomplete", suggestion);
+                mCourses = new ArrayList<>();
+                Log.d("Database", "Count = " + dataSnapshot.getChildrenCount());
+                for (DataSnapshot coursesSnapshot: dataSnapshot.getChildren()) {
+                    String course = coursesSnapshot.getValue(Course.class).getCourseName();
+                    mCourses.add(course);
                 }
+                Log.d("Database", "Got " + mCourses.size() + " items");
+                mCallback.notifyOnCoursesRetrieved();
             }
 
             @Override
@@ -80,5 +96,9 @@ public class DatabaseHandler {
 
             }
         });
+    }
+
+    public ArrayList<String> getCourseArrayList() {
+        return mCourses;
     }
 }

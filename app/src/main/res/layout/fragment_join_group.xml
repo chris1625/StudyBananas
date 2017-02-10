@@ -1,6 +1,38 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="15dp"
+    android:orientation="vertical"
     tools:context=".ui.joingroup.JoinGroupFragment">
-</FrameLayout>
+
+    <!--Dummy layout to grab focus -->
+    <LinearLayout
+        android:id="@+id/dummy_layout"
+        android:layout_width="0px"
+        android:layout_height="0px"
+        android:orientation="vertical"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+    </LinearLayout>
+
+    <AutoCompleteTextView
+        android:id="@+id/course_select"
+        android:hint="@string/add_class"
+        android:inputType="textVisiblePassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:dropDownAnchor="@id/course_select"
+        android:dropDownHeight="250dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display2"
+        android:gravity="start"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/class_view">
+    </LinearLayout>
+</LinearLayout>

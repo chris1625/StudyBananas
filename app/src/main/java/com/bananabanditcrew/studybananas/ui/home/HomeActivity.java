@@ -15,6 +15,7 @@ public class HomeActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private NavigationView mNavigationView;
+    private HomePresenter mHomePresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,12 +43,12 @@ public class HomeActivity extends AppCompatActivity {
         HomeFragment homeFragment = new HomeFragment();
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_container, homeFragment).commit();
-        HomePresenter presenter = new HomePresenter(homeFragment);
+        mHomePresenter = new HomePresenter(homeFragment);
 
         // Create onClick listeners for menu items
         mNavigationView = (NavigationView) findViewById(R.id.nav_drawer);
         if (mNavigationView != null)
-            setupDrawerContent(mNavigationView, presenter);
+            setupDrawerContent(mNavigationView, mHomePresenter);
     }
 
     @Override

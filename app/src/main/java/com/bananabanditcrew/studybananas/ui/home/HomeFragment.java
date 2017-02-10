@@ -13,11 +13,13 @@ import android.widget.Button;
 import com.bananabanditcrew.studybananas.ui.joingroup.JoinGroupFragment;
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.ui.creategroup.CreateGroupFragment;
+import com.bananabanditcrew.studybananas.ui.joingroup.JoinGroupPresenter;
 import com.bananabanditcrew.studybananas.ui.signin.SignInActivity;
 
 public class HomeFragment extends Fragment implements HomeContract.View {
 
     private HomeContract.Presenter mPresenter;
+    private JoinGroupPresenter mJoinGroupPresenter;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -88,9 +90,12 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         JoinGroupFragment joinGroupFragment = new JoinGroupFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.slide_from_right, R.anim.slide_to_left,
-                R.anim.slide_from_left, R.anim.slide_to_left);
+                R.anim.slide_from_left, R.anim.slide_to_right);
         transaction.replace(R.id.fragment_container, joinGroupFragment);
         transaction.addToBackStack(null);
+
+        // Create presenter and link it to new fragment
+        mJoinGroupPresenter = new JoinGroupPresenter(joinGroupFragment);
 
         // Commit the transaction
         transaction.commit();
