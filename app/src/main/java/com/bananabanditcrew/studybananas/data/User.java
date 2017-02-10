@@ -5,13 +5,31 @@ package com.bananabanditcrew.studybananas.data;
  */
 
 public class User {
-    public boolean leader; //group leaders have different accessible features
-    public String mFirstName;
-    public String mLastName;
+    private String mFirstName;
+    private String mLastName;
+    private String mEmail;
+    private Group mGroup;
 
-    public User (String mFirstName, String mLastName) {
-        this.mFirstName = mFirstName;
-        this.mLastName = mLastName;
+    public User (String first, String last, String email) {
+        mFirstName = first;
+        mLastName = last;
+        mEmail = email;
+    }
+
+    public void setFirstName(String first) {
+        mFirstName = first;
+    }
+
+    public void setLastName(String last) {
+        mLastName = last;
+    }
+
+    public void setEmail(String email) {
+        mEmail = email;
+    }
+
+    public void setGroup(Group group) {
+        mGroup = group;
     }
 
     public String getFirstName() {
@@ -20,5 +38,15 @@ public class User {
     public String getLastName() {
         return mLastName;
     }
+    public String getEmail() {
+        return mEmail;
+    }
+    public Group getGroup() {
+        return mGroup;
+    }
 
+    @Override
+    public String toString() {
+        return (mFirstName + " " + mLastName);
+    }
 }

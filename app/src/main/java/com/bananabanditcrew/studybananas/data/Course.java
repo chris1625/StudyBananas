@@ -6,16 +6,24 @@ package com.bananabanditcrew.studybananas.data;
 import java.util.ArrayList;
 
 public class Course {
-    public String courseName;
-    public ArrayList<Group> studyGroups;
+    private String mCourseName;
+    private ArrayList<Group> mStudyGroups;
 
     public Course(String courseName){
-        this.courseName = courseName;
-        this.studyGroups = new ArrayList<Group>();
+        mCourseName = courseName;
+        mStudyGroups = new ArrayList<>();
     }
 
     public void addStudyGroup(Group group) {
-        studyGroups.add(group);
+        mStudyGroups.add(group);
+    }
+
+    public void removeStudyGroup(Group group) {
+        mStudyGroups.remove(group);
+    }
+
+    public String getCourseName() {
+        return mCourseName;
     }
 
 }

@@ -35,7 +35,8 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     @Override
     public void onResume() {
         super.onResume();
-        mPresenter.start();
+        if (mPresenter != null)
+            mPresenter.start();
     }
 
     @Override
@@ -46,6 +47,8 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         // Create listener for createGroup button
@@ -66,7 +69,6 @@ public class HomeFragment extends Fragment implements HomeContract.View {
             }
         });
 
-        // Inflate the layout for this fragment
         return view;
     }
 
