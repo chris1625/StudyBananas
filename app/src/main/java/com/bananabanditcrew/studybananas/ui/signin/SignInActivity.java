@@ -20,7 +20,12 @@ public class SignInActivity extends AppCompatActivity {
                 return;
             }
 
-            SignInFragment signInFragment = new SignInFragment();
+            SignInFragment signInFragment = (SignInFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.fragment_sign_in);
+
+            if (signInFragment == null)
+                signInFragment = SignInFragment.newInstance();
+
             signInFragment.setArguments(getIntent().getExtras());
 
             SignInPresenter mPresenter = new SignInPresenter(signInFragment);

@@ -1,6 +1,8 @@
 package com.bananabanditcrew.studybananas.ui.home;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
@@ -11,90 +13,91 @@ import android.widget.Button;
 import com.bananabanditcrew.studybananas.ui.joingroup.JoinGroupFragment;
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.ui.creategroup.CreateGroupFragment;
+import com.bananabanditcrew.studybananas.ui.signin.SignInActivity;
 
+public class HomeFragment extends Fragment implements HomeContract.View {
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link HomeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class HomeFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private HomeContract.Presenter mPresenter;
 
     public HomeFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment HomeFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static HomeFragment newInstance(String param1, String param2) {
-        HomeFragment fragment = new HomeFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    public static HomeFragment newInstance() {
+        return new HomeFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mPresenter.start();
+    }
+
+    @Override
+    public void setPresenter(@NonNull HomeContract.Presenter presenter) {
+        mPresenter = presenter;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home_page, container, false);
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        // Create listener for createGroup button
         Button createGroupButton = (Button) view.findViewById(R.id.create_group_button);
         createGroupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CreateGroupFragment createGroupFragment = new CreateGroupFragment();
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                transaction.setCustomAnimations(R.anim.slide_from_right, R.anim.slide_to_left,
-                        R.anim.slide_from_left, R.anim.slide_to_right);
-                transaction.replace(R.id.fragment_container, createGroupFragment);
-                transaction.addToBackStack(null);
-
-                // Commit the transaction
-                transaction.commit();
+                showCreateGroupView();
             }
         });
 
+        // Create listener for joinGroup button
         Button joinGroupButton = (Button) view.findViewById(R.id.join_group_button);
         joinGroupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                JoinGroupFragment joinGroupFragment = new JoinGroupFragment();
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                transaction.setCustomAnimations(R.anim.slide_from_right, R.anim.slide_to_left,
-                        R.anim.slide_from_left, R.anim.slide_to_left);
-                transaction.replace(R.id.fragment_container, joinGroupFragment);
-                transaction.addToBackStack(null);
-
-                // Commit the transaction
-                transaction.commit();
+                showJoinGroupView();
             }
         });
+
         // Inflate the layout for this fragment
         return view;
+    }
+
+    public void showCreateGroupView() {
+        CreateGroupFragment createGroupFragment = new CreateGroupFragment();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.slide_from_right, R.anim.slide_to_left,
+                R.anim.slide_from_left, R.anim.slide_to_right);
+        transaction.replace(R.id.fragment_container, createGroupFragment);
+        transaction.addToBackStack(null);
+
+        // Commit the transaction
+        transaction.commit();
+    }
+
+    public void showJoinGroupView() {
+        JoinGroupFragment joinGroupFragment = new JoinGroupFragment();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.slide_from_right, R.anim.slide_to_left,
+                R.anim.slide_from_left, R.anim.slide_to_left);
+        transaction.replace(R.id.fragment_container, joinGroupFragment);
+        transaction.addToBackStack(null);
+
+        // Commit the transaction
+        transaction.commit();
+    }
+
+    @Override
+    public void showSignInView() {
+        Intent myIntent = new Intent(getActivity(), SignInActivity.class);
+        startActivity(myIntent);
+        getActivity().finish();
     }
 }

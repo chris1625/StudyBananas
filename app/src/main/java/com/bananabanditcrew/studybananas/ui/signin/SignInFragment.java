@@ -250,17 +250,20 @@ public class SignInFragment extends Fragment implements SignInContract.View {
 
     @Override
     public void showSignUpView() {
-        SignUpFragment signUpFragment = new SignUpFragment();
-        new SignUpPresenter(signUpFragment);
+        SignUpFragment signUpFragment = (SignUpFragment) getFragmentManager()
+                .findFragmentById(R.id.fragment_sign_up);
+        if (signUpFragment == null) {
+            signUpFragment = SignUpFragment.newInstance();
 
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.setCustomAnimations(R.anim.slide_from_right, R.anim.slide_to_left,
-                R.anim.slide_from_left, R.anim.slide_to_right);
-        transaction.replace(R.id.fragment_container_signin, signUpFragment);
-        transaction.addToBackStack(null);
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            transaction.setCustomAnimations(R.anim.slide_from_right, R.anim.slide_to_left,
+                    R.anim.slide_from_left, R.anim.slide_to_right);
+            transaction.replace(R.id.fragment_container_signin, signUpFragment);
+            transaction.addToBackStack(null);
 
-        // Commit the transaction
-        transaction.commit();
+            // Commit the transaction
+            transaction.commit();
+        }
     }
 
     @Override
