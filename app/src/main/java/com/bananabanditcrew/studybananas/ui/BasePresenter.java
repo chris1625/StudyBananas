@@ -1,4 +1,4 @@
-package com.bananabanditcrew.studybananas;
+package com.bananabanditcrew.studybananas.ui;
 
 /**
  * Created by chris on 2/8/17.

@@ -2,9 +2,8 @@ package com.bananabanditcrew.studybananas.ui.signup;
 
 import android.app.Activity;
 
-import com.bananabanditcrew.studybananas.BasePresenter;
-import com.bananabanditcrew.studybananas.BaseView;
-import com.bananabanditcrew.studybananas.ui.signin.SignInContract;
+import com.bananabanditcrew.studybananas.ui.BasePresenter;
+import com.bananabanditcrew.studybananas.ui.BaseView;
 
 /**
  * Created by chris on 2/9/17.
