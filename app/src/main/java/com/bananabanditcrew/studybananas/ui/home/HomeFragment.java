@@ -1,5 +1,6 @@
 package com.bananabanditcrew.studybananas.ui.home;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -20,6 +21,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
 
     private HomeContract.Presenter mPresenter;
     private JoinGroupPresenter mJoinGroupPresenter;
+    private ProgressDialog mProgressView;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -52,6 +54,9 @@ public class HomeFragment extends Fragment implements HomeContract.View {
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        // Get courses and put them in an arrayadapter
+        mPresenter.addCoursesToAutoComplete();
 
         // Create listener for createGroup button
         Button createGroupButton = (Button) view.findViewById(R.id.create_group_button);
@@ -95,7 +100,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         transaction.addToBackStack(null);
 
         // Create presenter and link it to new fragment
-        mJoinGroupPresenter = new JoinGroupPresenter(joinGroupFragment);
+        mJoinGroupPresenter = new JoinGroupPresenter(joinGroupFragment, mPresenter.getCoursesAdapter());
 
         // Commit the transaction
         transaction.commit();
@@ -106,5 +111,15 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         Intent myIntent = new Intent(getActivity(), SignInActivity.class);
         startActivity(myIntent);
         getActivity().finish();
+    }
+
+    @Override
+    public void showProgressView(String title, String body) {
+        mProgressView = ProgressDialog.show(getContext(), title, body);
+    }
+
+    @Override
+    public void hideProgressView() {
+        mProgressView.dismiss();
     }
 }

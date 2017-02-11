@@ -1,58 +1,31 @@
 package com.bananabanditcrew.studybananas.ui.joingroup;
 
-import android.app.Activity;
 import android.support.annotation.NonNull;
-
-import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
-import com.bananabanditcrew.studybananas.data.database.DatabaseHandler;
-
-import java.util.ArrayList;
+import android.widget.ArrayAdapter;
 
 /**
  * Created by chris on 2/10/17.
  */
 
-public class JoinGroupPresenter implements JoinGroupContract.Presenter, DatabaseCallback{
+public class JoinGroupPresenter implements JoinGroupContract.Presenter {
 
     private final JoinGroupContract.View mJoinGroupView;
-    private DatabaseHandler mDatabase;
-    private ArrayList<String> mCourseList;
+    private ArrayAdapter<String> mCourseList;
 
-    public JoinGroupPresenter(@NonNull JoinGroupContract.View joinGroupView) {
+    public JoinGroupPresenter(@NonNull JoinGroupContract.View joinGroupView,
+                              ArrayAdapter<String> courseList) {
         mJoinGroupView = joinGroupView;
         mJoinGroupView.setPresenter(this);
-        mDatabase = new DatabaseHandler(this);
+        mCourseList = courseList;
     }
 
     @Override
     public void start() {
-        // TODO fill in JoinGroup presenter's
+        // TODO fill in JoinGroup presenter's start method
     }
 
     @Override
-    public Activity getActivity() {
-        return mJoinGroupView.getActivity();
-    }
-
-    @Override
-    public void writeCoursesToDatabase() {
-        mDatabase.updateClasses();
-    }
-
-    @Override
-    public void notifyOnCoursesRetrieved() {
-        mJoinGroupView.hideProgressView();
-        mCourseList = mDatabase.getCourseArrayList();
-
-        // Create array adapter in view
-        mJoinGroupView.setupAutoComplete(mCourseList);
-    }
-
-    @Override
-    public void addCoursesToAutoComplete() {
-        if (mCourseList == null) {
-            mJoinGroupView.showProgressView("Courses", "Fetching list of courses...");
-            mDatabase.getClassesArray();
-        }
+    public ArrayAdapter<String> getCoursesAdapter() {
+        return mCourseList;
     }
 }

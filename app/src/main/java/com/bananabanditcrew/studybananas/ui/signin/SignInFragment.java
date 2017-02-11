@@ -22,9 +22,7 @@ import android.widget.TextView;
 
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.ui.home.HomeActivity;
-import com.bananabanditcrew.studybananas.ui.signup.SignUpContract;
 import com.bananabanditcrew.studybananas.ui.signup.SignUpFragment;
-import com.bananabanditcrew.studybananas.ui.signup.SignUpPresenter;
 
 /**
  * A simple {@link Fragment} subclass.
