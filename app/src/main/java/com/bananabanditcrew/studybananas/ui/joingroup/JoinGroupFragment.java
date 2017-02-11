@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -82,6 +83,23 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mDummyLayout.requestFocus();
                 closeKeyboard(getActivity(), mDummyLayout.getWindowToken());
+            }
+        });
+
+        mCoursesSelect.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    int leftEdgeOfRightDrawable = mCoursesSelect.getRight()
+                            - mCoursesSelect.getCompoundDrawables()[2].getBounds().width();
+                    if (event.getRawX() >= leftEdgeOfRightDrawable) {
+                        mCoursesSelect.setText("");
+                        mCoursesSelect.dismissDropDown();
+                        return true;
+                    }
+
+                }
+                return false;
             }
         });
 

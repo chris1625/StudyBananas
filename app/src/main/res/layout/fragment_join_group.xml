@@ -23,11 +23,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:dropDownAnchor="@id/course_select"
-        android:dropDownHeight="250dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Display2"
         android:gravity="start"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:drawableEnd="@drawable/ic_clear"
+        android:drawableRight="@drawable/ic_clear" />
 
     <LinearLayout
         android:orientation="vertical"
