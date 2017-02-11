@@ -40,7 +40,7 @@ public class HomePresenter implements HomeContract.Presenter, DatabaseCallback {
 
     @Override
     public void notifyOnCoursesRetrieved() {
-//        mHomeView.hideProgressView();
+        mHomeView.hideProgressView();
         ArrayList<String> courses = mDatabase.getCourseArrayList();
 
         // Set up array adapter
@@ -52,7 +52,7 @@ public class HomePresenter implements HomeContract.Presenter, DatabaseCallback {
     @Override
     public void addCoursesToAutoComplete() {
         if (mCourseList == null) {
-//            mHomeView.showProgressView("Courses", "Fetching list of courses...");
+            mHomeView.showProgressView("Courses", "Fetching list of courses...");
             mDatabase.getClassesArray();
         }
     }
