@@ -5,7 +5,10 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,7 +57,20 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_join_group, container, false);
 
+        mDummyLayout = (LinearLayout) root.findViewById(R.id.dummy_layout);
         mCoursesSelect = (AutoCompleteTextView) root.findViewById(R.id.course_select);
+        setupCoursesSelectView();
+
+        return root;
+    }
+
+    public static void closeKeyboard(Context c, IBinder windowToken) {
+        InputMethodManager mgr = (InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
+        mgr.hideSoftInputFromWindow(windowToken, 0);
+    }
+
+    public void setupCoursesSelectView() {
+
         mCoursesSelect.setAdapter(mPresenter.getCoursesAdapter());
         mCoursesSelect.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,8 +79,7 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
             }
         });
 
-        mDummyLayout = (LinearLayout) root.findViewById(R.id.dummy_layout);
-
+        // Close window once option is selected
         mCoursesSelect.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -73,6 +88,7 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
             }
         });
 
+        // Setup the function of the clear button in the right-hand side
         mCoursesSelect.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -90,11 +106,27 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
             }
         });
 
-        return root;
-    }
+        // Prevent copy/paste in mCoursesSelect
+        mCoursesSelect.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
 
-    public static void closeKeyboard(Context c, IBinder windowToken) {
-        InputMethodManager mgr = (InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
-        mgr.hideSoftInputFromWindow(windowToken, 0);
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                return false;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+
+            }
+        });
     }
 }
