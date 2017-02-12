@@ -97,9 +97,6 @@ public class SignInFragment extends Fragment implements SignInContract.View {
             }
         });
 
-        // Create the presenter
-        mPresenter = new SignInPresenter(this);
-
         return root;
     }
 
