@@ -28,6 +28,14 @@ public class Course {
         return mCourseName;
     }
 
+    public Group getGroupByIndex(int index) {
+        return mStudyGroups.get(index);
+    }
+
+    public int getGroupCount() {
+        return mStudyGroups.size();
+    }
+
     public void setcourseName(String courseName) {
         mCourseName = courseName;
     }

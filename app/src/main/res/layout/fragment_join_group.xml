@@ -33,6 +33,14 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/class_view">
+        android:id="@+id/class_view" >
+
+        <ExpandableListView
+            android:id="@+id/courses_list"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
+            android:divider="@android:color/darker_gray"
+            android:dividerHeight="0.5dp"/>
     </LinearLayout>
 </LinearLayout>
