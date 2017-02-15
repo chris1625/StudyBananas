@@ -1,8 +1,10 @@
 package com.bananabanditcrew.studybananas.ui.joingroup;
 
 import android.app.Activity;
+import android.graphics.Paint;
 import android.widget.ArrayAdapter;
 
+import com.bananabanditcrew.studybananas.data.Course;
 import com.bananabanditcrew.studybananas.ui.BasePresenter;
 import com.bananabanditcrew.studybananas.ui.BaseView;
 
@@ -18,13 +20,21 @@ public interface JoinGroupContract {
 
         Activity getActivity();
 
+        void attachAdapter(JoinGroupFragment.CoursesAdapter adapter);
+
     }
 
     interface Presenter extends BasePresenter {
 
         ArrayAdapter<String> getCoursesAdapter();
 
-        ArrayList<String> getUserCoursesList();
+        JoinGroupFragment.CoursesAdapter getUserCoursesAdapter();
+
+        void getUserSavedCourses();
+
+        void addUserCourse(String course);
+
+        void removeUserCourse(String course);
 
     }
 }

@@ -5,8 +5,10 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
+import com.bananabanditcrew.studybananas.data.Course;
 import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
 import com.bananabanditcrew.studybananas.data.database.DatabaseHandler;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -19,7 +21,7 @@ public class JoinGroupPresenter implements DatabaseCallback.UserCoursesCallback,
 
     private final JoinGroupContract.View mJoinGroupView;
     private ArrayAdapter<String> mCourseList;
-    private ArrayList<String> mUserCourseList;
+    private JoinGroupFragment.CoursesAdapter mUserCoursesAdapter;
     private DatabaseHandler mDatabase;
 
     public JoinGroupPresenter(@NonNull JoinGroupContract.View joinGroupView,
@@ -41,13 +43,37 @@ public class JoinGroupPresenter implements DatabaseCallback.UserCoursesCallback,
     }
 
     @Override
-    public void notifyOnUserCoursesRetrieved(ArrayList<String> userCoursesList) {
-        mUserCourseList = userCoursesList;
+    public void notifyOnUserCoursesRetrieved(ArrayList<Course> userCoursesList) {
+
+        mUserCoursesAdapter = new JoinGroupFragment.CoursesAdapter(mJoinGroupView.getActivity(),
+                                                                   userCoursesList, this);
+        mJoinGroupView.attachAdapter(mUserCoursesAdapter);
     }
 
     @Override
-    public ArrayList<String> getUserCoursesList() {
-        return mUserCourseList;
+    public void getUserSavedCourses() {
+        mDatabase.getUserClassesArray(getUserEmail(), this);
+    }
+
+    private String getUserEmail() {
+        return FirebaseAuth.getInstance().getCurrentUser().getEmail();
+    }
+
+    @Override
+    public void addUserCourse(String course) {
+        mDatabase.addUserClass(getUserEmail(), course);
+        getUserSavedCourses();
+    }
+
+    @Override
+    public void removeUserCourse(String course) {
+        mDatabase.removeUserClass(getUserEmail(), course);
+        getUserSavedCourses();
+    }
+
+    @Override
+    public JoinGroupFragment.CoursesAdapter getUserCoursesAdapter() {
+        return mUserCoursesAdapter;
     }
 
     public Activity getActivity() {

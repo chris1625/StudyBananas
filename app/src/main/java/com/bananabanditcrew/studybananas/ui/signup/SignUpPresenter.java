@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
+import com.bananabanditcrew.studybananas.data.database.DatabaseHandler;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -16,7 +18,7 @@ import com.google.firebase.auth.FirebaseUser;
  * Created by chris on 2/9/17.
  */
 
-public class SignUpPresenter implements SignUpContract.Presenter {
+public class SignUpPresenter implements SignUpContract.Presenter, DatabaseCallback.UserCreationCallback {
 
     // Firebase auth listener stuff
     private FirebaseAuth mAuth;
@@ -25,10 +27,14 @@ public class SignUpPresenter implements SignUpContract.Presenter {
     // Reference to our view
     private final SignUpContract.View mSignUpView;
 
+    // Database reference
+    private DatabaseHandler mDatabase;
+
     public SignUpPresenter (@NonNull SignUpContract.View signUpView) {
         mSignUpView = signUpView;
         mSignUpView.setPresenter(this);
         startFirebaseAuthListener();
+        mDatabase = new DatabaseHandler();
     }
 
     @Override
@@ -93,7 +99,7 @@ public class SignUpPresenter implements SignUpContract.Presenter {
 
         if (!cancel) {
             mSignUpView.startProgressIndicator("Create Account", "Creating account...");
-            firebaseCreateAccount(email, password);
+            firebaseCreateAccount(mSignUpView.getFirst(), mSignUpView.getLast(), email, password);
         }
     }
 
@@ -133,7 +139,8 @@ public class SignUpPresenter implements SignUpContract.Presenter {
         return (email.endsWith("@ucsd.edu") && !email.equals("@ucsd.edu"));
     }
 
-    private void firebaseCreateAccount(String email, String password) {
+    private void firebaseCreateAccount(final String first, final String last, final String email,
+                                       final String password) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(mSignUpView.getFragmentActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
@@ -159,13 +166,24 @@ public class SignUpPresenter implements SignUpContract.Presenter {
 
                         // Login successful
                         // Send email verification, account won't be accessible until this is completed
-                        FirebaseAuth.getInstance().getCurrentUser().sendEmailVerification();
-                        FirebaseAuth.getInstance().signOut();
-                        Log.d("Accounts", "sending email verification");
+                        firstTimeCreation(first, last, email);
 
-                        // Display popup about the email
-                        mSignUpView.showEmailVerifyDialog();
+                        // The verification will be completed in the callback method
                     }
                 });
+    }
+
+    private void firstTimeCreation(String first, String last, String email) {
+        mDatabase.createNewUser(first, last, email, this);
+    }
+
+    @Override
+    public void finishAccountCreation() {
+        FirebaseAuth.getInstance().getCurrentUser().sendEmailVerification();
+        FirebaseAuth.getInstance().signOut();
+        Log.d("Accounts", "sending email verification");
+
+        // Display popup about the email
+        mSignUpView.showEmailVerifyDialog();
     }
 }

@@ -18,6 +18,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -26,6 +27,7 @@ import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.data.Course;
 import com.bananabanditcrew.studybananas.data.Group;
 import com.bananabanditcrew.studybananas.data.User;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,35 +77,19 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         setupCoursesSelectView();
         mUserCourseList = (ExpandableListView) root.findViewById(R.id.courses_list);
 
-        // TODO THIS IS A PURELY EXPERIMENTAL SECTION, WILL BE REMOVED
-
-        User user1 = new User("Chris", "Harris", "crh013@ucsd.edu");
-        User user2 = new User("Bob", "Ross", "rip@gmail.com");
-        Location loc1 = new Location("text");
-        Location loc2 = new Location("lul");
-        Course course1 = new Course("CSE 101");
-        Course course2 = new Course("CSE 120");
-        Group group1 = new Group(user1.getEmail(), loc1, 0, 0, 2, 20);
-        Group group2 = new Group(user2.getEmail(), loc2, 2, 20, 4, 0);
-        course1.addStudyGroup(group1);
-        course2.addStudyGroup(group2);
-
-        mCourseArrayList = new ArrayList<>();
-        mCourseArrayList.add(course1);
-        mCourseArrayList.add(course2);
-
-        // Create adapter from list
-        CoursesAdapter coursesAdapter = new CoursesAdapter(getActivity(), mCourseArrayList);
-        mUserCourseList.setAdapter(coursesAdapter);
-
-        // TODO END EXPERIMENTAL SECTION
-
+        mPresenter.getUserSavedCourses();
         return root;
     }
 
     public static void closeKeyboard(Context c, IBinder windowToken) {
         InputMethodManager mgr = (InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
         mgr.hideSoftInputFromWindow(windowToken, 0);
+    }
+
+    @Override
+    public void attachAdapter(CoursesAdapter adapter) {
+        mUserCourseList.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
     public void setupCoursesSelectView() {
@@ -122,6 +108,8 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mDummyLayout.requestFocus();
                 closeKeyboard(getActivity(), mDummyLayout.getWindowToken());
+                mPresenter.addUserCourse((String)mCoursesSelect.getAdapter().getItem(position));
+                mCoursesSelect.setText("");
             }
         });
 
@@ -167,14 +155,16 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         });
     }
 
-    private static class CoursesAdapter extends BaseExpandableListAdapter {
+    public static class CoursesAdapter extends BaseExpandableListAdapter {
 
         private Context mContext;
         private List<Course> mCourses;
+        private JoinGroupPresenter mPresenter;
 
-        public CoursesAdapter(Context context, List<Course> courses) {
+        public CoursesAdapter(Context context, List<Course> courses, JoinGroupPresenter presenter) {
             mContext = context;
             mCourses = courses;
+            mPresenter = presenter;
         }
 
         @Override
@@ -206,7 +196,7 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
 
         @Override
         public int getChildrenCount(int listPosition) {
-            return mCourses.get(listPosition).getGroupCount();
+            return mCourses.get(listPosition).getStudyGroups().size();
         }
 
         @Override
@@ -225,19 +215,28 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         }
 
         @Override
-        public View getGroupView(int listPosition, boolean isExpanded, View convertView,
+        public View getGroupView(final int listPosition, boolean isExpanded, View convertView,
                                  ViewGroup parent) {
-            String listTitle = getGroup(listPosition).getCourseName();
+            final String listTitle = getGroup(listPosition).getCourseName();
             if (convertView == null) {
                 LayoutInflater layoutInflater =
                         (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = layoutInflater.inflate(R.layout.list_group_course, null);
             }
 
-            TextView listTitleTextView = (TextView)
+            final TextView listTitleTextView = (TextView)
                     convertView.findViewById(R.id.list_group_course);
             listTitleTextView.setTypeface(null, Typeface.BOLD);
             listTitleTextView.setText(listTitle);
+
+            Button removeClassButton = (Button)convertView.findViewById(R.id.delete_class_button);
+            removeClassButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mPresenter.removeUserCourse(getGroup(listPosition).getCourseName());
+                }
+            });
+
             return convertView;
         }
 

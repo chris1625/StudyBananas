@@ -59,8 +59,6 @@ public interface SignInContract {
 
         void resetPassword(String email, DialogInterface dialog);
 
-        void firebaseSignIn(String email, String password);
-
         void startFirebaseAuthListener();
 
         void addFirebaseAuthStateListener();
@@ -68,5 +66,6 @@ public interface SignInContract {
         void removeFirebaseAuthStateListener();
 
         boolean isUserLoggedIn();
+
     }
 }

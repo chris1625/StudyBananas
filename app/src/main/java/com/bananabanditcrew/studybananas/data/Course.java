@@ -9,7 +9,9 @@ public class Course {
     private String mCourseName;
     private ArrayList<Group> mStudyGroups;
 
-    public Course() {}
+    public Course() {
+        mStudyGroups = new ArrayList<>();
+    }
 
     public Course(String courseName){
         mCourseName = courseName;
@@ -30,10 +32,6 @@ public class Course {
 
     public Group getGroupByIndex(int index) {
         return mStudyGroups.get(index);
-    }
-
-    public int getGroupCount() {
-        return mStudyGroups.size();
     }
 
     public ArrayList<Group> getStudyGroups() {

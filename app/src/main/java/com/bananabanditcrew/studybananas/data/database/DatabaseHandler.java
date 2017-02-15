@@ -5,6 +5,7 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.bananabanditcrew.studybananas.data.Course;
+import com.bananabanditcrew.studybananas.data.Group;
 import com.bananabanditcrew.studybananas.data.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,14 +34,32 @@ public class DatabaseHandler {
 
     private DatabaseReference mDatabase;
     private ArrayList<String> mCourses;
+    private ArrayList<Course> mUserCourses;
+    private ArrayList<String> mUserCourseStrings;
 
     public DatabaseHandler() {
         mDatabase = FirebaseDatabase.getInstance().getReference();
     }
 
-    public void updateUser(String first, String last, String email) {
-        User user = new User(first, last, email);
-        updateUser(user);
+    public void createNewUser(String first, String last, final String email,
+                              final DatabaseCallback.UserCreationCallback callback) {
+        final User user = new User(first, last, email);
+        mDatabase.child("users").child(uidFromEmail(email))
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getChildrenCount() == 0) {
+                    Log.d("Database", "Updating user " + email);
+                    updateUser(user);
+                    callback.finishAccountCreation();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void updateUser(User user) {
@@ -123,13 +142,14 @@ public class DatabaseHandler {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        ArrayList<String> courseList = new ArrayList<>();
+                        mUserCourseStrings = new ArrayList<>();
                         Log.d("Database", "Count = " + dataSnapshot.getChildrenCount());
                         for (DataSnapshot coursesSnapshot: dataSnapshot.getChildren()) {
-                            courseList.add((String)coursesSnapshot.getValue());
+                            mUserCourseStrings.add((String)coursesSnapshot.getValue());
                         }
-                        Log.d("Database", "Got " + courseList.size() + " items");
-                        callback.notifyOnUserCoursesRetrieved(courseList);
+                        Log.d("Database", "Got " + mUserCourseStrings.size() + " items");
+                        mUserCourses = new ArrayList<>();
+                        stringsToCourses(mUserCourseStrings, callback);
                     }
 
                     @Override
@@ -139,7 +159,53 @@ public class DatabaseHandler {
                 });
     }
 
-    public void updateUserClasses(String email, ArrayList<String> courses) {
+    private void getCourseByString(String course, final boolean isLast,
+                                   final DatabaseCallback.UserCoursesCallback callback) {
+        mDatabase.child("courses").child(Integer.toString(course.hashCode()))
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        mUserCourses.add(dataSnapshot.getValue(Course.class));
+                        if (isLast)
+                            callback.notifyOnUserCoursesRetrieved(mUserCourses);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    private void stringsToCourses(ArrayList<String> courseStrings,
+                                  DatabaseCallback.UserCoursesCallback callback) {
+
+        int counter = 0;
+
+        for (String courseName: courseStrings) {
+            counter++;
+            getCourseByString(courseName, (counter == courseStrings.size()), callback);
+        }
+
+        if (counter == 0) {
+            callback.notifyOnUserCoursesRetrieved(mUserCourses);
+        }
+
+    }
+
+    private void updateUserClasses(String email, ArrayList<String> courses) {
         mDatabase.child("users").child(uidFromEmail(email)).child("courses").setValue(courses);
+    }
+
+    public void removeUserClass(String email, String course) {
+        mUserCourseStrings.remove(course);
+        updateUserClasses(email, mUserCourseStrings);
+    }
+
+    public void addUserClass(String email, String course) {
+        if (!mUserCourseStrings.contains(course)) {
+            mUserCourseStrings.add(course);
+        }
+        updateUserClasses(email, mUserCourseStrings);
     }
 }

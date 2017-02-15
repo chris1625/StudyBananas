@@ -21,13 +21,19 @@ public interface DatabaseCallback {
 
     interface UserCoursesCallback {
 
-        void notifyOnUserCoursesRetrieved(ArrayList<String> userCoursesList);
+        void notifyOnUserCoursesRetrieved(ArrayList<Course> userCoursesList);
 
     }
 
     interface ClassUpdateCallback {
 
         Activity getActivity();
+
+    }
+
+    interface UserCreationCallback {
+
+        void finishAccountCreation();
 
     }
 
