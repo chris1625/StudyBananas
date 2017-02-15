@@ -13,8 +13,22 @@ import java.util.ArrayList;
 
 public interface DatabaseCallback {
 
-    Activity getActivity();
+    interface CoursesCallback {
 
-    void notifyOnCoursesRetrieved();
+        void notifyOnCoursesRetrieved();
+
+    }
+
+    interface UserCoursesCallback {
+
+        void notifyOnUserCoursesRetrieved(ArrayList<String> userCoursesList);
+
+    }
+
+    interface ClassUpdateCallback {
+
+        Activity getActivity();
+
+    }
 
 }

@@ -1,5 +1,7 @@
 package com.bananabanditcrew.studybananas.data;
 
+import android.widget.ArrayAdapter;
+
 import java.util.ArrayList;
 
 /**
@@ -10,13 +12,14 @@ public class User {
     private String mFirstName;
     private String mLastName;
     private String mEmail;
-    private ArrayList<Course> mCourses;
+    private ArrayList<String> mCourses;
     private Group mGroup;
 
     public User (String first, String last, String email) {
         mFirstName = first;
         mLastName = last;
         mEmail = email;
+        mCourses = new ArrayList<>();
     }
 
     public void setFirstName(String first) {
@@ -35,11 +38,11 @@ public class User {
         mGroup = group;
     }
 
-    public void addCourse(Course course) {
+    public void addCourse(String course) {
         mCourses.add(course);
     }
 
-    public void removeCourse(Course course) {
+    public void removeCourse(String course) {
         mCourses.remove(course);
     }
 
@@ -54,6 +57,9 @@ public class User {
     }
     public Group getGroup() {
         return mGroup;
+    }
+    public ArrayList<String> getCourses() {
+        return mCourses;
     }
 
     @Override

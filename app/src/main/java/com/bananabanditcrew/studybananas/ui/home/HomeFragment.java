@@ -76,6 +76,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
             }
         });
 
+        mPresenter.updateClasses();
         return view;
     }
 

@@ -36,6 +36,10 @@ public class Course {
         return mStudyGroups.size();
     }
 
+    public ArrayList<Group> getStudyGroups() {
+        return mStudyGroups;
+    }
+
     public void setcourseName(String courseName) {
         mCourseName = courseName;
     }

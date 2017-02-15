@@ -10,9 +10,8 @@ import java.util.ArrayList;
 
 public class Group {
 
-    private Course mCourse;
-    private User mGroupLeader;
-    private ArrayList<User> mGroupMembers;
+    private String mGroupLeader;
+    private ArrayList<String> mGroupMembers;
     private Location mLocation;
     private int mStartHour;
     private int mStartMinute;
@@ -20,9 +19,8 @@ public class Group {
     private int mEndMinute;
 
 
-    public Group(Course course, User groupLeader, Location location, int startTimeHour,
+    public Group(String groupLeader, Location location, int startTimeHour,
                  int startTimeMinute, int endTimeHour, int endTimeMinute) {
-        mCourse = course;
         mGroupLeader = groupLeader;
         mLocation = location;
 
@@ -34,7 +32,7 @@ public class Group {
         mEndMinute = endTimeMinute;
     }
 
-    public void addGroupMember(User groupMember) {
+    public void addGroupMember(String groupMember) {
         if (mGroupMembers == null) {
             mGroupMembers = new ArrayList<>();
         }
@@ -42,7 +40,7 @@ public class Group {
         mGroupMembers.add(groupMember);
     }
 
-    public void removeGroupMember(User groupMember) {
+    public void removeGroupMember(String groupMember) {
         if (mGroupMembers == null) {
             return;
         }
@@ -50,23 +48,15 @@ public class Group {
         mGroupMembers.remove(groupMember);
     }
 
-    public Course getCourse() {
-        return mCourse;
-    }
-
-    public void setCourse(Course course) {
-        mCourse = course;
-    }
-
-    public User getLeader() {
+    public String getLeader() {
         return mGroupLeader;
     }
 
-    public void setLeader(User user) {
+    public void setLeader (String user) {
         mGroupLeader = user;
     }
 
-    public ArrayList<User> getGroupMembers() {
+    public ArrayList<String> getGroupMembers() {
         return mGroupMembers;
     }
 

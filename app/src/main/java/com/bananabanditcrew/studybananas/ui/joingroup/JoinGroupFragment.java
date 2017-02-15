@@ -83,8 +83,8 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         Location loc2 = new Location("lul");
         Course course1 = new Course("CSE 101");
         Course course2 = new Course("CSE 120");
-        Group group1 = new Group(course1, user1, loc1, 0, 0, 2, 20);
-        Group group2 = new Group(course2, user2, loc2, 2, 20, 4, 0);
+        Group group1 = new Group(user1.getEmail(), loc1, 0, 0, 2, 20);
+        Group group2 = new Group(user2.getEmail(), loc2, 2, 20, 4, 0);
         course1.addStudyGroup(group1);
         course2.addStudyGroup(group2);
 
@@ -191,7 +191,7 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         public View getChildView(int listPosition, final int expandedListPosition,
                                  boolean isLastChild, View convertView, ViewGroup parent) {
             final String expandedListText = getChild(listPosition,
-                    expandedListPosition).getLeader().getFirstName();
+                    expandedListPosition).getLeader();
             if (convertView == null) {
                 LayoutInflater layoutInflater =
                         (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

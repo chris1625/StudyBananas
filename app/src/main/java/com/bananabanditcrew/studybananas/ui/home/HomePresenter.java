@@ -1,9 +1,14 @@
 package com.bananabanditcrew.studybananas.ui.home;
 
 import android.app.Activity;
+import android.location.Location;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 
+import com.bananabanditcrew.studybananas.data.Course;
+import com.bananabanditcrew.studybananas.data.Group;
+import com.bananabanditcrew.studybananas.data.User;
 import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
 import com.bananabanditcrew.studybananas.data.database.DatabaseHandler;
 import com.google.firebase.auth.FirebaseAuth;
@@ -14,7 +19,8 @@ import java.util.ArrayList;
  * Created by chris on 2/9/17.
  */
 
-public class HomePresenter implements HomeContract.Presenter, DatabaseCallback {
+public class HomePresenter implements HomeContract.Presenter, DatabaseCallback.CoursesCallback,
+                                                              DatabaseCallback.ClassUpdateCallback {
 
     // Reference to view
     private final HomeContract.View mHomeView;
@@ -24,7 +30,7 @@ public class HomePresenter implements HomeContract.Presenter, DatabaseCallback {
     HomePresenter(@NonNull HomeContract.View homeView) {
         mHomeView = homeView;
         mHomeView.setPresenter(this);
-        mDatabase = new DatabaseHandler(this);
+        mDatabase = new DatabaseHandler();
     }
 
     @Override
@@ -53,7 +59,7 @@ public class HomePresenter implements HomeContract.Presenter, DatabaseCallback {
     public void addCoursesToAutoComplete() {
         if (mCourseList == null) {
             mHomeView.showProgressView("Courses", "Fetching list of courses...");
-            mDatabase.getClassesArray();
+            mDatabase.getClassesArray(this);
         }
     }
 
@@ -65,5 +71,10 @@ public class HomePresenter implements HomeContract.Presenter, DatabaseCallback {
     @Override
     public ArrayAdapter<String> getCoursesAdapter() {
         return mCourseList;
+    }
+
+    @Override
+    public void updateClasses() {
+        mDatabase.updateClasses(this);
     }
 }
