@@ -42,4 +42,8 @@ public class Course {
         mCourseName = courseName;
     }
 
+    @Override
+    public boolean equals(Object course) {
+        return mCourseName.equals(((Course) course).getCourseName());
+    }
 }

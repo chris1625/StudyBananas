@@ -21,6 +21,7 @@ public class JoinGroupPresenter implements DatabaseCallback.UserCoursesCallback,
 
     private final JoinGroupContract.View mJoinGroupView;
     private ArrayAdapter<String> mCourseList;
+    private ArrayList<Course> mUserCoursesList;
     private JoinGroupFragment.CoursesAdapter mUserCoursesAdapter;
     private DatabaseHandler mDatabase;
 
@@ -44,9 +45,9 @@ public class JoinGroupPresenter implements DatabaseCallback.UserCoursesCallback,
 
     @Override
     public void notifyOnUserCoursesRetrieved(ArrayList<Course> userCoursesList) {
-
+        mUserCoursesList = userCoursesList;
         mUserCoursesAdapter = new JoinGroupFragment.CoursesAdapter(mJoinGroupView.getActivity(),
-                                                                   userCoursesList, this);
+                                                                   mUserCoursesList, this);
         mJoinGroupView.attachAdapter(mUserCoursesAdapter);
     }
 
@@ -61,14 +62,35 @@ public class JoinGroupPresenter implements DatabaseCallback.UserCoursesCallback,
 
     @Override
     public void addUserCourse(String course) {
-        mDatabase.addUserClass(getUserEmail(), course);
-        getUserSavedCourses();
+        mDatabase.addUserClass(getUserEmail(), course, this);
     }
 
     @Override
     public void removeUserCourse(String course) {
-        mDatabase.removeUserClass(getUserEmail(), course);
-        getUserSavedCourses();
+        mDatabase.removeUserClass(getUserEmail(), course, this);
+    }
+
+    @Override
+    public void notifyOnUserCourseRetrievedToRemove(Course course) {
+        mUserCoursesList.remove(course);
+        mUserCoursesAdapter.notifyDataSetChanged();
+        Log.d("Database", Integer.toString(mUserCoursesList.size()));
+    }
+
+    @Override
+    public void notifyOnUserCourseRetrievedToAdd(Course course) {
+        mUserCoursesList.add(course);
+        mUserCoursesAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void notifyOnCourseUpdated(Course course) {
+        Log.d("Database", "Course updated: " + course.getCourseName());
+        if (mUserCoursesAdapter != null) {
+            mUserCoursesList.remove(course);
+            mUserCoursesList.add(course);
+            mUserCoursesAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override

@@ -23,6 +23,12 @@ public interface DatabaseCallback {
 
         void notifyOnUserCoursesRetrieved(ArrayList<Course> userCoursesList);
 
+        void notifyOnUserCourseRetrievedToRemove(Course course);
+
+        void notifyOnUserCourseRetrievedToAdd(Course course);
+
+        void notifyOnCourseUpdated(Course course);
+
     }
 
     interface ClassUpdateCallback {
