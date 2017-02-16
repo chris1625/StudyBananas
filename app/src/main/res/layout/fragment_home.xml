@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="50dp"
+    android:layout_margin="40dp"
     android:orientation="vertical"
     android:id="@+id/fragment_home"
     tools:context=".ui.home.HomeFragment">
@@ -14,7 +14,8 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginBottom="25dp"
+        android:layout_marginBottom="30dp"
+        android:layout_marginTop="20dp"
         android:layout_gravity="center"
         android:id="@+id/join_group_button"
         android:background="@drawable/joingroupbutton"/>
@@ -27,7 +28,8 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_gravity="center"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="20dp"
         android:id="@+id/create_group_button"
         android:layout_weight="1" />
 </LinearLayout>
