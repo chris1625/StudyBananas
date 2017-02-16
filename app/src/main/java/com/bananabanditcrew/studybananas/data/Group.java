@@ -1,25 +1,24 @@
 package com.bananabanditcrew.studybananas.data;
 
+import java.util.ArrayList;
+
 /**
  * Created by bubblesli96 on 2/9/17.
  */
-
-import android.location.Location;
-
-import java.util.ArrayList;
 
 public class Group {
 
     private String mGroupLeader;
     private ArrayList<String> mGroupMembers;
-    private Location mLocation;
+    private GroupLocation mLocation;
     private int mStartHour;
     private int mStartMinute;
     private int mEndHour;
     private int mEndMinute;
 
+    public Group() {}
 
-    public Group(String groupLeader, Location location, int startTimeHour,
+    public Group(String groupLeader, GroupLocation location, int startTimeHour,
                  int startTimeMinute, int endTimeHour, int endTimeMinute) {
         mGroupLeader = groupLeader;
         mLocation = location;
@@ -60,11 +59,11 @@ public class Group {
         return mGroupMembers;
     }
 
-    public Location getLocation() {
+    public GroupLocation getLocation() {
         return mLocation;
     }
 
-    public void setLocation(Location location) {
+    public void setLocation(GroupLocation location) {
         mLocation = location;
     }
 

@@ -1,9 +1,10 @@
 package com.bananabanditcrew.studybananas.data;
 
+import java.util.ArrayList;
+
 /**
  * Created by bubblesli96 on 2/9/17.
  */
-import java.util.ArrayList;
 
 public class Course {
     private String mCourseName;
@@ -24,6 +25,10 @@ public class Course {
 
     public void removeStudyGroup(Group group) {
         mStudyGroups.remove(group);
+    }
+
+    public void setStudyGroups(ArrayList<Group> studyGroups) {
+        mStudyGroups = studyGroups;
     }
 
     public String getCourseName() {

@@ -6,11 +6,11 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 
 import com.bananabanditcrew.studybananas.data.Course;
+import com.bananabanditcrew.studybananas.data.Group;
 import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
 import com.bananabanditcrew.studybananas.data.database.DatabaseHandler;
 import com.google.firebase.auth.FirebaseAuth;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -87,15 +87,19 @@ public class JoinGroupPresenter implements DatabaseCallback.UserCoursesCallback,
     public void notifyOnCourseUpdated(Course course) {
         Log.d("Database", "Course updated: " + course.getCourseName());
         if (mUserCoursesAdapter != null) {
-            mUserCoursesList.remove(course);
-            mUserCoursesList.add(course);
+            mUserCoursesList.set(mUserCoursesList.indexOf(course), course);
             mUserCoursesAdapter.notifyDataSetChanged();
         }
     }
 
     @Override
-    public JoinGroupFragment.CoursesAdapter getUserCoursesAdapter() {
-        return mUserCoursesAdapter;
+    public void addGroupToCourse(String course, Group group) {
+        mDatabase.addGroupToCourse(course, group);
+    }
+
+    @Override
+    public void removeGroupFromCourse(String course, Group group) {
+        mDatabase.removeGroupFromCourse(course, group);
     }
 
     public Activity getActivity() {

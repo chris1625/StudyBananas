@@ -1,7 +1,5 @@
 package com.bananabanditcrew.studybananas.data;
 
-import android.widget.ArrayAdapter;
-
 import java.util.ArrayList;
 
 /**

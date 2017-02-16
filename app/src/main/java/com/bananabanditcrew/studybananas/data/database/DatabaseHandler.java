@@ -1,6 +1,5 @@
 package com.bananabanditcrew.studybananas.data.database;
 
-import android.annotation.SuppressLint;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -19,12 +18,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by chris on 2/9/17.
@@ -282,5 +278,52 @@ public class DatabaseHandler {
             addValueEventListener(databaseReference, course.hashCode(), callback);
         }
         updateUserClasses(email, mUserCourseStrings);
+    }
+
+    public void addGroupToCourse(String course, final Group group) {
+
+        // Get course first
+        final DatabaseReference databaseReference = mDatabase.child("courses")
+                .child(Integer.toString(course.hashCode()));
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Course refCourse = dataSnapshot.getValue(Course.class);
+                refCourse.addStudyGroup(group);
+                updateCourse(databaseReference, refCourse);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void removeGroupFromCourse(String course, final Group group) {
+
+        // Get course first
+        final DatabaseReference databaseReference = mDatabase.child("courses")
+                .child(Integer.toString(course.hashCode()));
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Course refCourse = dataSnapshot.getValue(Course.class);
+                refCourse.removeStudyGroup(group);
+                updateCourse(databaseReference, refCourse);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void updateCourse(DatabaseReference databaseReference, Course course) {
+        Log.d("Database", "Updating course from handler");
+        databaseReference.setValue(course);
     }
 }

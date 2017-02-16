@@ -1,7 +1,6 @@
 package com.bananabanditcrew.studybananas.data.database;
 
 import android.app.Activity;
-import android.widget.ArrayAdapter;
 
 import com.bananabanditcrew.studybananas.data.Course;
 
