@@ -123,11 +123,14 @@
 
                 <EditText
                     android:layout_width="match_parent"
-                    android:layout_height="184dp"
+                    android:layout_height="202dp"
                     android:inputType="textMultiLine"
                     android:ems="10"
                     android:id="@+id/description_text"
-                    android:hint="description" />
+                    android:hint="description"
+                    android:outlineProvider="paddedBounds"
+                    android:background="@android:drawable/zoom_plate"
+                    tools:minLines="5" />
             </android.support.design.widget.TextInputLayout>
 
         </LinearLayout>
