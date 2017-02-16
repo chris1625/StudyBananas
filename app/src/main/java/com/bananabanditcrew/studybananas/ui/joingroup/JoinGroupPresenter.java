@@ -6,11 +6,11 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 
 import com.bananabanditcrew.studybananas.data.Course;
+import com.bananabanditcrew.studybananas.data.Group;
 import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
 import com.bananabanditcrew.studybananas.data.database.DatabaseHandler;
 import com.google.firebase.auth.FirebaseAuth;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -21,6 +21,7 @@ public class JoinGroupPresenter implements DatabaseCallback.UserCoursesCallback,
 
     private final JoinGroupContract.View mJoinGroupView;
     private ArrayAdapter<String> mCourseList;
+    private ArrayList<Course> mUserCoursesList;
     private JoinGroupFragment.CoursesAdapter mUserCoursesAdapter;
     private DatabaseHandler mDatabase;
 
@@ -44,9 +45,9 @@ public class JoinGroupPresenter implements DatabaseCallback.UserCoursesCallback,
 
     @Override
     public void notifyOnUserCoursesRetrieved(ArrayList<Course> userCoursesList) {
-
+        mUserCoursesList = userCoursesList;
         mUserCoursesAdapter = new JoinGroupFragment.CoursesAdapter(mJoinGroupView.getActivity(),
-                                                                   userCoursesList, this);
+                                                                   mUserCoursesList, this);
         mJoinGroupView.attachAdapter(mUserCoursesAdapter);
     }
 
@@ -61,19 +62,44 @@ public class JoinGroupPresenter implements DatabaseCallback.UserCoursesCallback,
 
     @Override
     public void addUserCourse(String course) {
-        mDatabase.addUserClass(getUserEmail(), course);
-        getUserSavedCourses();
+        mDatabase.addUserClass(getUserEmail(), course, this);
     }
 
     @Override
     public void removeUserCourse(String course) {
-        mDatabase.removeUserClass(getUserEmail(), course);
-        getUserSavedCourses();
+        mDatabase.removeUserClass(getUserEmail(), course, this);
     }
 
     @Override
-    public JoinGroupFragment.CoursesAdapter getUserCoursesAdapter() {
-        return mUserCoursesAdapter;
+    public void notifyOnUserCourseRetrievedToRemove(Course course) {
+        mUserCoursesList.remove(course);
+        mUserCoursesAdapter.notifyDataSetChanged();
+        Log.d("Database", Integer.toString(mUserCoursesList.size()));
+    }
+
+    @Override
+    public void notifyOnUserCourseRetrievedToAdd(Course course) {
+        mUserCoursesList.add(course);
+        mUserCoursesAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void notifyOnCourseUpdated(Course course) {
+        Log.d("Database", "Course updated: " + course.getCourseName());
+        if (mUserCoursesAdapter != null) {
+            mUserCoursesList.set(mUserCoursesList.indexOf(course), course);
+            mUserCoursesAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void addGroupToCourse(String course, Group group) {
+        mDatabase.addGroupToCourse(course, group);
+    }
+
+    @Override
+    public void removeGroupFromCourse(String course, Group group) {
+        mDatabase.removeGroupFromCourse(course, group);
     }
 
     public Activity getActivity() {

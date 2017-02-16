@@ -2,7 +2,6 @@ package com.bananabanditcrew.studybananas.ui.joingroup;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -26,8 +25,6 @@ import android.widget.TextView;
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.data.Course;
 import com.bananabanditcrew.studybananas.data.Group;
-import com.bananabanditcrew.studybananas.data.User;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +75,7 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         mUserCourseList = (ExpandableListView) root.findViewById(R.id.courses_list);
 
         mPresenter.getUserSavedCourses();
+
         return root;
     }
 

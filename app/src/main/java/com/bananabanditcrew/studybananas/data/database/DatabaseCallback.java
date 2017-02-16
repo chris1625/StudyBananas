@@ -1,7 +1,6 @@
 package com.bananabanditcrew.studybananas.data.database;
 
 import android.app.Activity;
-import android.widget.ArrayAdapter;
 
 import com.bananabanditcrew.studybananas.data.Course;
 
@@ -22,6 +21,12 @@ public interface DatabaseCallback {
     interface UserCoursesCallback {
 
         void notifyOnUserCoursesRetrieved(ArrayList<Course> userCoursesList);
+
+        void notifyOnUserCourseRetrievedToRemove(Course course);
+
+        void notifyOnUserCourseRetrievedToAdd(Course course);
+
+        void notifyOnCourseUpdated(Course course);
 
     }
 

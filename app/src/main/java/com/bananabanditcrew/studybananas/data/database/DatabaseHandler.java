@@ -1,6 +1,5 @@
 package com.bananabanditcrew.studybananas.data.database;
 
-import android.annotation.SuppressLint;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -19,12 +18,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by chris on 2/9/17.
@@ -36,6 +32,9 @@ public class DatabaseHandler {
     private ArrayList<String> mCourses;
     private ArrayList<Course> mUserCourses;
     private ArrayList<String> mUserCourseStrings;
+
+    // Map of hashcodes to listener objects
+    private SparseArray<ValueEventListener> mCourseListeners;
 
     public DatabaseHandler() {
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -161,8 +160,9 @@ public class DatabaseHandler {
 
     private void getCourseByString(String course, final boolean isLast,
                                    final DatabaseCallback.UserCoursesCallback callback) {
-        mDatabase.child("courses").child(Integer.toString(course.hashCode()))
-                .addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference databaseReference = mDatabase.child("courses")
+                .child(Integer.toString(course.hashCode()));
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         mUserCourses.add(dataSnapshot.getValue(Course.class));
@@ -175,12 +175,43 @@ public class DatabaseHandler {
 
                     }
                 });
+
+        // Add listener to this course
+        addValueEventListener(databaseReference, course.hashCode(), callback);
+    }
+
+    private void addValueEventListener(DatabaseReference databaseReference, int hashCode,
+                                       final DatabaseCallback.UserCoursesCallback callback) {
+        // Create a listener for this course
+        mCourseListeners.append(hashCode, new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                callback.notifyOnCourseUpdated(dataSnapshot.getValue(Course.class));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        // Add the listener
+        databaseReference.addValueEventListener(mCourseListeners.get(hashCode));
+        Log.d("EventListeners", "Added event listener for " + Integer.toString(hashCode));
+    }
+
+    private void removeValueEventListener(DatabaseReference databaseReference, int hashCode) {
+        databaseReference.removeEventListener(mCourseListeners.get(hashCode));
+        Log.d("EventListeners", "Removed event listener for " + Integer.toString(hashCode));
     }
 
     private void stringsToCourses(ArrayList<String> courseStrings,
                                   DatabaseCallback.UserCoursesCallback callback) {
 
         int counter = 0;
+
+        // Initialize map of listener objects
+        mCourseListeners = new SparseArray<>();
 
         for (String courseName: courseStrings) {
             counter++;
@@ -197,15 +228,102 @@ public class DatabaseHandler {
         mDatabase.child("users").child(uidFromEmail(email)).child("courses").setValue(courses);
     }
 
-    public void removeUserClass(String email, String course) {
+    public void removeUserClass(String email, String course,
+                                final DatabaseCallback.UserCoursesCallback callback) {
         mUserCourseStrings.remove(course);
+        updateUserClasses(email, mUserCourseStrings);
+
+        DatabaseReference databaseReference = mDatabase.child("courses")
+                .child(Integer.toString(course.hashCode()));
+
+        // Find course and remove it from adapter
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        callback.notifyOnUserCourseRetrievedToRemove(dataSnapshot.getValue(Course.class));
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+        // Remove listener for course
+        removeValueEventListener(databaseReference, course.hashCode());
+    }
+
+    public void addUserClass(String email, String course,
+                             final DatabaseCallback.UserCoursesCallback callback) {
+        if (!mUserCourseStrings.contains(course)) {
+            mUserCourseStrings.add(course);
+
+            DatabaseReference databaseReference = mDatabase.child("courses")
+                    .child(Integer.toString(course.hashCode()));
+
+            // Find course and add it to adapter
+            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    callback.notifyOnUserCourseRetrievedToAdd(dataSnapshot.getValue(Course.class));
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+            // Add a data change listener
+            addValueEventListener(databaseReference, course.hashCode(), callback);
+        }
         updateUserClasses(email, mUserCourseStrings);
     }
 
-    public void addUserClass(String email, String course) {
-        if (!mUserCourseStrings.contains(course)) {
-            mUserCourseStrings.add(course);
-        }
-        updateUserClasses(email, mUserCourseStrings);
+    public void addGroupToCourse(String course, final Group group) {
+
+        // Get course first
+        final DatabaseReference databaseReference = mDatabase.child("courses")
+                .child(Integer.toString(course.hashCode()));
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Course refCourse = dataSnapshot.getValue(Course.class);
+                refCourse.addStudyGroup(group);
+                updateCourse(databaseReference, refCourse);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void removeGroupFromCourse(String course, final Group group) {
+
+        // Get course first
+        final DatabaseReference databaseReference = mDatabase.child("courses")
+                .child(Integer.toString(course.hashCode()));
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Course refCourse = dataSnapshot.getValue(Course.class);
+                refCourse.removeStudyGroup(group);
+                updateCourse(databaseReference, refCourse);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void updateCourse(DatabaseReference databaseReference, Course course) {
+        Log.d("Database", "Updating course from handler");
+        databaseReference.setValue(course);
     }
 }
