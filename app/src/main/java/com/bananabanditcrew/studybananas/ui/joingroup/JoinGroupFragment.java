@@ -208,50 +208,47 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         public View getChildView(int listPosition, final int expandedListPosition,
                                  boolean isLastChild, View convertView, ViewGroup parent) {
             Group groupRef = getChild(listPosition, expandedListPosition);
-            if (groupRef != null) {
-                final String locationName = groupRef.getLocationName();
+            final String locationName = groupRef.getLocationName();
 
-                // Get time string
-                int startHour = groupRef.getStartHour();
-                int startMinute = groupRef.getStartMinute();
-                int endHour = groupRef.getEndHour();
-                int endMinute = groupRef.getEndMinute();
+            // Get time string
+            int startHour = groupRef.getStartHour();
+            int startMinute = groupRef.getStartMinute();
+            int endHour = groupRef.getEndHour();
+            int endMinute = groupRef.getEndMinute();
 
-                // Boolean for AM vs PM
-                boolean startIsPostMeridian = (startHour >= 12);
-                boolean endIsPostMeridian = (endHour >= 12);
+            // Boolean for AM vs PM
+            boolean startIsPostMeridian = (startHour >= 12);
+            boolean endIsPostMeridian = (endHour >= 12);
 
-                int start12Hour = (startIsPostMeridian) ? (startHour - 12) : startHour;
-                int end12Hour = (endIsPostMeridian) ? (endHour - 12) : endHour;
+            int start12Hour = (startIsPostMeridian) ? (startHour - 12) : startHour;
+            int end12Hour = (endIsPostMeridian) ? (endHour - 12) : endHour;
 
-                // Time string
-                final String timeFrame = Integer.toString(start12Hour) + ":" +
-                        (startMinute == 0 ? "00" : Integer.toString(startMinute)) +
-                        (startIsPostMeridian ? " PM" : " AM") + " - " +
-                        Integer.toString(end12Hour) + ":" +
-                        (endMinute == 0 ? "00" : Integer.toString(endMinute)) +
-                        (endIsPostMeridian ? " PM" : " AM");
+            // Time string
+            final String timeFrame = Integer.toString(start12Hour) + ":" +
+                    (startMinute == 0 ? "00" : Integer.toString(startMinute)) +
+                    (startIsPostMeridian ? " PM" : " AM") + " - " +
+                    Integer.toString(end12Hour) + ":" +
+                    (endMinute == 0 ? "00" : Integer.toString(endMinute)) +
+                    (endIsPostMeridian ? " PM" : " AM");
 
-                final String members = Integer.toString(groupRef.getGroupMembers().size()) +
-                        "/" + Integer.toString(groupRef.getMaxMembers());
+            final String members = Integer.toString(groupRef.getGroupMembers().size()) +
+                    "/" + Integer.toString(groupRef.getMaxMembers());
 
-                if (convertView == null) {
-                    LayoutInflater layoutInflater =
-                            (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    convertView = layoutInflater.inflate(R.layout.list_item_group, null);
-                }
-
-                Button locationButton = (Button) convertView.findViewById(R.id.location_button);
-                locationButton.setText(locationName);
-
-                TextView timeView = (TextView) convertView.findViewById(R.id.group_time_view);
-                timeView.setText(timeFrame);
-
-                TextView memberCount = (TextView) convertView.findViewById(R.id.member_count);
-                memberCount.setText(members);
-
-                return convertView;
+            if (convertView == null) {
+                LayoutInflater layoutInflater =
+                        (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = layoutInflater.inflate(R.layout.list_item_group, null);
             }
+
+            Button locationButton = (Button) convertView.findViewById(R.id.location_button);
+            locationButton.setText(locationName);
+
+            TextView timeView = (TextView) convertView.findViewById(R.id.group_time_view);
+            timeView.setText(timeFrame);
+
+            TextView memberCount = (TextView) convertView.findViewById(R.id.member_count);
+            memberCount.setText(members);
+
             return convertView;
         }
 
