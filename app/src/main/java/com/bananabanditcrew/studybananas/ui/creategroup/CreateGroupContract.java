@@ -13,11 +13,21 @@ import com.bananabanditcrew.studybananas.ui.BaseView;
 public interface CreateGroupContract {
     interface View extends BaseView<Presenter> {
         Activity getActivity();
+
+        void showIncorrectTimeError();
+
+        void showTImePicker();
+
+        void showNumberPicker();
+
+        void showSuccessIndicator();
+
     }
 
     interface Presenter extends BasePresenter{
         ArrayAdapter<String> getCoursesAdapter();
 
+        void attemptCreateGroup();
 
     }
 }
