@@ -26,9 +26,15 @@ public interface CreateGroupContract {
 
         void showNoNaxPeoplePickedError();
 
-        void showTimePicker();
+        void showEndTimePicker();
+
+        void showStartTimePicker();
 
         void showNumberPicker();
+
+        void resetErrors();
+
+        void showGroupManagementView();
 
         void showSuccessIndicator();
 
