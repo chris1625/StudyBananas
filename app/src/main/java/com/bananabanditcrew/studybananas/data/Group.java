@@ -1,5 +1,7 @@
 package com.bananabanditcrew.studybananas.data;
 
+import android.location.Address;
+
 import java.util.ArrayList;
 
 /**
@@ -10,18 +12,24 @@ public class Group {
 
     private String mGroupLeader;
     private ArrayList<String> mGroupMembers;
-    private GroupLocation mLocation;
+    private int mMaxMembers;
+    private String mAddressLine;
+    private String mLocationName;
     private int mStartHour;
     private int mStartMinute;
     private int mEndHour;
     private int mEndMinute;
 
-    public Group() {}
+    public Group() {
+        mGroupMembers = new ArrayList<>();
+    }
 
-    public Group(String groupLeader, GroupLocation location, int startTimeHour,
+    public Group(String groupLeader, String addressLine, String locationName, int maxMembers, int startTimeHour,
                  int startTimeMinute, int endTimeHour, int endTimeMinute) {
         mGroupLeader = groupLeader;
-        mLocation = location;
+        mMaxMembers = maxMembers;
+        mAddressLine = addressLine;
+        mLocationName = locationName;
 
         //make a new calendar
         mStartHour = startTimeHour;
@@ -29,6 +37,8 @@ public class Group {
 
         mEndHour = endTimeHour;
         mEndMinute = endTimeMinute;
+
+        mGroupMembers = new ArrayList<>();
     }
 
     public void addGroupMember(String groupMember) {
@@ -59,12 +69,32 @@ public class Group {
         return mGroupMembers;
     }
 
-    public GroupLocation getLocation() {
-        return mLocation;
+    public void setGroupMembers(ArrayList<String> members) {
+        mGroupMembers = members;
     }
 
-    public void setLocation(GroupLocation location) {
-        mLocation = location;
+    public String getAddressLine() {
+        return mAddressLine;
+    }
+
+    public void setAddressLine(String addressLine) {
+        mAddressLine = addressLine;
+    }
+
+    public String getLocationName() {
+        return mLocationName;
+    }
+
+    public void setLocationName(String locationName) {
+        mLocationName = locationName;
+    }
+
+    public int getMaxMembers() {
+        return mMaxMembers;
+    }
+
+    public void setMaxMembers(int maxMembers) {
+        mMaxMembers = maxMembers;
     }
 
     public int getStartHour() {

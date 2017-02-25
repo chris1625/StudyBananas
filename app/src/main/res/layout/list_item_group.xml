@@ -1,15 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <TextView
-        android:id="@+id/list_item_group"
-        android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/list_item_group" >
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight=".8"
         android:layout_height="wrap_content"
-        android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
-        android:paddingRight="?android:attr/expandableListPreferredChildPaddingLeft"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"/>
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/location_button"
+                android:text="Geisel Library"
+                android:gravity="center_vertical"
+                android:layout_width="0dp"
+                android:layout_weight=".7"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:drawableEnd="@drawable/ic_place"
+                android:drawableRight="@drawable/ic_place" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/group_time_view"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="12:00 PM - 12:30 PM"
+            android:textAppearance="@style/TextAppearance.AppCompat.Notification.Time"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/member_count"
+        android:text="20/20"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:gravity="center_horizontal|center_vertical"
+        android:layout_width="0dp"
+        android:layout_weight="0.3"
+        android:layout_height="fill_parent"
+        android:drawableRight="@drawable/ic_people"
+        android:drawableEnd="@drawable/ic_people"
+        android:textSize="18sp" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/group_view_join_button"
+        android:layout_height="fill_parent"
+        android:text="Join Group"
+        android:drawableBottom="@drawable/ic_arrow_forward"
+        android:layout_width="0dp"
+        android:layout_weight="0.3"
+        android:focusable="false"
+        style="@style/Widget.AppCompat.Button.Colored"
+        app:backgroundTint="#8BC34A" />
 
 </LinearLayout>

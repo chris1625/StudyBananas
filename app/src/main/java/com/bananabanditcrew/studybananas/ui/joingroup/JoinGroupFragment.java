@@ -2,10 +2,15 @@ package com.bananabanditcrew.studybananas.ui.joingroup;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,8 +31,11 @@ import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.data.Course;
 import com.bananabanditcrew.studybananas.data.Group;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class JoinGroupFragment extends Fragment implements JoinGroupContract.View {
 
@@ -75,6 +83,27 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         mUserCourseList = (ExpandableListView) root.findViewById(R.id.courses_list);
 
         mPresenter.getUserSavedCourses();
+
+        // PURELY EXPERIMENTAL SECTION, TO BE REMOVED
+//        ArrayList<Address> addresses = new ArrayList<>();
+//        Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+//        String addressLines = "";
+//        String addressName = "";
+//        try {
+//            addresses = (ArrayList<Address>) geocoder.getFromLocationName("Canyon Vista La Jolla", 1);
+//            Address address = addresses.get(0);
+//            for (int i = 0; i < address.getMaxAddressLineIndex(); i++)
+//                addressLines += (" " + address.getAddressLine(i));
+//            addressName = address.getFeatureName();
+//
+//        } catch (Exception e) {
+//            Log.e("Location services", "IO Exception");
+//        }
+//
+//        Group testGroup = new Group("crh013@ucsd.edu", addressLines, addressName, 6, 13, 0,
+//                15, 30);
+//        mPresenter.addGroupToCourse("CSE 110", testGroup);
+        // END EXPERIMENTAL SECTION
 
         return root;
     }
@@ -178,17 +207,48 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         @Override
         public View getChildView(int listPosition, final int expandedListPosition,
                                  boolean isLastChild, View convertView, ViewGroup parent) {
-            final String expandedListText = getChild(listPosition,
-                    expandedListPosition).getLeader();
+            Group groupRef = getChild(listPosition, expandedListPosition);
+            final String locationName = groupRef.getLocationName();
+
+            // Get time string
+            int startHour = groupRef.getStartHour();
+            int startMinute = groupRef.getStartMinute();
+            int endHour = groupRef.getEndHour();
+            int endMinute = groupRef.getEndMinute();
+
+            // Boolean for AM vs PM
+            boolean startIsPostMeridian = (startHour >= 12);
+            boolean endIsPostMeridian = (endHour >= 12);
+
+            int start12Hour = (startIsPostMeridian) ? (startHour - 12) : startHour;
+            int end12Hour = (endIsPostMeridian) ? (endHour - 12) : endHour;
+
+            // Time string
+            final String timeFrame = Integer.toString(start12Hour) + ":" +
+                    (startMinute == 0 ? "00" : Integer.toString(startMinute)) +
+                    (startIsPostMeridian ? " PM" : " AM") + " - " +
+                    Integer.toString(end12Hour) + ":" +
+                    (endMinute == 0 ? "00" : Integer.toString(endMinute)) +
+                    (endIsPostMeridian ? " PM" : " AM");
+
+            final String members = Integer.toString(groupRef.getGroupMembers().size()) +
+                    "/" + Integer.toString(groupRef.getMaxMembers());
+
             if (convertView == null) {
                 LayoutInflater layoutInflater =
                         (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = layoutInflater.inflate(R.layout.list_item_group, null);
             }
 
-            TextView expandedListTextView =
-                    (TextView) convertView.findViewById(R.id.list_item_group);
-            expandedListTextView.setText(expandedListText);
+            Button locationButton = (Button) convertView.findViewById(R.id.location_button);
+            locationButton.setText(locationName);
+
+            TextView timeView = (TextView) convertView.findViewById(R.id.group_time_view);
+            timeView.setText(timeFrame);
+
+            TextView memberCount = (TextView) convertView.findViewById(R.id.member_count);
+            memberCount.setText(members);
+
             return convertView;
         }
 
