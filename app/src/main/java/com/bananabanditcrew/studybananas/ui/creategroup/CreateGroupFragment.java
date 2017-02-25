@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.data.Course;
+import com.bananabanditcrew.studybananas.ui.home.HomeFragment;
 
 import java.util.ArrayList;
 
@@ -51,11 +52,37 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_create_group, container, false);
 
+        //mCourseArrayList=
         mCoursesSelect = (AutoCompleteTextView) root.findViewById(R.id.pick_class);
         mStartTimeButton= (Button)root.findViewById(R.id.start_time_button);
         mEndTimeButton= (Button)root.findViewById(R.id.end_time_button);
-
-
+        mMaxGroupButton= (Button)root.findViewById(R.id.max_people_button);
+        mDescritionText= (EditText)root.findViewById(R.id.description_text);
+        mCreateGroupButton=(Button)root.findViewById(R.id.create_group_button);
+        mCreateGroupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.attemptCreateGroup();
+            }
+        });
+        mStartTimeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showTimePicker();
+            }
+        });
+        mEndTimeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showTimePicker();
+            }
+        });
+        mMaxGroupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showNumberPicker();
+            }
+        });
         return root;
     }
 
@@ -78,7 +105,32 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
     }
 
     @Override
-    public void showTImePicker() {
+    public void showNoCoursePickedError() {
+
+    }
+
+    @Override
+    public void showNoStartTimePickedError() {
+
+    }
+
+    @Override
+    public void showNoEndTimePickedError() {
+
+    }
+
+    @Override
+    public void showNoLocationPickedError() {
+
+    }
+
+    @Override
+    public void showNoNaxPeoplePickedError() {
+
+    }
+
+    @Override
+    public void showTimePicker() {
 
     }
 
@@ -124,6 +176,11 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
 
     @Override
     public String getCourseName() {
+        return null;
+    }
+
+    @Override
+    public String getLocation() {
         return null;
     }
 }

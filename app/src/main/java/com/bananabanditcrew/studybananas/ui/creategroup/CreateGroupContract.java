@@ -16,7 +16,17 @@ public interface CreateGroupContract {
 
         void showIncorrectTimeError();
 
-        void showTImePicker();
+        void showNoCoursePickedError();
+
+        void showNoStartTimePickedError();
+
+        void showNoEndTimePickedError();
+
+        void showNoLocationPickedError();
+
+        void showNoNaxPeoplePickedError();
+
+        void showTimePicker();
 
         void showNumberPicker();
 
@@ -35,6 +45,8 @@ public interface CreateGroupContract {
         int getMaxNum();
 
         String  getCourseName();
+
+        String getLocation();
 
     }
 
