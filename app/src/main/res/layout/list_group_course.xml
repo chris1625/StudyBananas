@@ -4,23 +4,31 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <TextView
-        android:id="@+id/list_group_course"
-        android:layout_width="0dp"
-        android:layout_weight="0.75"
-        android:layout_height="wrap_content"
-        android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
-        android:textColor="@android:color/black"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp" />
 
-    <android.support.v7.widget.AppCompatButton
-        android:text="@string/delete"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/delete_class_button"
-        android:layout_weight="0.25"
-        android:focusable="false"
-        style="@style/Widget.AppCompat.Button.Colored"
-        app:backgroundTint="#8BC34A" />
+        android:background="@color/colorPrimary">
+
+        <TextView
+            android:id="@+id/list_group_course"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
+            android:textColor="@android:color/black"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp" />
+
+        <android.support.v7.widget.AppCompatButton
+            android:text="@string/delete"
+            android:layout_width="0dp"
+            android:layout_weight="0.3"
+            android:layout_height="wrap_content"
+            android:id="@+id/delete_class_button"
+            android:focusable="false"
+            style="@style/Widget.AppCompat.Button.Colored"
+            app:backgroundTint="@color/colorPrimaryDark" />
+    </LinearLayout>
+
 </LinearLayout>

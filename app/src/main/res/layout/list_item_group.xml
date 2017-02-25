@@ -58,12 +58,12 @@
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/group_view_join_button"
         android:layout_height="fill_parent"
+        android:layout_width="0dp"
+        android:layout_weight="0.35"
         android:text="Join Group"
         android:drawableBottom="@drawable/ic_arrow_forward"
-        android:layout_width="0dp"
-        android:layout_weight="0.3"
         android:focusable="false"
         style="@style/Widget.AppCompat.Button.Colored"
-        app:backgroundTint="#8BC34A" />
+        app:backgroundTint="#8FC480" />
 
 </LinearLayout>
