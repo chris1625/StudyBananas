@@ -58,7 +58,7 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
         mEndTimeButton= (Button)root.findViewById(R.id.end_time_button);
         mMaxGroupButton= (Button)root.findViewById(R.id.max_people_button);
         mDescritionText= (EditText)root.findViewById(R.id.description_text);
-        mCreateGroupButton=(Button)root.findViewById(R.id.create_group_button);
+        mCreateGroupButton=(Button)root.findViewById(R.id.new_group_button);
         mCreateGroupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

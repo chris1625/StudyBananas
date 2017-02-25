@@ -20,7 +20,7 @@ public class CreateGroupPresenter implements DatabaseCallback, CreateGroupContra
                                 ArrayAdapter<String> courseList) {
         this.mCreateGroupView = mCreateGroupView;
         this.mCourseList = courseList;
-        this.mDatabase = new DatabaseHandler()
+        this.mDatabase = new DatabaseHandler();
     }
 
     @Override
@@ -30,5 +30,15 @@ public class CreateGroupPresenter implements DatabaseCallback, CreateGroupContra
 
     public Activity getActivity() {
         return mCreateGroupView.getActivity();
+    }
+
+    @Override
+    public ArrayAdapter<String> getCoursesAdapter() {
+        return null;
+    }
+
+    @Override
+    public void attemptCreateGroup() {
+
     }
 }
