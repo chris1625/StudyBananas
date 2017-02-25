@@ -17,6 +17,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="15dp"
             android:id="@+id/group_create_form">
 
 
@@ -110,27 +111,51 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/location_layout">
+
+                <TextView
+                    android:text="LOCATION:"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/location_text"
+                    android:layout_weight="1"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Button" />
+
+                <Button
+                    android:text="Select"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/location_button"
+                    android:layout_weight="0.88" />
+
+            </LinearLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="162dp"
+                    android:layout_marginBottom="10dp"
+                    android:inputType="textMultiLine"
+                    android:ems="10"
+                    android:id="@+id/description_text"
+                    android:hint="description(optional)"
+                    android:outlineProvider="paddedBounds"
+                    android:background="@android:drawable/zoom_plate"
+                    tools:minLines="5" />
 
                 <Button
                     android:text="Create Group"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:id="@+id/new_group_button"
+                    android:id="@+id/create_group_button"
                     android:layout_weight="1" />
-
-                <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="202dp"
-                    android:inputType="textMultiLine"
-                    android:ems="10"
-                    android:id="@+id/description_text"
-                    android:hint="description"
-                    android:outlineProvider="paddedBounds"
-                    android:background="@android:drawable/zoom_plate"
-                    tools:minLines="5" />
             </android.support.design.widget.TextInputLayout>
 
         </LinearLayout>
