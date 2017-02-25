@@ -30,7 +30,7 @@ public interface CreateGroupContract {
 
         int getEndHour();
 
-        int getMinute();
+        int getEndMinute();
 
         int getMaxNum();
 

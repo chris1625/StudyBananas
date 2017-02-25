@@ -113,7 +113,7 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
     }
 
     @Override
-    public int getMinute() {
+    public int getEndMinute() {
         return 0;
     }
 
