@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import com.bananabanditcrew.studybananas.ui.joingroup.JoinGroupFragment;
 import com.bananabanditcrew.studybananas.R;
@@ -59,7 +60,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         mPresenter.addCoursesToAutoComplete();
 
         // Create listener for createGroup button
-        Button createGroupButton = (Button) view.findViewById(R.id.create_group_button);
+        ImageButton createGroupButton = (ImageButton) view.findViewById(R.id.create_group_button);
         createGroupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -68,7 +69,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         });
 
         // Create listener for joinGroup button
-        Button joinGroupButton = (Button) view.findViewById(R.id.join_group_button);
+        ImageButton joinGroupButton = (ImageButton) view.findViewById(R.id.join_group_button);
         joinGroupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
