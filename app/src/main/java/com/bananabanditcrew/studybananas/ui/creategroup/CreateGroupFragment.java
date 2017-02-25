@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 
@@ -27,6 +29,11 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
     private CreateGroupContract.Presenter mPresenter;
     private AutoCompleteTextView mCoursesSelect;
     private ArrayList<Course> mCourseArrayList;
+    private Button mStartTimeButton;
+    private Button mEndTimeButton;
+    private Button mMaxGroupButton;
+    private Button mCreateGroupButton;
+    private EditText mDescritionText;
 
     public CreateGroupFragment() {
         // Required empty public constructor
@@ -45,6 +52,9 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
         View root = inflater.inflate(R.layout.fragment_create_group, container, false);
 
         mCoursesSelect = (AutoCompleteTextView) root.findViewById(R.id.pick_class);
+        mStartTimeButton= (Button)root.findViewById(R.id.start_time_button);
+        mEndTimeButton= (Button)root.findViewById(R.id.end_time_button);
+
 
         return root;
     }
@@ -60,5 +70,60 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
     @Override
     public void setPresenter(CreateGroupContract.Presenter presenter) {
         mPresenter = presenter;
+    }
+
+    @Override
+    public void showIncorrectTimeError() {
+
+    }
+
+    @Override
+    public void showTImePicker() {
+
+    }
+
+    @Override
+    public void showNumberPicker() {
+
+    }
+
+    @Override
+    public void showSuccessIndicator() {
+
+    }
+
+    @Override
+    public String getDescription() {
+        return null;
+    }
+
+    @Override
+    public int getStartHour() {
+        return 0;
+    }
+
+    @Override
+    public int getStartMinute() {
+        return 0;
+    }
+
+    @Override
+    public int getEndHour() {
+        return 0;
+    }
+
+    @Override
+    public int getMinute() {
+        return 0;
+    }
+
+    @Override
+    public int getMaxNum() {
+        return 0;
+    }
+
+    @Override
+    public String getCourseName() {
+        return null;
     }
 }

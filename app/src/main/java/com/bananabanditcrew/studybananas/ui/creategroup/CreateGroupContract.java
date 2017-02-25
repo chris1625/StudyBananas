@@ -22,6 +22,20 @@ public interface CreateGroupContract {
 
         void showSuccessIndicator();
 
+        String getDescription();
+
+        int getStartHour();
+
+        int getStartMinute();
+
+        int getEndHour();
+
+        int getMinute();
+
+        int getMaxNum();
+
+        String  getCourseName();
+
     }
 
     interface Presenter extends BasePresenter{
