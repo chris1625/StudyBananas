@@ -48,4 +48,11 @@
     <string name="last_name">Last Name</string>
     <string name="add_class">Add a class</string>
     <string name="delete">Remove</string>
+    <string name="pick_class">Select a class</string>
+    <string name="start_time">"Start Time: "</string>
+    <string name="end_time">"End Time: "</string>
+    <string name="select">Select</string>
+    <string name="max_members">Max Members: </string>
+    <string name="location">"LOCATION: "</string>
+    <string name="description_hint">"Description (Optional)"</string>
 </resources>
