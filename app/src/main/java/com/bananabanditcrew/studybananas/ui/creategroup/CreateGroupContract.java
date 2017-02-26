@@ -52,6 +52,8 @@ public interface CreateGroupContract {
 
         String  getCourseName();
 
+        void showLocationPicker();
+
         String getLocation();
 
     }

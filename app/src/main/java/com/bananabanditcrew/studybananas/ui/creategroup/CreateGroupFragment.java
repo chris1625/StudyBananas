@@ -5,7 +5,9 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
@@ -25,9 +27,19 @@ import android.widget.TimePicker;
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.data.Course;
 import com.bananabanditcrew.studybananas.ui.home.HomeFragment;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
 
 
 /**
@@ -35,7 +47,7 @@ import java.util.Calendar;
  * Use the {@link CreateGroupFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CreateGroupFragment extends Fragment implements CreateGroupContract.View{
+public class CreateGroupFragment extends Fragment implements CreateGroupContract.View, GoogleApiClient.OnConnectionFailedListener {
 
     private CreateGroupContract.Presenter mPresenter;
     private AutoCompleteTextView mCoursesSelect;
@@ -45,6 +57,7 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
     private Button mMaxGroupButton;
     private Button mCreateGroupButton;
     private EditText mDescritionText;
+    private Button mLocationButton;
     private int startHour;
     private int startMinute;
     private int endHour;
@@ -52,6 +65,7 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
     private int maxNum;
     private String location;
     private String course;
+    private GoogleApiClient mGoogleApiClient;
 
     public CreateGroupFragment() {
         // Required empty public constructor
@@ -61,7 +75,14 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
     public static CreateGroupFragment newInstance() { return new CreateGroupFragment(); }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) { super.onCreate(savedInstanceState); }
+    public void onCreate(Bundle savedInstanceState) { super.onCreate(savedInstanceState);
+        mGoogleApiClient = new GoogleApiClient
+                .Builder(getActivity())
+                .addApi(Places.GEO_DATA_API)
+                .addApi(Places.PLACE_DETECTION_API)
+                .enableAutoManage(getActivity(), this)
+                .build();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -75,6 +96,7 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
         mEndTimeButton= (Button)root.findViewById(R.id.end_time_button);
         mMaxGroupButton= (Button)root.findViewById(R.id.max_people_button);
         mDescritionText= (EditText)root.findViewById(R.id.description_text);
+        mLocationButton=(Button)root.findViewById(R.id.location_button);
         mCreateGroupButton=(Button)root.findViewById(R.id.new_group_button);
         mCreateGroupButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,6 +120,12 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
             @Override
             public void onClick(View v) {
                 showNumberPicker();
+            }
+        });
+        mLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showLocationPicker();
             }
         });
         return root;
@@ -139,7 +167,7 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
 
     @Override
     public void showNoLocationPickedError() {
-        //TODO
+        mLocationButton.setError("Please select a location");
     }
 
     @Override
@@ -259,6 +287,7 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
         mCoursesSelect.setError(null);
         mStartTimeButton.setError(null);
         mEndTimeButton.setError(null);
+        mLocationButton.setError(null);
     }
 
     @Override
@@ -319,7 +348,46 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
     }
 
     @Override
+    public void showLocationPicker() {
+        int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
+        try {
+            Intent intent =
+                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+                            .build(getActivity());
+            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+            Place place = PlaceAutocomplete.getPlace(getActivity(),intent);
+            //System.out.println(place.getName());
+        } catch (GooglePlayServicesRepairableException e) {
+            // TODO: Handle the error.
+        } catch (GooglePlayServicesNotAvailableException e) {
+            // TODO: Handle the error.
+        }
+    }
+
+    @Override
     public String getLocation() {
         return location;
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        //TODO
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(getActivity(), data);
+                location= place.getName().toString();
+                mLocationButton.setText(place.getName().toString());
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                /*Status status = PlaceAutocomplete.getStatus(getActivity(), data);
+                // TODO: Handle the error.
+                Log.i(TAG, status.getStatusMessage());*/
+
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+        }
     }
 }
