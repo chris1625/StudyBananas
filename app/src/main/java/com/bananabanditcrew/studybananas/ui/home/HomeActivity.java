@@ -22,6 +22,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private NavigationView mNavigationView;
+    private HomeFragment mHomeFragment;
     private HomePresenter mHomePresenter;
     private GroupInteractionPresenter mGroupInteractionPresenter;
     private DatabaseHandler mDatabase;
@@ -48,6 +49,10 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
             return;
         }
 
+        // Create home fragment and presenter so we can setup our menu items
+        mHomeFragment = new HomeFragment();
+        mHomePresenter = new HomePresenter(mHomeFragment);
+
         // Create onClick listeners for menu items
         mNavigationView = (NavigationView) findViewById(R.id.nav_drawer);
         if (mNavigationView != null)
@@ -67,12 +72,9 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
 
         // Check if user is in a group
         if (user.getGroupID() == 0) {
-            // Setup homefragment and presenter
-            HomeFragment homeFragment = new HomeFragment();
+            // Add the home fragment
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, homeFragment).commit();
-            mHomePresenter = new HomePresenter(homeFragment);
-
+                    .add(R.id.fragment_container, mHomeFragment).commit();
         } else {
             // Setup groupInteraction fragment and presenter
             GroupInteractionFragment groupInteractionFragment = new GroupInteractionFragment();
