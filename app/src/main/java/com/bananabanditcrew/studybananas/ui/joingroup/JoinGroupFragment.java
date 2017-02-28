@@ -3,12 +3,8 @@ package com.bananabanditcrew.studybananas.ui.joingroup;
 import android.content.Intent;
 import android.content.Context;
 import android.graphics.Typeface;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -34,13 +30,9 @@ import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.data.Course;
 import com.bananabanditcrew.studybananas.data.Group;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import static com.google.android.gms.instantapps.InstantApps.getPackageManager;
 
 public class JoinGroupFragment extends Fragment implements JoinGroupContract.View {
 
