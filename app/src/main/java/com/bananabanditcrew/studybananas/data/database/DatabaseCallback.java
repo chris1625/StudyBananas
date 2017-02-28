@@ -3,6 +3,7 @@ package com.bananabanditcrew.studybananas.data.database;
 import android.app.Activity;
 
 import com.bananabanditcrew.studybananas.data.Course;
+import com.bananabanditcrew.studybananas.data.User;
 
 import java.util.ArrayList;
 
@@ -39,6 +40,12 @@ public interface DatabaseCallback {
     interface UserCreationCallback {
 
         void finishAccountCreation();
+
+    }
+
+    interface GetUserCallback {
+
+        void onUserRetrieved(User user);
 
     }
 

@@ -61,10 +61,25 @@ public class DatabaseHandler {
         });
     }
 
-    private void updateUser(User user) {
+    public void updateUser(User user) {
         Log.d("Database", user.getEmail());
         String email = user.getEmail();
         mDatabase.child("users").child(uidFromEmail(user.getEmail())).setValue(user);
+    }
+
+    public void getUser(String email, final DatabaseCallback.GetUserCallback callback) {
+        mDatabase.child("users").child(uidFromEmail(email))
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        callback.onUserRetrieved(dataSnapshot.getValue(User.class));
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
     }
 
     private String uidFromEmail(String email) {

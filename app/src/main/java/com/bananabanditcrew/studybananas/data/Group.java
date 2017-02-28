@@ -19,13 +19,14 @@ public class Group {
     private int mStartMinute;
     private int mEndHour;
     private int mEndMinute;
+    private long mGroupID;
 
     public Group() {
         mGroupMembers = new ArrayList<>();
     }
 
     public Group(String groupLeader, String addressLine, String locationName, int maxMembers, int startTimeHour,
-                 int startTimeMinute, int endTimeHour, int endTimeMinute) {
+                 int startTimeMinute, int endTimeHour, int endTimeMinute, long groupID) {
         mGroupLeader = groupLeader;
         mMaxMembers = maxMembers;
         mAddressLine = addressLine;
@@ -37,6 +38,8 @@ public class Group {
 
         mEndHour = endTimeHour;
         mEndMinute = endTimeMinute;
+
+        mGroupID = groupID;
 
         mGroupMembers = new ArrayList<>();
     }
@@ -127,5 +130,13 @@ public class Group {
 
     public void setEndMinute(int endMinute) {
         mEndMinute = endMinute;
+    }
+
+    public long getGroupID() {
+        return mGroupID;
+    }
+
+    public void setGroupID(long groupID) {
+        mGroupID = groupID;
     }
 }

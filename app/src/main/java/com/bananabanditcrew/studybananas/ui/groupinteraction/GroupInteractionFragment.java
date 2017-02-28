@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bananabanditcrew.studybananas.R;
-import com.bananabanditcrew.studybananas.ui.signup.SignUpContract;
 
 /**
  * A simple {@link Fragment} subclass.

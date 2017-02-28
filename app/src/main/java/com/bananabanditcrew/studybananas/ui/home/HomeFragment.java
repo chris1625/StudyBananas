@@ -101,7 +101,8 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         transaction.addToBackStack(null);
 
         // Create presenter and link it to new fragment
-        mJoinGroupPresenter = new JoinGroupPresenter(joinGroupFragment, mPresenter.getCoursesAdapter());
+        mJoinGroupPresenter = new JoinGroupPresenter(joinGroupFragment,
+                                                     mPresenter.getCoursesAdapter(), this);
 
         // Commit the transaction
         transaction.commit();
