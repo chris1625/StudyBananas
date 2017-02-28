@@ -48,7 +48,15 @@
     <string name="last_name">Last Name</string>
     <string name="add_class">Add a class</string>
     <string name="delete">Remove</string>
+    <string name="pick_class">Select a class</string>
+    <string name="start_time">"Start Time: "</string>
+    <string name="end_time">"End Time: "</string>
+    <string name="select">Select</string>
+    <string name="max_members">Max Members: </string>
+    <string name="location">"LOCATION: "</string>
+    <string name="description_hint">"Description (Optional)"</string>
     <string name="leave_group">Leave Group</string>
     <string name="description">Description</string>
     <string name="members">Members</string>
+    <string name="title_activity_maps">Map</string>
 </resources>

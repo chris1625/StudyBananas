@@ -1,8 +1,166 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.creategroup.CreateGroupFragment">
+    tools:context=".ui.creategroup.CreateGroupFragment"
+    android:orientation="vertical"
+    android:id="@+id/fragment_create_group">
 
-    <!-- TODO: Update createGroup fragment layout -->
-</FrameLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/create_group_form">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:id="@+id/group_create_form">
+
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+                <AutoCompleteTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:id="@+id/pick_class"
+                    android:hint="@string/pick_class"
+                    android:inputType="textEmailAddress"
+                    android:maxLines="1" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </android.support.design.widget.TextInputLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/start_time_layout">
+
+                <TextView
+                    android:text="@string/start_time"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/start_time_text"
+                    android:layout_weight="1"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Button" />
+
+                <Button
+                    android:text="@string/select"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/start_time_button"
+                    android:layout_weight="1" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/end_time_layout">
+
+                <TextView
+                    android:text="@string/end_time"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/end_time_text"
+                    android:layout_weight="1"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Button" />
+
+                <Button
+                    android:text="@string/select"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/end_time_button"
+                    android:layout_weight="1" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/max_people_layout">
+
+                <TextView
+                    android:text="@string/max_members"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/max_people_text"
+                    android:layout_weight="1"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Button" />
+
+                <Button
+                    android:text="@string/select"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/max_people_button"
+                    android:layout_weight="1" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/location_layout">
+
+                <TextView
+                    android:text="@string/location"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/location_text"
+                    android:layout_weight="1"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Button" />
+
+                <Button
+                    android:text="@string/select"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/location_button"
+                    android:layout_weight="1" />
+
+            </LinearLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="15dp" >
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lines="5"
+                    android:minLines="5"
+                    android:gravity="top|start"
+                    android:maxLines="10"
+                    android:layout_marginBottom="10dp"
+                    android:inputType="textMultiLine"
+                    android:ems="10"
+                    android:id="@+id/description_text"
+                    android:hint="@string/description_hint"
+                    android:background="@android:drawable/edit_text" />
+
+                <Button
+                    android:text="@string/create_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/new_group_button"
+                    android:layout_weight="1" />
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

@@ -102,7 +102,6 @@ public class JoinGroupPresenter implements DatabaseCallback.UserCoursesCallback,
         mDatabase.removeGroupFromCourse(course, group);
     }
 
-    public Activity getActivity() {
-        return mJoinGroupView.getActivity();
-    }
+
+    public Activity getActivity() {return mJoinGroupView.getActivity();}
 }

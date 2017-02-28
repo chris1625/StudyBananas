@@ -1,5 +1,6 @@
 package com.bananabanditcrew.studybananas.ui.joingroup;
 
+import android.content.Intent;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.location.Address;
@@ -27,6 +28,8 @@ import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import android.net.Uri;
+
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.data.Course;
 import com.bananabanditcrew.studybananas.data.Group;
@@ -36,6 +39,8 @@ import org.w3c.dom.Text;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import static com.google.android.gms.instantapps.InstantApps.getPackageManager;
 
 public class JoinGroupFragment extends Fragment implements JoinGroupContract.View {
 
@@ -118,6 +123,7 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         mUserCourseList.setAdapter(adapter);
         adapter.notifyDataSetChanged();
     }
+
 
     public void setupCoursesSelectView() {
 
@@ -210,6 +216,7 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
             Group groupRef = getChild(listPosition, expandedListPosition);
             final String locationName = groupRef.getLocationName();
 
+
             // Get time string
             int startHour = groupRef.getStartHour();
             int startMinute = groupRef.getStartMinute();
@@ -242,6 +249,14 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
 
             Button locationButton = (Button) convertView.findViewById(R.id.location_button);
             locationButton.setText(locationName);
+            locationButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                   showGoogleMaps();
+
+                }
+            });
+
 
             TextView timeView = (TextView) convertView.findViewById(R.id.group_time_view);
             timeView.setText(timeFrame);
@@ -250,6 +265,18 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
             memberCount.setText(members);
 
             return convertView;
+        }
+
+
+        public void showGoogleMaps() {
+
+            Uri gmmIntentUri = Uri.parse("geo:37.7749,-122.4194");
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            mapIntent.setPackage("com.google.android.apps.maps");
+            if (mapIntent.resolveActivity(mContext.getPackageManager()) != null) {
+                mContext.startActivity(mapIntent);
+            }
+
         }
 
         @Override

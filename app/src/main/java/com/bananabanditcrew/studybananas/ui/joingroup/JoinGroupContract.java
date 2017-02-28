@@ -19,6 +19,7 @@ public interface JoinGroupContract {
 
         void attachAdapter(JoinGroupFragment.CoursesAdapter adapter);
 
+
     }
 
     interface Presenter extends BasePresenter {
@@ -34,6 +35,7 @@ public interface JoinGroupContract {
         void addGroupToCourse(String course, Group group);
 
         void removeGroupFromCourse(String course, Group group);
+
 
     }
 }
