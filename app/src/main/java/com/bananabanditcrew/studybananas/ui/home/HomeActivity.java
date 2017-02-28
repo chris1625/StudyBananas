@@ -6,16 +6,25 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.bananabanditcrew.studybananas.R;
+import com.bananabanditcrew.studybananas.data.User;
+import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
+import com.bananabanditcrew.studybananas.data.database.DatabaseHandler;
+import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionFragment;
+import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionPresenter;
+import com.google.firebase.auth.FirebaseAuth;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements DatabaseCallback.GetUserCallback {
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private NavigationView mNavigationView;
     private HomePresenter mHomePresenter;
+    private GroupInteractionPresenter mGroupInteractionPresenter;
+    private DatabaseHandler mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,16 +48,38 @@ public class HomeActivity extends AppCompatActivity {
             return;
         }
 
-        // Setup homefragment and presenter
-        HomeFragment homeFragment = new HomeFragment();
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragment_container, homeFragment).commit();
-        mHomePresenter = new HomePresenter(homeFragment);
-
         // Create onClick listeners for menu items
         mNavigationView = (NavigationView) findViewById(R.id.nav_drawer);
         if (mNavigationView != null)
             setupDrawerContent(mNavigationView, mHomePresenter);
+
+        // Initialize database handler
+        mDatabase = new DatabaseHandler();
+
+        // Get the user and hand off setup to onUserRetrieved
+        mDatabase.getUser(FirebaseAuth.getInstance().getCurrentUser().getEmail(), this);
+    }
+
+    @Override
+    public void onUserRetrieved(User user) {
+
+        Log.d("Users", "Retrieved user " + user.getFirstName());
+
+        // Check if user is in a group
+        if (user.getGroupID() == 0) {
+            // Setup homefragment and presenter
+            HomeFragment homeFragment = new HomeFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, homeFragment).commit();
+            mHomePresenter = new HomePresenter(homeFragment);
+
+        } else {
+            // Setup groupInteraction fragment and presenter
+            GroupInteractionFragment groupInteractionFragment = new GroupInteractionFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, groupInteractionFragment).commit();
+            mGroupInteractionPresenter = new GroupInteractionPresenter(groupInteractionFragment);
+        }
     }
 
     @Override

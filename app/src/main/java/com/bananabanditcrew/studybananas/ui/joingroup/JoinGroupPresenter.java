@@ -9,6 +9,7 @@ import com.bananabanditcrew.studybananas.data.Course;
 import com.bananabanditcrew.studybananas.data.Group;
 import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
 import com.bananabanditcrew.studybananas.data.database.DatabaseHandler;
+import com.bananabanditcrew.studybananas.ui.home.HomeFragment;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
@@ -24,13 +25,15 @@ public class JoinGroupPresenter implements DatabaseCallback.UserCoursesCallback,
     private ArrayList<Course> mUserCoursesList;
     private JoinGroupFragment.CoursesAdapter mUserCoursesAdapter;
     private DatabaseHandler mDatabase;
+    private HomeFragment mHomeFragment;
 
     public JoinGroupPresenter(@NonNull JoinGroupContract.View joinGroupView,
-                              ArrayAdapter<String> courseList) {
+                              ArrayAdapter<String> courseList, HomeFragment homeFragment) {
         mJoinGroupView = joinGroupView;
         mJoinGroupView.setPresenter(this);
         mCourseList = courseList;
         mDatabase = new DatabaseHandler();
+        mHomeFragment = homeFragment;
     }
 
     @Override
@@ -47,7 +50,8 @@ public class JoinGroupPresenter implements DatabaseCallback.UserCoursesCallback,
     public void notifyOnUserCoursesRetrieved(ArrayList<Course> userCoursesList) {
         mUserCoursesList = userCoursesList;
         mUserCoursesAdapter = new JoinGroupFragment.CoursesAdapter(mJoinGroupView.getActivity(),
-                                                                   mUserCoursesList, this);
+                                                                   mUserCoursesList, this,
+                                                                   mJoinGroupView);
         mJoinGroupView.attachAdapter(mUserCoursesAdapter);
     }
 
@@ -100,6 +104,11 @@ public class JoinGroupPresenter implements DatabaseCallback.UserCoursesCallback,
     @Override
     public void removeGroupFromCourse(String course, Group group) {
         mDatabase.removeGroupFromCourse(course, group);
+    }
+
+    @Override
+    public HomeFragment getHomeFragment() {
+        return mHomeFragment;
     }
 
     public Activity getActivity() {

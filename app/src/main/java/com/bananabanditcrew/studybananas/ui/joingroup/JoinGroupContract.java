@@ -6,6 +6,7 @@ import android.widget.ArrayAdapter;
 import com.bananabanditcrew.studybananas.data.Group;
 import com.bananabanditcrew.studybananas.ui.BasePresenter;
 import com.bananabanditcrew.studybananas.ui.BaseView;
+import com.bananabanditcrew.studybananas.ui.home.HomeFragment;
 
 /**
  * Created by chris on 2/10/17.
@@ -18,6 +19,8 @@ public interface JoinGroupContract {
         Activity getActivity();
 
         void attachAdapter(JoinGroupFragment.CoursesAdapter adapter);
+
+        void showGroupInteractionView(long groupID);
 
     }
 
@@ -34,6 +37,8 @@ public interface JoinGroupContract {
         void addGroupToCourse(String course, Group group);
 
         void removeGroupFromCourse(String course, Group group);
+
+        HomeFragment getHomeFragment();
 
     }
 }
