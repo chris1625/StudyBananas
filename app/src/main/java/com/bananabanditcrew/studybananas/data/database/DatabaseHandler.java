@@ -195,9 +195,26 @@ public class DatabaseHandler {
         addValueEventListener(databaseReference, course.hashCode(), callback);
     }
 
+    public void getCourse(String course, final DatabaseCallback.GetCourseCallback callback) {
+
+        DatabaseReference databaseReference = mDatabase.child("courses")
+                .child(Integer.toString(course.hashCode()));
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                callback.onCourseRetrieved(dataSnapshot.getValue(Course.class));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     private void addValueEventListener(DatabaseReference databaseReference, int hashCode,
                                        final DatabaseCallback.UserCoursesCallback callback) {
-        // Create a listener for this course
+        // Create a listener for this coursed(dataSnapshot.getValue(Course.class))
         mCourseListeners.append(hashCode, new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -335,6 +352,14 @@ public class DatabaseHandler {
 
             }
         });
+    }
+
+    public void updateCourse(Course course) {
+        Log.d("Database", "Updating course from handler via another layer");
+        DatabaseReference databaseReference = mDatabase.child("courses")
+                .child(Integer.toString(course.getCourseName().hashCode()));
+
+        updateCourse(databaseReference, course);
     }
 
     private void updateCourse(DatabaseReference databaseReference, Course course) {

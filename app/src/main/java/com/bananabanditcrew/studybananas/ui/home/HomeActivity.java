@@ -17,7 +17,8 @@ import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionFra
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionPresenter;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class HomeActivity extends AppCompatActivity implements DatabaseCallback.GetUserCallback {
+public class HomeActivity extends AppCompatActivity implements DatabaseCallback.GetUserCallback,
+        HomeContract.HomeActivityCallback {
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
@@ -50,13 +51,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
         }
 
         // Create home fragment and presenter so we can setup our menu items
-        mHomeFragment = new HomeFragment();
-        mHomePresenter = new HomePresenter(mHomeFragment);
-
-        // Create onClick listeners for menu items
-        mNavigationView = (NavigationView) findViewById(R.id.nav_drawer);
-        if (mNavigationView != null)
-            setupDrawerContent(mNavigationView, mHomePresenter);
+        createHomeFragment();
 
         // Initialize database handler
         mDatabase = new DatabaseHandler();
@@ -71,7 +66,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
         Log.d("Users", "Retrieved user " + user.getFirstName());
 
         // Check if user is in a group
-        if (user.getGroupID() == 0) {
+        if (user.getGroupID() == null) {
             // Add the home fragment
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, mHomeFragment).commit();
@@ -80,7 +75,10 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
             GroupInteractionFragment groupInteractionFragment = new GroupInteractionFragment();
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, groupInteractionFragment).commit();
-            mGroupInteractionPresenter = new GroupInteractionPresenter(groupInteractionFragment);
+            mGroupInteractionPresenter = new GroupInteractionPresenter(groupInteractionFragment,
+                                                                       user.getGroupCourse(),
+                                                                       user.getGroupID(),
+                                                                       this);
         }
     }
 
@@ -110,5 +108,18 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
                 return false;
             }
         });
+    }
+
+    @Override
+    public HomeFragment createHomeFragment() {
+        mHomeFragment = new HomeFragment();
+        mHomePresenter = new HomePresenter(mHomeFragment, this);
+
+        // Create onClick listeners for menu items
+        mNavigationView = (NavigationView) findViewById(R.id.nav_drawer);
+        if (mNavigationView != null)
+            setupDrawerContent(mNavigationView, mHomePresenter);
+
+        return mHomeFragment;
     }
 }

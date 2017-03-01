@@ -9,7 +9,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 
 import com.bananabanditcrew.studybananas.ui.joingroup.JoinGroupFragment;
@@ -102,17 +101,11 @@ public class HomeFragment extends Fragment implements HomeContract.View {
 
         // Create presenter and link it to new fragment
         mJoinGroupPresenter = new JoinGroupPresenter(joinGroupFragment,
-                                                     mPresenter.getCoursesAdapter(), this);
+                                                     mPresenter.getCoursesAdapter(), this,
+                                                     mPresenter.getActivityCallback());
 
         // Commit the transaction
         transaction.commit();
-    }
-
-    @Override
-    public void showSignInView() {
-        Intent myIntent = new Intent(getActivity(), SignInActivity.class);
-        startActivity(myIntent);
-        getActivity().finish();
     }
 
     @Override

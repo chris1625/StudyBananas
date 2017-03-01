@@ -2,16 +2,11 @@ package com.bananabanditcrew.studybananas.ui.joingroup;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -33,14 +28,11 @@ import com.bananabanditcrew.studybananas.data.Course;
 import com.bananabanditcrew.studybananas.data.Group;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionFragment;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionPresenter;
-import com.bananabanditcrew.studybananas.ui.home.HomeFragment;
+import com.bananabanditcrew.studybananas.ui.home.HomeContract;
 import com.bananabanditcrew.studybananas.ui.home.HomePresenter;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class JoinGroupFragment extends Fragment implements JoinGroupContract.View {
 
@@ -107,7 +99,7 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
 //        }
 //
 //        Group testGroup = new Group("crh013@ucsd.edu", addressLines, addressName, 6, 13, 0,
-//                15, 30, System.currentTimeMillis());
+//                15, 30, Long.toString(System.currentTimeMillis()));
 //        mPresenter.addGroupToCourse("CSE 110", testGroup);
         // END EXPERIMENTAL SECTION
 
@@ -190,7 +182,7 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
     }
 
     @Override
-    public void showGroupInteractionView(long groupID) {
+    public void showGroupInteractionView(String course, String groupID) {
         // Setup groupInteraction fragment and presenter
         GroupInteractionFragment groupInteractionFragment = new GroupInteractionFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -198,11 +190,15 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
                 R.anim.slide_from_left, R.anim.slide_to_right);
         transaction.replace(R.id.fragment_container, groupInteractionFragment).commit();
 
-        mGroupInteractionPresenter = new GroupInteractionPresenter(groupInteractionFragment);
+        mGroupInteractionPresenter = new GroupInteractionPresenter(groupInteractionFragment,
+                                                                   course, groupID,
+                                                                   mPresenter.getActivityCallback());
         getFragmentManager().beginTransaction().remove(this).commit();
         getFragmentManager().popBackStack();
         getFragmentManager().beginTransaction().remove(mPresenter.getHomeFragment()).commit();
         getFragmentManager().popBackStack();
+
+        mPresenter.addUserToGroup(course, groupID);
 
     }
 
@@ -233,7 +229,7 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         }
 
         @Override
-        public View getChildView(int listPosition, final int expandedListPosition,
+        public View getChildView(final int listPosition, final int expandedListPosition,
                                  boolean isLastChild, View convertView, ViewGroup parent) {
             final Group groupRef = getChild(listPosition, expandedListPosition);
             final String locationName = groupRef.getLocationName();
@@ -281,7 +277,8 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
             joinGroupButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mView.showGroupInteractionView(groupRef.getGroupID());
+                    mView.showGroupInteractionView(getGroup(listPosition).getCourseName(),
+                            groupRef.getGroupID());
                 }
             });
 
@@ -323,7 +320,7 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
             listTitleTextView.setTypeface(null, Typeface.BOLD);
             listTitleTextView.setText(listTitle);
 
-            Button removeClassButton = (Button)convertView.findViewById(R.id.delete_class_button);
+            Button removeClassButton = (Button) convertView.findViewById(R.id.delete_class_button);
             removeClassButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -343,7 +340,5 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         public boolean isChildSelectable(int listPosition, int expandedListPosition) {
             return true;
         }
-
-
     }
 }

@@ -19,6 +19,12 @@ public interface DatabaseCallback {
 
     }
 
+    interface GetCourseCallback {
+
+        void onCourseRetrieved(Course course);
+
+    }
+
     interface UserCoursesCallback {
 
         void notifyOnUserCoursesRetrieved(ArrayList<Course> userCoursesList);

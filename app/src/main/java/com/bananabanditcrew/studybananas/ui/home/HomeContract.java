@@ -5,6 +5,7 @@ import android.widget.ArrayAdapter;
 
 import com.bananabanditcrew.studybananas.ui.BasePresenter;
 import com.bananabanditcrew.studybananas.ui.BaseView;
+import com.bananabanditcrew.studybananas.ui.joingroup.JoinGroupContract;
 
 import java.util.ArrayList;
 
@@ -16,8 +17,6 @@ public interface HomeContract {
 
     interface View extends BaseView<Presenter> {
 
-        void showSignInView();
-
         Activity getActivity();
 
         void showProgressView(String title, String body);
@@ -28,6 +27,8 @@ public interface HomeContract {
 
     interface Presenter extends BasePresenter {
 
+        void setView(HomeContract.View view);
+
         void signOut();
 
         ArrayAdapter<String> getCoursesAdapter();
@@ -35,5 +36,15 @@ public interface HomeContract {
         void addCoursesToAutoComplete();
 
         void updateClasses();
+
+        void showSignInView();
+
+        HomeContract.HomeActivityCallback getActivityCallback();
+    }
+
+    interface HomeActivityCallback {
+
+        HomeFragment createHomeFragment();
+
     }
 }
