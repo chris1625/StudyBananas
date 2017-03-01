@@ -20,7 +20,7 @@ public interface JoinGroupContract {
 
         void attachAdapter(JoinGroupFragment.CoursesAdapter adapter);
 
-        void showGroupInteractionView(long groupID);
+        void showGroupInteractionView(String groupID);
 
     }
 

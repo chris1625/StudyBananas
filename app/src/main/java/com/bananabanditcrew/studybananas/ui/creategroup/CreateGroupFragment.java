@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,7 @@ import android.widget.TimePicker;
 
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.data.Course;
+import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionFragment;
 import com.bananabanditcrew.studybananas.ui.home.HomeFragment;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -64,6 +66,7 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
     private int endMinute;
     private int maxNum;
     private String location;
+    private String address;
     private String course;
     private GoogleApiClient mGoogleApiClient;
 
@@ -291,9 +294,8 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
     }
 
     @Override
-    public void showGroupManagementView() {
-        //uncoment code when GroupManagement fragment is ready
-        /*GroupManagementFragment createGroupFragment = new GroupManagemtFragment();
+    public void showGroupInteractionView() {
+        GroupInteractionFragment createGroupFragment = new GroupInteractionFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.slide_from_right, R.anim.slide_to_left,
                 R.anim.slide_from_left, R.anim.slide_to_right);
@@ -301,7 +303,7 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
         transaction.addToBackStack(null);
 
         // Commit the transaction
-        transaction.commit();*/
+        transaction.commit();
     }
 
     @Override
@@ -370,6 +372,9 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
     }
 
     @Override
+    public String getAddress() { return address;}
+
+    @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         //TODO
     }
@@ -378,7 +383,8 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(getActivity(), data);
-                location= place.getName().toString();
+                location = place.getName().toString();
+                address = place.getAddress().toString();
                 mLocationButton.setText(place.getName().toString());
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 /*Status status = PlaceAutocomplete.getStatus(getActivity(), data);

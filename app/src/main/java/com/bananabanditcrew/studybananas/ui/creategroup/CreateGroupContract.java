@@ -34,7 +34,7 @@ public interface CreateGroupContract {
 
         void resetErrors();
 
-        void showGroupManagementView();
+        void showGroupInteractionView();
 
         void showSuccessIndicator();
 
@@ -55,6 +55,8 @@ public interface CreateGroupContract {
         void showLocationPicker();
 
         String getLocation();
+
+        String getAddress();
 
     }
 

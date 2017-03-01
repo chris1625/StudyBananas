@@ -8,7 +8,6 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,12 +31,9 @@ import com.bananabanditcrew.studybananas.data.Course;
 import com.bananabanditcrew.studybananas.data.Group;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionFragment;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionPresenter;
-import com.bananabanditcrew.studybananas.ui.home.HomeFragment;
-import com.bananabanditcrew.studybananas.ui.home.HomePresenter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class JoinGroupFragment extends Fragment implements JoinGroupContract.View {
 
@@ -188,7 +184,7 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
     }
 
     @Override
-    public void showGroupInteractionView(long groupID) {
+    public void showGroupInteractionView(String groupID) {
         // Setup groupInteraction fragment and presenter
         GroupInteractionFragment groupInteractionFragment = new GroupInteractionFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
