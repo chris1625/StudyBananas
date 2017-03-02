@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="1">
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.04" />
+
+    <TextView
+        android:text="   Notifications"
+        android:layout_width="382dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView3"
+        android:layout_weight="0.04"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textSize="24sp"
+        android:textAllCaps="false" />
+
+    <Switch
+        android:text="     Enable/disable all"
+        android:paddingRight = "10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/switch6"
+        android:textSize="16sp"
+        android:layout_weight="0.07"
+        android:checked="true" />
+
+    <Switch
+        android:text="     When member joins group"
+        android:paddingRight = "10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/switch10"
+        android:textSize="16sp"
+        android:layout_weight="0.07"
+        android:checked="true" />
+
+    <Switch
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingRight = "10dp"
+        android:id="@+id/switch9"
+        android:textSize="16sp"
+        android:layout_weight="0.07"
+        android:checked="true"
+        android:text="     When member leaves group" />
+
+    <Switch
+        android:text="     When manager changes"
+        android:paddingRight = "10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/switch8"
+        android:textSize="16sp"
+        android:layout_weight="0.10"
+        android:checked="true" />
+
+</LinearLayout>

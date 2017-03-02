@@ -48,4 +48,5 @@
     <string name="last_name">Last Name</string>
     <string name="add_class">Add a class</string>
     <string name="delete">Remove</string>
+    <string name="title_activity_settings">Settings</string>
 </resources>
