@@ -19,6 +19,7 @@ public class Group {
     private int mStartMinute;
     private int mEndHour;
     private int mEndMinute;
+    private String mDescription;
     private String mGroupID;
 
     public Group() {
@@ -26,7 +27,7 @@ public class Group {
     }
 
     public Group(String groupLeader, String addressLine, String locationName, int maxMembers, int startTimeHour,
-                 int startTimeMinute, int endTimeHour, int endTimeMinute, String groupID) {
+                 int startTimeMinute, int endTimeHour, int endTimeMinute, String description, String groupID) {
         mGroupLeader = groupLeader;
         mMaxMembers = maxMembers;
         mAddressLine = addressLine;
@@ -38,6 +39,8 @@ public class Group {
 
         mEndHour = endTimeHour;
         mEndMinute = endTimeMinute;
+
+        mDescription = description;
 
         mGroupID = groupID;
 
@@ -136,6 +139,14 @@ public class Group {
 
     public void setEndMinute(int endMinute) {
         mEndMinute = endMinute;
+    }
+
+    public String getDescription() {
+        return mDescription;
+    }
+
+    public void setDescription(String description) {
+        mDescription = description;
     }
 
     public String getGroupID() {

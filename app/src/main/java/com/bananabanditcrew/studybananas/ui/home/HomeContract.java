@@ -46,5 +46,11 @@ public interface HomeContract {
 
         HomeFragment createHomeFragment();
 
+        void showEditActionButton();
+
+        void showSaveActionButton();
+
+        void hideActionButtons();
+
     }
 }

@@ -2,11 +2,14 @@ package com.bananabanditcrew.studybananas.ui.joingroup;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -33,6 +36,7 @@ import com.bananabanditcrew.studybananas.ui.home.HomePresenter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class JoinGroupFragment extends Fragment implements JoinGroupContract.View {
 
@@ -64,7 +68,8 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         }
 
         // Re-add listeners if they do not exist
-        mPresenter.addCourseListeners();
+        if (mPresenter != null)
+            mPresenter.addCourseListeners();
     }
 
     @Override
@@ -101,8 +106,10 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
 //            Log.e("Location services", "IO Exception");
 //        }
 //
+//        String description = "The quick brown fox jumped over the lazy dogs";
+//
 //        Group testGroup = new Group("crh013@ucsd.edu", addressLines, addressName, 6, 13, 0,
-//                15, 30, Long.toString(System.currentTimeMillis()));
+//                15, 30, description, Long.toString(System.currentTimeMillis()));
 //        mPresenter.addGroupToCourse("CSE 110", testGroup);
         // END EXPERIMENTAL SECTION
 

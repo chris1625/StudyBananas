@@ -18,9 +18,21 @@ public interface GroupInteractionContract {
 
         void setMemberCount(String memberCount);
 
+        void setMemberCountEdit(String memberCount);
+
         void setTimeRange(String timeRange);
 
         void setDescription(String description);
+
+        void setDescriptionEdit(String description);
+
+        void setMemberListViewVisibility(boolean isVisible);
+
+        void setLeaveButtonText(String text);
+
+        void setFieldsEditable(boolean editable);
+
+        String getStringByID(int string);
 
     }
 
@@ -37,6 +49,8 @@ public interface GroupInteractionContract {
         void openMapView();
 
         void updateGroupInfo();
+
+        void updateEditFields();
 
     }
 }

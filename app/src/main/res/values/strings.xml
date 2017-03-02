@@ -50,6 +50,8 @@
     <string name="delete">Remove</string>
     <string name="title_activity_settings">Settings</string>
     <string name="leave_group">Leave Group</string>
+    <string name="disband_group">Disband Group</string>
     <string name="description">Description</string>
     <string name="members">Members</string>
+    <string name="max_members_hint"><font size="8">Max Members</font></string>
 </resources>

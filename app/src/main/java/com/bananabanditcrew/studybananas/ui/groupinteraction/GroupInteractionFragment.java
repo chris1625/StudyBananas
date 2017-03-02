@@ -9,7 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.NumberPicker;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.ui.home.HomeContract;
@@ -25,10 +30,15 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
     private GroupInteractionContract.Presenter mPresenter;
 
     private Button mLocationButton;
+    private ViewSwitcher mGroupMemberCountSwitcher;
     private TextView mGroupMemberCount;
+    private EditText mGroupMemberEdit;
     private TextView mTimeView;
+    private ViewSwitcher mDescriptionSwitcher;
     private TextView mDescription;
+    private EditText mEditDescription;
     private Button mLeaveGroupButton;
+    private LinearLayout mMemberListViewLayout;
 
     public GroupInteractionFragment() {
         // Required empty public constructor
@@ -64,10 +74,14 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
         View view = inflater.inflate(R.layout.fragment_group_interaction, container, false);
 
         mLocationButton = (Button) view.findViewById(R.id.group_interaction_location);
+        mGroupMemberCountSwitcher = (ViewSwitcher) view.findViewById(R.id.group_interaction_members_switcher);
         mGroupMemberCount = (TextView) view.findViewById(R.id.group_interaction_members);
+        mGroupMemberEdit = (EditText) view.findViewById(R.id.group_interaction_members_edit);
         mTimeView = (TextView) view.findViewById(R.id.group_interaction_time);
+        mDescriptionSwitcher = (ViewSwitcher) view.findViewById(R.id.group_interaction_description_switcher);
         mDescription = (TextView) view.findViewById(R.id.group_interaction_description);
-
+        mEditDescription = (EditText) view.findViewById(R.id.group_interaction_description_edit);
+        mMemberListViewLayout = (LinearLayout) view.findViewById(R.id.group_interaction_member_layout);
         mLeaveGroupButton = (Button) view.findViewById(R.id.leave_group_button);
         mLeaveGroupButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,6 +119,11 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
     }
 
     @Override
+    public void setMemberCountEdit(String memberCount) {
+        mGroupMemberEdit.setText(memberCount);
+    }
+
+    @Override
     public void setTimeRange(String timeRange) {
         mTimeView.setText(timeRange);
     }
@@ -112,5 +131,32 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
     @Override
     public void setDescription(String description) {
         mDescription.setText(description);
+    }
+
+    @Override
+    public void setDescriptionEdit(String description) {
+        mEditDescription.setText(description);
+    }
+
+    @Override
+    public void setMemberListViewVisibility(boolean isVisible) {
+        mMemberListViewLayout.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    @Override
+    public void setFieldsEditable(boolean editable) {
+        mGroupMemberCountSwitcher.showNext();
+        mDescriptionSwitcher.showNext();
+
+        mPresenter.updateEditFields();
+    }
+
+    @Override
+    public void setLeaveButtonText(String text) {
+        mLeaveGroupButton.setText(text);
+    }
+
+    public String getStringByID(int string) {
+        return getString(string);
     }
 }

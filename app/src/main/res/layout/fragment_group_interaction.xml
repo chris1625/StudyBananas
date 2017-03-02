@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:layout_margin="10dp"
     android:orientation="vertical"
+    android:id="@+id/fragment_group_interaction"
     tools:context="com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionFragment">
 
     <LinearLayout
@@ -12,7 +13,6 @@
         android:orientation="horizontal">
 
         <Button
-            android:text="Geisel Library"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/group_interaction_location"
@@ -21,23 +21,46 @@
             android:drawableEnd="@drawable/ic_place"
             android:textSize="20sp" />
 
-        <TextView
-            android:text="1/15"
-            android:id="@+id/group_interaction_members"
-            android:layout_marginEnd="10dp"
-            android:layout_marginRight="10dp"
-            android:gravity="center_horizontal|center_vertical"
-            android:drawableRight="@drawable/ic_people"
-            android:drawableEnd="@drawable/ic_people"
+        <ViewSwitcher
+            android:id="@+id/group_interaction_members_switcher"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
-            android:layout_weight="0.3"
-            android:textSize="20sp" />
+            android:layout_weight="0.3">
+
+            <TextView
+                android:id="@+id/group_interaction_members"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:gravity="center_horizontal|center_vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:drawableRight="@drawable/ic_people"
+                android:drawableEnd="@drawable/ic_people"
+                android:textSize="20sp" />
+
+            <EditText
+                android:hint="@string/max_members_hint"
+                android:inputType="number"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:drawableRight="@drawable/ic_people"
+                android:drawableEnd="@drawable/ic_people"
+                android:paddingEnd="10dp"
+                android:paddingRight="10dp"
+                android:gravity="center_horizontal|center_vertical"
+                android:id="@+id/group_interaction_members_edit"
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:textSize="20sp"
+                android:background="@drawable/text_frame_white">
+            </EditText>
+
+        </ViewSwitcher>
+
     </LinearLayout>
 
     <TextView
         android:id="@+id/group_interaction_time"
-        android:text="12:00 PM - 3:30 PM"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         android:gravity="center_vertical|center_horizontal"
@@ -53,24 +76,47 @@
         android:textStyle="normal|bold"
         android:textSize="18sp" />
 
-    <FrameLayout
+    <ViewSwitcher
+        android:id="@+id/group_interaction_description_switcher"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/text_frame">
+        android:layout_marginBottom="10dp">
 
-        <TextView
-            android:id="@+id/group_interaction_description"
-            android:text="What are you studying? How can people find you?"
-            android:layout_margin="10dp"
-            android:minLines="5"
-            android:maxLines="5"
-            android:scrollbars="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textSize="18sp" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/text_frame_green">
 
-    </FrameLayout>
+            <TextView
+                android:id="@+id/group_interaction_description"
+                android:layout_margin="5dp"
+                android:minLines="5"
+                android:maxLines="5"
+                android:scrollbars="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/text_frame_white">
+
+            <EditText
+                android:inputType="textCapSentences|textMultiLine"
+                android:id="@+id/group_interaction_description_edit"
+                android:gravity="top|start"
+                android:layout_margin="5dp"
+                android:minLines="5"
+                android:maxLines="5"
+                android:scrollbars="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:background="@android:color/transparent"/>
+        </FrameLayout>
+    </ViewSwitcher>
 
     <RelativeLayout
         android:layout_width="fill_parent"

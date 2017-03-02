@@ -1,8 +1,10 @@
 package com.bananabanditcrew.studybananas.ui.home;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,9 +12,12 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.inputmethod.InputMethod;
+import android.view.inputmethod.InputMethodManager;
 
 import com.bananabanditcrew.studybananas.R;
-import com.bananabanditcrew.studybananas.ui.Settings;
+import com.bananabanditcrew.studybananas.ui.settings.Settings;
 import com.bananabanditcrew.studybananas.data.User;
 import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
 import com.bananabanditcrew.studybananas.data.database.DatabaseHandler;
@@ -30,6 +35,10 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
     private HomePresenter mHomePresenter;
     private GroupInteractionPresenter mGroupInteractionPresenter;
     private DatabaseHandler mDatabase;
+
+    // Variables to hide or show edit and save buttons
+    private boolean mSaveActionVisible = false;
+    private boolean mEditActionVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,14 +96,27 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.settings_menu, menu);
-        return true;
 
+        MenuItem saveItem = menu.findItem(R.id.action_save);
+        saveItem.setVisible(mSaveActionVisible);
+
+        MenuItem editItem = menu.findItem(R.id.action_edit);
+        editItem.setVisible(mEditActionVisible);
+        return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.action_settings){
             startActivity(new Intent(this, Settings.class));
             return true;
+        }
+        if(item.getItemId() == R.id.action_edit){
+            showSaveActionButton();
+        }
+        if(item.getItemId() == R.id.action_save){
+            showEditActionButton();
+            closeKeyboard();
         }
         if (mToggle.onOptionsItemSelected(item)) {
             return true;
@@ -132,5 +154,57 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
             setupDrawerContent(mNavigationView, mHomePresenter);
 
         return mHomeFragment;
+    }
+
+    @Override
+    public void showEditActionButton() {
+
+        // Only switch fields if save button was shown before
+        if (mSaveActionVisible) {
+
+            // Call method in fragment to hide edit fields
+            GroupInteractionFragment fragment =
+                    (GroupInteractionFragment) getSupportFragmentManager()
+                            .findFragmentById(R.id.fragment_container);
+            fragment.setFieldsEditable(false);
+        }
+
+        mEditActionVisible = true;
+        mSaveActionVisible = false;
+
+        // Refresh action bar and call onCreateOptionsMenu
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public void showSaveActionButton() {
+        mEditActionVisible = false;
+        mSaveActionVisible = true;
+
+        // Refresh action bar and call onCreateOptionsMenu
+        invalidateOptionsMenu();
+
+        // Call method in fragment to show edit fields
+        GroupInteractionFragment fragment =
+                (GroupInteractionFragment) getSupportFragmentManager()
+                        .findFragmentById(R.id.fragment_container);
+        fragment.setFieldsEditable(true);
+    }
+
+    @Override
+    public void hideActionButtons() {
+        mEditActionVisible = false;
+        mSaveActionVisible = false;
+
+        // Refresh action bar and call onCreateOptionsMenu
+        invalidateOptionsMenu();
+    }
+
+    private void closeKeyboard() {
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 }

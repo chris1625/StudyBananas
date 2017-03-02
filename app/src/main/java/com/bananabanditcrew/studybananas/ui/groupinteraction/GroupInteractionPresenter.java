@@ -2,6 +2,7 @@ package com.bananabanditcrew.studybananas.ui.groupinteraction;
 
 import android.support.annotation.NonNull;
 
+import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.data.Course;
 import com.bananabanditcrew.studybananas.data.User;
 import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
@@ -83,11 +84,13 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
         mDatabase.removeGroupValueEventListener(mCourse.getCourseName());
 
         mGroupInteractionView.showHomeView(mActivityCallback);
+        mActivityCallback.hideActionButtons();
     }
 
     @Override
     public void onUserRetrieved(User user) {
         mUser = user;
+        updateLeaderFunctions();
     }
 
     @Override
@@ -110,6 +113,25 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
         mGroupInteractionView.setLocation(mGroup.getLocationName());
         mGroupInteractionView.setMemberCount(parseMemberCount());
         mGroupInteractionView.setTimeRange(parseTimeRange());
+        mGroupInteractionView.setDescription((mGroup.getDescription() != null) ?
+                mGroup.getDescription() : "");
+        updateLeaderFunctions();
+    }
+
+    private void updateLeaderFunctions() {
+        if (mUser != null && mGroup != null) {
+            if (mGroup.getLeader().equals(mUser.getEmail())) {
+                mActivityCallback.showEditActionButton();
+                mGroupInteractionView.setMemberListViewVisibility(true);
+                mGroupInteractionView.setLeaveButtonText
+                        (mGroupInteractionView.getStringByID(R.string.disband_group));
+            } else {
+                mActivityCallback.hideActionButtons();
+                mGroupInteractionView.setMemberListViewVisibility(false);
+                mGroupInteractionView.setLeaveButtonText
+                        (mGroupInteractionView.getStringByID(R.string.leave_group));
+            }
+        }
     }
 
     private String parseMemberCount() {
@@ -140,5 +162,14 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
                 Integer.toString(end12Hour) + ":" +
                 (endMinute == 0 ? "00" : Integer.toString(endMinute)) +
                 (endIsPostMeridian ? " PM" : " AM");
+    }
+
+    @Override
+    public void updateEditFields() {
+        if (mGroup != null) {
+            mGroupInteractionView.setMemberCountEdit(Integer.toString(mGroup.getMaxMembers()));
+            mGroupInteractionView.setDescriptionEdit((mGroup.getDescription() != null) ?
+                    mGroup.getDescription() : "");
+        }
     }
 }
