@@ -12,9 +12,15 @@ public interface GroupInteractionContract {
 
     interface View extends BaseView<Presenter> {
 
-        void updateUI();
-
         void showHomeView(HomeContract.HomeActivityCallback callback);
+
+        void setLocation(String locationName);
+
+        void setMemberCount(String memberCount);
+
+        void setTimeRange(String timeRange);
+
+        void setDescription(String description);
 
     }
 
@@ -23,6 +29,14 @@ public interface GroupInteractionContract {
         void getGroupFromDatabase();
 
         void leaveGroup();
+
+        void addGroupListener();
+
+        void removeGroupListener();
+
+        void openMapView();
+
+        void updateGroupInfo();
 
     }
 }

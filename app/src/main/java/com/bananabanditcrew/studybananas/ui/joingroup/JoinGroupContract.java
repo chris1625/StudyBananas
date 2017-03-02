@@ -7,6 +7,8 @@ import com.bananabanditcrew.studybananas.data.Group;
 import com.bananabanditcrew.studybananas.data.User;
 import com.bananabanditcrew.studybananas.ui.BasePresenter;
 import com.bananabanditcrew.studybananas.ui.BaseView;
+import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionFragment;
+import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionPresenter;
 import com.bananabanditcrew.studybananas.ui.home.HomeContract;
 import com.bananabanditcrew.studybananas.ui.home.HomeFragment;
 
@@ -46,5 +48,8 @@ public interface JoinGroupContract {
 
         HomeContract.HomeActivityCallback getActivityCallback();
 
+        void removeCourseListeners();
+
+        void addCourseListeners();
     }
 }

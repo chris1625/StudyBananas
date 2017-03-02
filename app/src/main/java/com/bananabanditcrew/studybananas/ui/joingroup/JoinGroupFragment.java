@@ -62,6 +62,9 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         if (mPresenter != null) {
             mPresenter.start();
         }
+
+        // Re-add listeners if they do not exist
+        mPresenter.addCourseListeners();
     }
 
     @Override
@@ -202,6 +205,14 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
 
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // Remove event listeners for user courses
+        mPresenter.removeCourseListeners();
+    }
+
     public static class CoursesAdapter extends BaseExpandableListAdapter {
 
         private Context mContext;
@@ -244,8 +255,10 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
             boolean startIsPostMeridian = (startHour >= 12);
             boolean endIsPostMeridian = (endHour >= 12);
 
-            int start12Hour = (startIsPostMeridian) ? (startHour - 12) : startHour;
-            int end12Hour = (endIsPostMeridian) ? (endHour - 12) : endHour;
+            int start12Hour = ((startIsPostMeridian) ? ((startHour == 12) ? 12 : (startHour - 12)) :
+                    ((startHour == 0) ? 12 : startHour));
+            int end12Hour = ((endIsPostMeridian) ? ((endHour == 12) ? 12 : (endHour - 12)) :
+                    ((endHour == 0) ? 12 : endHour));
 
             // Time string
             final String timeFrame = Integer.toString(start12Hour) + ":" +

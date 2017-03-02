@@ -34,7 +34,7 @@ public class SignUpPresenter implements SignUpContract.Presenter, DatabaseCallba
         mSignUpView = signUpView;
         mSignUpView.setPresenter(this);
         startFirebaseAuthListener();
-        mDatabase = new DatabaseHandler();
+        mDatabase = DatabaseHandler.getInstance();
     }
 
     @Override

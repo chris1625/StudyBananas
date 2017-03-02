@@ -9,10 +9,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.ui.home.HomeContract;
 import com.bananabanditcrew.studybananas.ui.home.HomeFragment;
+
+import org.w3c.dom.Text;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -21,6 +24,10 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
 
     private GroupInteractionContract.Presenter mPresenter;
 
+    private Button mLocationButton;
+    private TextView mGroupMemberCount;
+    private TextView mTimeView;
+    private TextView mDescription;
     private Button mLeaveGroupButton;
 
     public GroupInteractionFragment() {
@@ -36,6 +43,13 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
     public void onResume() {
         super.onResume();
         mPresenter.start();
+        mPresenter.addGroupListener();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mPresenter.removeGroupListener();
     }
 
     @Override
@@ -49,6 +63,11 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_group_interaction, container, false);
 
+        mLocationButton = (Button) view.findViewById(R.id.group_interaction_location);
+        mGroupMemberCount = (TextView) view.findViewById(R.id.group_interaction_members);
+        mTimeView = (TextView) view.findViewById(R.id.group_interaction_time);
+        mDescription = (TextView) view.findViewById(R.id.group_interaction_description);
+
         mLeaveGroupButton = (Button) view.findViewById(R.id.leave_group_button);
         mLeaveGroupButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,12 +77,8 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
         });
 
         mPresenter.getGroupFromDatabase();
+        mPresenter.addGroupListener();
         return view;
-    }
-
-    @Override
-    public void updateUI() {
-
     }
 
     @Override
@@ -79,4 +94,23 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
         getFragmentManager().popBackStack();
     }
 
+    @Override
+    public void setLocation(String location) {
+        mLocationButton.setText(location);
+    }
+
+    @Override
+    public void setMemberCount(String memberCount) {
+        mGroupMemberCount.setText(memberCount);
+    }
+
+    @Override
+    public void setTimeRange(String timeRange) {
+        mTimeView.setText(timeRange);
+    }
+
+    @Override
+    public void setDescription(String description) {
+        mDescription.setText(description);
+    }
 }

@@ -10,6 +10,7 @@ import com.bananabanditcrew.studybananas.data.Group;
 import com.bananabanditcrew.studybananas.data.User;
 import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
 import com.bananabanditcrew.studybananas.data.database.DatabaseHandler;
+import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionPresenter;
 import com.bananabanditcrew.studybananas.ui.home.HomeContract;
 import com.bananabanditcrew.studybananas.ui.home.HomeFragment;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,7 +40,7 @@ public class JoinGroupPresenter implements DatabaseCallback.UserCoursesCallback,
         mJoinGroupView = joinGroupView;
         mJoinGroupView.setPresenter(this);
         mCourseList = courseList;
-        mDatabase = new DatabaseHandler();
+        mDatabase = DatabaseHandler.getInstance();
         mHomeFragment = homeFragment;
         mActivityCallback = callback;
     }
@@ -170,5 +171,15 @@ public class JoinGroupPresenter implements DatabaseCallback.UserCoursesCallback,
     @Override
     public HomeContract.HomeActivityCallback getActivityCallback() {
         return mActivityCallback;
+    }
+
+    @Override
+    public void removeCourseListeners() {
+        mDatabase.removeCourseListeners();
+    }
+
+    @Override
+    public void addCourseListeners() {
+        mDatabase.addCourseListeners(this);
     }
 }

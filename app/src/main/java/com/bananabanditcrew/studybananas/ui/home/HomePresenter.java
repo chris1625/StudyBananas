@@ -34,7 +34,7 @@ public class HomePresenter implements HomeContract.Presenter, DatabaseCallback.C
     HomePresenter(@NonNull HomeContract.View homeView, Activity activity) {
         mHomeView = homeView;
         mHomeView.setPresenter(this);
-        mDatabase = new DatabaseHandler();
+        mDatabase = DatabaseHandler.getInstance();
         mActivity = activity;
     }
 

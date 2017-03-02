@@ -34,7 +34,7 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
                                      HomeContract.HomeActivityCallback callback) {
         mGroupInteractionView = groupInteractionView;
         mGroupInteractionView.setPresenter(this);
-        mDatabase = new DatabaseHandler();
+        mDatabase = DatabaseHandler.getInstance();
 
         // Get the current user from database
         mDatabase.getUser(FirebaseAuth.getInstance().getCurrentUser().getEmail(), this);
@@ -63,7 +63,7 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
         int groupIndex = course.getStudyGroups().indexOf(group);
         mGroup = course.getGroupByIndex(groupIndex);
 
-        mGroupInteractionView.updateUI();
+        updateGroupInfo();
     }
 
     @Override
@@ -79,11 +79,66 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
         mUser.setGroupCourse(null);
         mDatabase.updateUser(mUser);
 
+        // Remove the group listener
+        mDatabase.removeGroupValueEventListener(mCourse.getCourseName());
+
         mGroupInteractionView.showHomeView(mActivityCallback);
     }
 
     @Override
     public void onUserRetrieved(User user) {
         mUser = user;
+    }
+
+    @Override
+    public void openMapView() {
+
+    }
+
+    @Override
+    public void addGroupListener() {
+        mDatabase.addGroupValueEventListener(mCourseName, this);
+    }
+
+    @Override
+    public void removeGroupListener() {
+        mDatabase.removeGroupValueEventListener(mCourseName);
+    }
+
+    @Override
+    public void updateGroupInfo() {
+        mGroupInteractionView.setLocation(mGroup.getLocationName());
+        mGroupInteractionView.setMemberCount(parseMemberCount());
+        mGroupInteractionView.setTimeRange(parseTimeRange());
+    }
+
+    private String parseMemberCount() {
+        return Integer.toString(mGroup.getGroupMembers().size()) + "/" +
+                Integer.toString(mGroup.getMaxMembers());
+    }
+
+    private String parseTimeRange() {
+
+        int startHour = mGroup.getStartHour();
+        int endHour = mGroup.getEndHour();
+        int startMinute = mGroup.getStartMinute();
+        int endMinute = mGroup.getEndMinute();
+
+        // Boolean for AM vs PM
+        boolean startIsPostMeridian = (startHour >= 12);
+        boolean endIsPostMeridian = (endHour >= 12);
+
+        int start12Hour = ((startIsPostMeridian) ? ((startHour == 12) ? 12 : (startHour - 12)) :
+                ((startHour == 0) ? 12 : startHour));
+        int end12Hour = ((endIsPostMeridian) ? ((endHour == 12) ? 12 : (endHour - 12)) :
+                ((endHour == 0) ? 12 : endHour));
+
+        // Time string
+        return Integer.toString(start12Hour) + ":" +
+                (startMinute == 0 ? "00" : Integer.toString(startMinute)) +
+                (startIsPostMeridian ? " PM" : " AM") + " - " +
+                Integer.toString(end12Hour) + ":" +
+                (endMinute == 0 ? "00" : Integer.toString(endMinute)) +
+                (endIsPostMeridian ? " PM" : " AM");
     }
 }

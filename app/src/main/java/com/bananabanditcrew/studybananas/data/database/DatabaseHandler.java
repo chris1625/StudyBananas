@@ -28,6 +28,8 @@ import java.util.HashMap;
 
 public class DatabaseHandler {
 
+    private static DatabaseHandler mInstance = null;
+
     private DatabaseReference mDatabase;
     private ArrayList<String> mCourses;
     private ArrayList<Course> mUserCourses;
@@ -36,8 +38,20 @@ public class DatabaseHandler {
     // Map of hashcodes to listener objects
     private SparseArray<ValueEventListener> mCourseListeners;
 
+    // Listener to the root course of our group, will be accessed and updated while in the group
+    // interaction page
+    private ValueEventListener mGroupListener;
+
     public DatabaseHandler() {
         mDatabase = FirebaseDatabase.getInstance().getReference();
+    }
+
+    public static DatabaseHandler getInstance() {
+        if (mInstance == null) {
+            Log.d("DatabaseHandler", "Creating instance of DatabaseHandler");
+            mInstance = new DatabaseHandler();
+        }
+        return mInstance;
     }
 
     public void createNewUser(String first, String last, final String email,
@@ -190,9 +204,6 @@ public class DatabaseHandler {
 
                     }
                 });
-
-        // Add listener to this course
-        addValueEventListener(databaseReference, course.hashCode(), callback);
     }
 
     public void getCourse(String course, final DatabaseCallback.GetCourseCallback callback) {
@@ -212,28 +223,73 @@ public class DatabaseHandler {
         });
     }
 
-    private void addValueEventListener(DatabaseReference databaseReference, int hashCode,
-                                       final DatabaseCallback.UserCoursesCallback callback) {
-        // Create a listener for this coursed(dataSnapshot.getValue(Course.class))
-        mCourseListeners.append(hashCode, new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                callback.notifyOnCourseUpdated(dataSnapshot.getValue(Course.class));
-            }
+    private void addCourseValueEventListener(DatabaseReference databaseReference, int hashCode,
+                                             final DatabaseCallback.UserCoursesCallback callback) {
+        // Create a listener for this course
+        // Note that this should only happen if a listener doesn't already exist
+        Log.d("EventListeners", "Size of the course listener array before add function: " +
+               mCourseListeners.size());
+        if (mCourseListeners.get(hashCode) == null) {
+            mCourseListeners.put(hashCode, new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    callback.notifyOnCourseUpdated(dataSnapshot.getValue(Course.class));
+                }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
 
-        // Add the listener
-        databaseReference.addValueEventListener(mCourseListeners.get(hashCode));
-        Log.d("EventListeners", "Added event listener for " + Integer.toString(hashCode));
+            // Add the listener
+            databaseReference.addValueEventListener(mCourseListeners.get(hashCode));
+            Log.d("EventListeners", "Value at this location isNull: " +
+                    Boolean.toString(mCourseListeners.get(hashCode) == null));
+            Log.d("EventListeners", "Added event listener for " + Integer.toString(hashCode));
+            Log.d("EventListeners", "The size of the course listeners array is " +
+                  Integer.toString(mCourseListeners.size()));
+        }
     }
 
-    private void removeValueEventListener(DatabaseReference databaseReference, int hashCode) {
+    public void addGroupValueEventListener(String course,
+                                           final DatabaseCallback.GetCourseCallback callback) {
+        if (mGroupListener == null) {
+            mGroupListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    callback.onCourseRetrieved(dataSnapshot.getValue(Course.class));
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            };
+
+            Log.d("Group Listeners", "Adding listener for group under course " + course);
+
+            // Listen to the root course of the child of interest
+            DatabaseReference databaseReference = mDatabase.child("courses")
+                    .child(Integer.toString(course.hashCode()));
+            databaseReference.addValueEventListener(mGroupListener);
+        }
+    }
+
+    public void removeGroupValueEventListener(String course) {
+
+        DatabaseReference databaseReference = mDatabase.child("courses")
+                .child(Integer.toString(course.hashCode()));
+        if (mGroupListener != null) {
+            databaseReference.removeEventListener(mGroupListener);
+            Log.d("Group Listeners", "Removing listener for group under course " + course);
+            mGroupListener = null;
+        }
+    }
+
+    private void removeCourseValueEventListener(DatabaseReference databaseReference, int hashCode) {
         databaseReference.removeEventListener(mCourseListeners.get(hashCode));
+        mCourseListeners.remove(hashCode);
         Log.d("EventListeners", "Removed event listener for " + Integer.toString(hashCode));
     }
 
@@ -243,12 +299,17 @@ public class DatabaseHandler {
         int counter = 0;
 
         // Initialize map of listener objects
-        mCourseListeners = new SparseArray<>();
+        if (mCourseListeners == null) {
+            mCourseListeners = new SparseArray<>();
+        }
 
         for (String courseName: courseStrings) {
             counter++;
             getCourseByString(courseName, (counter == courseStrings.size()), callback);
         }
+
+        // Add listeners to each course
+        addCourseListeners(callback);
 
         if (counter == 0) {
             callback.notifyOnUserCoursesRetrieved(mUserCourses);
@@ -282,7 +343,7 @@ public class DatabaseHandler {
                 });
 
         // Remove listener for course
-        removeValueEventListener(databaseReference, course.hashCode());
+        removeCourseValueEventListener(databaseReference, course.hashCode());
     }
 
     public void addUserClass(String email, String course,
@@ -307,7 +368,7 @@ public class DatabaseHandler {
             });
 
             // Add a data change listener
-            addValueEventListener(databaseReference, course.hashCode(), callback);
+            addCourseValueEventListener(databaseReference, course.hashCode(), callback);
         }
         updateUserClasses(email, mUserCourseStrings);
     }
@@ -365,5 +426,27 @@ public class DatabaseHandler {
     private void updateCourse(DatabaseReference databaseReference, Course course) {
         Log.d("Database", "Updating course from handler");
         databaseReference.setValue(course);
+    }
+
+    public void removeCourseListeners() {
+        if (mUserCourseStrings != null) {
+            for (String course : mUserCourseStrings) {
+                DatabaseReference databaseReference = mDatabase.child("courses")
+                        .child(Integer.toString(course.hashCode()));
+                removeCourseValueEventListener(databaseReference, course.hashCode());
+            }
+
+            Log.d("Event Listeners", "Removed all course listeners");
+        }
+    }
+
+    public void addCourseListeners(DatabaseCallback.UserCoursesCallback callback) {
+        if (mUserCourseStrings != null) {
+            for (String course : mUserCourseStrings) {
+                DatabaseReference databaseReference = mDatabase.child("courses")
+                        .child(Integer.toString(course.hashCode()));
+                addCourseValueEventListener(databaseReference, course.hashCode(), callback);
+            }
+        }
     }
 }
