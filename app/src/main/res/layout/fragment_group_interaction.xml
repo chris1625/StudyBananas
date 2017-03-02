@@ -1,0 +1,110 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:orientation="vertical"
+    tools:context="com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:text="Geisel Library"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/group_interaction_location"
+            android:layout_weight="0.7"
+            android:drawableRight="@drawable/ic_place"
+            android:drawableEnd="@drawable/ic_place"
+            android:textSize="20sp" />
+
+        <TextView
+            android:text="1/15"
+            android:id="@+id/group_interaction_members"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:gravity="center_horizontal|center_vertical"
+            android:drawableRight="@drawable/ic_people"
+            android:drawableEnd="@drawable/ic_people"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.3"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/group_interaction_time"
+        android:text="12:00 PM - 3:30 PM"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center_vertical|center_horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.StatusBar.EventContent.Time"
+        android:textSize="20sp" />
+
+    <TextView
+        android:text="@string/description"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="normal|bold"
+        android:textSize="18sp" />
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/text_frame">
+
+        <TextView
+            android:id="@+id/group_interaction_description"
+            android:text="What are you studying? How can people find you?"
+            android:layout_margin="10dp"
+            android:minLines="5"
+            android:maxLines="5"
+            android:scrollbars="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp" />
+
+    </FrameLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <Button
+            android:layout_alignParentBottom="true"
+            android:id="@+id/leave_group_button"
+            android:text="@string/leave_group"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:textSize="20sp" />
+
+        <LinearLayout
+            android:id="@+id/group_interaction_member_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="5dp"
+            android:orientation="vertical"
+            android:layout_above="@id/leave_group_button">
+
+            <TextView
+                android:text="@string/members"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="normal|bold"
+                android:textSize="18sp" />
+
+            <ListView
+                android:id="@+id/group_interaction_member_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>

@@ -11,7 +11,10 @@ public class User {
     private String mLastName;
     private String mEmail;
     private ArrayList<String> mCourses;
-    private Group mGroup;
+    private String mGroupCourse;
+    private String mGroupID;
+
+    public User() {};
 
     public User (String first, String last, String email) {
         mFirstName = first;
@@ -32,8 +35,12 @@ public class User {
         mEmail = email;
     }
 
-    public void setGroup(Group group) {
-        mGroup = group;
+    public void setGroupCourse(String groupCourse) {
+        mGroupCourse = groupCourse;
+    }
+
+    public void setGroupID(String groupID) {
+        mGroupID = groupID;
     }
 
     public void addCourse(String course) {
@@ -53,15 +60,26 @@ public class User {
     public String getEmail() {
         return mEmail;
     }
-    public Group getGroup() {
-        return mGroup;
+    public String getGroupCourse() {
+        return mGroupCourse;
+    }
+    public String getGroupID() {
+        return mGroupID;
     }
     public ArrayList<String> getCourses() {
         return mCourses;
+    }
+    public void setCourses(ArrayList<String> courses) {
+        mCourses = courses;
     }
 
     @Override
     public String toString() {
         return (mFirstName + " " + mLastName);
+    }
+
+    @Override
+    public boolean equals(Object user) {
+        return mEmail.equals(((User)user).getEmail());
     }
 }

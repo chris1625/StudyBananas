@@ -2,15 +2,11 @@ package com.bananabanditcrew.studybananas.ui.joingroup;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.support.v4.app.FragmentTransaction;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,12 +26,13 @@ import android.widget.TextView;
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.data.Course;
 import com.bananabanditcrew.studybananas.data.Group;
-
-import org.w3c.dom.Text;
+import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionFragment;
+import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionPresenter;
+import com.bananabanditcrew.studybananas.ui.home.HomeContract;
+import com.bananabanditcrew.studybananas.ui.home.HomePresenter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class JoinGroupFragment extends Fragment implements JoinGroupContract.View {
 
@@ -44,6 +41,7 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
     private AutoCompleteTextView mCoursesSelect;
     private ExpandableListView mUserCourseList;
     private ArrayList<Course> mCourseArrayList;
+    private GroupInteractionPresenter mGroupInteractionPresenter;
 
     public JoinGroupFragment() {
         // Required empty public constructor
@@ -64,6 +62,9 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         if (mPresenter != null) {
             mPresenter.start();
         }
+
+        // Re-add listeners if they do not exist
+        mPresenter.addCourseListeners();
     }
 
     @Override
@@ -101,7 +102,7 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
 //        }
 //
 //        Group testGroup = new Group("crh013@ucsd.edu", addressLines, addressName, 6, 13, 0,
-//                15, 30);
+//                15, 30, Long.toString(System.currentTimeMillis()));
 //        mPresenter.addGroupToCourse("CSE 110", testGroup);
         // END EXPERIMENTAL SECTION
 
@@ -180,6 +181,36 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
 
             }
         });
+
+    }
+
+    @Override
+    public void showGroupInteractionView(String course, String groupID) {
+        // Setup groupInteraction fragment and presenter
+        GroupInteractionFragment groupInteractionFragment = new GroupInteractionFragment();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.slide_from_right, R.anim.slide_to_left,
+                R.anim.slide_from_left, R.anim.slide_to_right);
+        transaction.replace(R.id.fragment_container, groupInteractionFragment).commit();
+
+        mGroupInteractionPresenter = new GroupInteractionPresenter(groupInteractionFragment,
+                                                                   course, groupID,
+                                                                   mPresenter.getActivityCallback());
+        getFragmentManager().beginTransaction().remove(this).commit();
+        getFragmentManager().popBackStack();
+        getFragmentManager().beginTransaction().remove(mPresenter.getHomeFragment()).commit();
+        getFragmentManager().popBackStack();
+
+        mPresenter.addUserToGroup(course, groupID);
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // Remove event listeners for user courses
+        mPresenter.removeCourseListeners();
     }
 
     public static class CoursesAdapter extends BaseExpandableListAdapter {
@@ -187,11 +218,15 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         private Context mContext;
         private List<Course> mCourses;
         private JoinGroupPresenter mPresenter;
+        private final JoinGroupContract.View mView;
 
-        public CoursesAdapter(Context context, List<Course> courses, JoinGroupPresenter presenter) {
+        public CoursesAdapter(Context context, List<Course> courses, JoinGroupPresenter presenter,
+                              JoinGroupContract.View view) {
             mContext = context;
             mCourses = courses;
             mPresenter = presenter;
+            mView = view;
+
         }
 
         @Override
@@ -205,9 +240,9 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         }
 
         @Override
-        public View getChildView(int listPosition, final int expandedListPosition,
+        public View getChildView(final int listPosition, final int expandedListPosition,
                                  boolean isLastChild, View convertView, ViewGroup parent) {
-            Group groupRef = getChild(listPosition, expandedListPosition);
+            final Group groupRef = getChild(listPosition, expandedListPosition);
             final String locationName = groupRef.getLocationName();
 
             // Get time string
@@ -220,8 +255,10 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
             boolean startIsPostMeridian = (startHour >= 12);
             boolean endIsPostMeridian = (endHour >= 12);
 
-            int start12Hour = (startIsPostMeridian) ? (startHour - 12) : startHour;
-            int end12Hour = (endIsPostMeridian) ? (endHour - 12) : endHour;
+            int start12Hour = ((startIsPostMeridian) ? ((startHour == 12) ? 12 : (startHour - 12)) :
+                    ((startHour == 0) ? 12 : startHour));
+            int end12Hour = ((endIsPostMeridian) ? ((endHour == 12) ? 12 : (endHour - 12)) :
+                    ((endHour == 0) ? 12 : endHour));
 
             // Time string
             final String timeFrame = Integer.toString(start12Hour) + ":" +
@@ -248,6 +285,15 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
 
             TextView memberCount = (TextView) convertView.findViewById(R.id.member_count);
             memberCount.setText(members);
+
+            Button joinGroupButton = (Button) convertView.findViewById(R.id.group_view_join_button);
+            joinGroupButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mView.showGroupInteractionView(getGroup(listPosition).getCourseName(),
+                            groupRef.getGroupID());
+                }
+            });
 
             return convertView;
         }
@@ -287,7 +333,7 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
             listTitleTextView.setTypeface(null, Typeface.BOLD);
             listTitleTextView.setText(listTitle);
 
-            Button removeClassButton = (Button)convertView.findViewById(R.id.delete_class_button);
+            Button removeClassButton = (Button) convertView.findViewById(R.id.delete_class_button);
             removeClassButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

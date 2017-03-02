@@ -19,13 +19,14 @@ public class Group {
     private int mStartMinute;
     private int mEndHour;
     private int mEndMinute;
+    private String mGroupID;
 
     public Group() {
         mGroupMembers = new ArrayList<>();
     }
 
     public Group(String groupLeader, String addressLine, String locationName, int maxMembers, int startTimeHour,
-                 int startTimeMinute, int endTimeHour, int endTimeMinute) {
+                 int startTimeMinute, int endTimeHour, int endTimeMinute, String groupID) {
         mGroupLeader = groupLeader;
         mMaxMembers = maxMembers;
         mAddressLine = addressLine;
@@ -38,7 +39,15 @@ public class Group {
         mEndHour = endTimeHour;
         mEndMinute = endTimeMinute;
 
+        mGroupID = groupID;
+
         mGroupMembers = new ArrayList<>();
+    }
+
+    // Constructor for dummy object with just ID
+    public Group(String groupID) {
+        this();
+        mGroupID = groupID;
     }
 
     public void addGroupMember(String groupMember) {
@@ -127,5 +136,18 @@ public class Group {
 
     public void setEndMinute(int endMinute) {
         mEndMinute = endMinute;
+    }
+
+    public String getGroupID() {
+        return mGroupID;
+    }
+
+    public void setGroupID(String groupID) {
+        mGroupID = groupID;
+    }
+
+    @Override
+    public boolean equals(Object group) {
+        return mGroupID.equals(((Group) group).getGroupID());
     }
 }
