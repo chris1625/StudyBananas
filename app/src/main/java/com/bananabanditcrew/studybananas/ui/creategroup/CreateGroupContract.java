@@ -58,6 +58,7 @@ public interface CreateGroupContract {
 
         String getAddress();
 
+        void doValidations();
     }
 
     interface Presenter extends BasePresenter{

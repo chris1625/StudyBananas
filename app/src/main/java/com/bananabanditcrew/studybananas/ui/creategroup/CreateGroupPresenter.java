@@ -7,7 +7,11 @@ import android.widget.ArrayAdapter;
 import com.bananabanditcrew.studybananas.data.Group;
 import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
 import com.bananabanditcrew.studybananas.data.database.DatabaseHandler;
+import com.bananabanditcrew.studybananas.ui.home.HomeFragment;
+import com.bananabanditcrew.studybananas.ui.joingroup.JoinGroupContract;
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.ArrayList;
 
 /**
  * Created by Ryan on 2/24/2017.
@@ -18,11 +22,10 @@ public class CreateGroupPresenter implements DatabaseCallback, CreateGroupContra
     private ArrayAdapter<String> mCourseList;
     private DatabaseHandler mDatabase;
 
-    public CreateGroupPresenter(@NonNull CreateGroupContract.View mCreateGroupView,
-                                ArrayAdapter<String> courseList) {
+    public CreateGroupPresenter(@NonNull CreateGroupContract.View mCreateGroupView, ArrayAdapter<String> courseList) {
         this.mCreateGroupView = mCreateGroupView;
-        this.mCourseList = courseList;
         this.mDatabase = new DatabaseHandler();
+        this.mCourseList=courseList;
     }
 
     @Override
@@ -36,7 +39,7 @@ public class CreateGroupPresenter implements DatabaseCallback, CreateGroupContra
 
     @Override
     public ArrayAdapter<String> getCoursesAdapter() {
-        return null;
+        return mCourseList;
     }
 
     @Override

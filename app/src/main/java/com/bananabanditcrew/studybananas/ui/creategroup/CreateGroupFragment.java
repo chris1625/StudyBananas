@@ -11,9 +11,14 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.text.format.DateFormat;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -29,6 +34,7 @@ import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.data.Course;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionFragment;
 import com.bananabanditcrew.studybananas.ui.home.HomeFragment;
+import com.bananabanditcrew.studybananas.ui.joingroup.JoinGroupContract;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -78,7 +84,8 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
     public static CreateGroupFragment newInstance() { return new CreateGroupFragment(); }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) { super.onCreate(savedInstanceState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         mGoogleApiClient = new GoogleApiClient
                 .Builder(getActivity())
                 .addApi(Places.GEO_DATA_API)
@@ -92,21 +99,13 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_create_group, container, false);
-
-        //mCourseArrayList=
         mCoursesSelect = (AutoCompleteTextView) root.findViewById(R.id.pick_class);
+        setupCoursesSelectView();
         mStartTimeButton= (Button)root.findViewById(R.id.start_time_button);
         mEndTimeButton= (Button)root.findViewById(R.id.end_time_button);
         mMaxGroupButton= (Button)root.findViewById(R.id.max_people_button);
         mDescritionText= (EditText)root.findViewById(R.id.description_text);
         mLocationButton=(Button)root.findViewById(R.id.location_button);
-        mCreateGroupButton=(Button)root.findViewById(R.id.new_group_button);
-        mCreateGroupButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mPresenter.attemptCreateGroup();
-            }
-        });
         mStartTimeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -129,6 +128,14 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
             @Override
             public void onClick(View v) {
                 showLocationPicker();
+            }
+        });
+        mCreateGroupButton=(Button)root.findViewById(R.id.new_group_button);
+        mCreateGroupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doValidations();
+                mPresenter.attemptCreateGroup();
             }
         });
         return root;
@@ -346,7 +353,7 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
 
     @Override
     public String getCourseName() {
-        return mCoursesSelect.getText().toString();
+        return course;
     }
 
     @Override
@@ -375,6 +382,11 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
     public String getAddress() { return address;}
 
     @Override
+    public void doValidations() {
+        //TODO
+    }
+
+    @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         //TODO
     }
@@ -395,5 +407,16 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
                 // The user canceled the operation.
             }
         }
+    }
+    public void setupCoursesSelectView() {
+        mCoursesSelect.setAdapter(mPresenter.getCoursesAdapter());
+
+        // Close window once option is selected
+        mCoursesSelect.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                course=mCoursesSelect.getText().toString();
+            }
+        });
     }
 }

@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 
+import com.bananabanditcrew.studybananas.ui.creategroup.CreateGroupPresenter;
 import com.bananabanditcrew.studybananas.ui.joingroup.JoinGroupFragment;
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.ui.creategroup.CreateGroupFragment;
@@ -22,6 +23,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
 
     private HomeContract.Presenter mPresenter;
     private JoinGroupPresenter mJoinGroupPresenter;
+    private CreateGroupPresenter mCreateGroupPresenter;
     private ProgressDialog mProgressView;
 
     public HomeFragment() {
@@ -87,7 +89,9 @@ public class HomeFragment extends Fragment implements HomeContract.View {
                 R.anim.slide_from_left, R.anim.slide_to_right);
         transaction.replace(R.id.fragment_container, createGroupFragment);
         transaction.addToBackStack(null);
-
+        // Create presenter and link it to new fragment
+        mCreateGroupPresenter = new CreateGroupPresenter(createGroupFragment,mPresenter.getCoursesAdapter());
+        createGroupFragment.setPresenter(mCreateGroupPresenter);
         // Commit the transaction
         transaction.commit();
     }
