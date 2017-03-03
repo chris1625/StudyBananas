@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,11 +12,10 @@ import android.view.Menu;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethod;
 import android.view.inputmethod.InputMethodManager;
 
 import com.bananabanditcrew.studybananas.R;
-import com.bananabanditcrew.studybananas.ui.settings.Settings;
+import com.bananabanditcrew.studybananas.ui.settings.SettingsActivity;
 import com.bananabanditcrew.studybananas.data.User;
 import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
 import com.bananabanditcrew.studybananas.data.database.DatabaseHandler;
@@ -108,7 +106,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.action_settings){
-            startActivity(new Intent(this, Settings.class));
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
         if(item.getItemId() == R.id.action_edit){

@@ -2,20 +2,28 @@ package com.bananabanditcrew.studybananas.ui.groupinteraction;
 
 
 import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.ViewSwitcher;
@@ -24,6 +32,8 @@ import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.ui.home.HomeContract;
 import com.bananabanditcrew.studybananas.ui.home.HomeFragment;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 /**
@@ -46,6 +56,10 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
     private EditText mEditDescription;
     private Button mLeaveGroupButton;
     private LinearLayout mMemberListViewLayout;
+    private ListView mMemberListView;
+
+    // Adapter for the members of a group
+    private MemberAdapter mMemberAdapter;
 
     public GroupInteractionFragment() {
         // Required empty public constructor
@@ -93,6 +107,7 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
         mEditDescription = (EditText) view.findViewById(R.id.group_interaction_description_edit);
         mMemberListViewLayout = (LinearLayout) view.findViewById(R.id.group_interaction_member_layout);
         mLeaveGroupButton = (Button) view.findViewById(R.id.leave_group_button);
+        mMemberListView = (ListView) view.findViewById(R.id.group_interaction_member_list);
 
         // Listener for set end time button
         mEndTimeButton.setOnClickListener(new View.OnClickListener() {
@@ -233,5 +248,144 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
     @Override
     public String getDescriptionEdited() {
         return mEditDescription.getText().toString();
+    }
+
+    @Override
+    public void createAdapter(ArrayList<String> members) {
+        mMemberAdapter = new MemberAdapter(getContext(), members);
+        mMemberListView.setAdapter(mMemberAdapter);
+    }
+
+    @Override
+    public void notifyAdapter() {
+        if (mMemberAdapter != null) {
+            mMemberAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void showKickedMessage() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(R.string.kicked_notification).setTitle(R.string.group_management);
+        // Add ok button
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // User clicked ok button
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    @Override
+    public void showGroupDisbandedMessage() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(R.string.group_deleted_notification).setTitle(R.string.group_management);
+        // Add ok button
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // User clicked ok button
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void showLeadershipTransferDialog(String user) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(getString(R.string.changed_leadership,user)).setTitle(R.string.group_management);
+        // Add ok button
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // User clicked ok button
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    @Override
+    public void showNewLeaderDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(R.string.new_leader).setTitle(R.string.group_management);
+        // Add ok button
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // User clicked ok button
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    // Custom array adapter to show the current members in the group to the group leader
+    public class MemberAdapter extends ArrayAdapter<String> {
+        public MemberAdapter(Context context, ArrayList<String> members) {
+            super(context, 0, members);
+        }
+
+        @Override @NonNull
+        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+            // Get the member data for this position
+            final String member = getItem(position);
+
+            // Check if view is being reused, otherwise inflate new view
+            if (convertView == null) {
+                convertView = LayoutInflater
+                        .from(getContext()).inflate(R.layout.list_item_member, parent, false);
+            }
+
+            // Get text and button fields
+            TextView memberText = (TextView) convertView.findViewById(R.id.member_list_item_text);
+            Button kickButton = (Button) convertView.findViewById(R.id.kick_member_button);
+            ImageButton ownershipButton = (ImageButton) convertView
+                    .findViewById(R.id.transfer_ownership_button);
+
+            // Update the text field with the user email
+            memberText.setText(member);
+
+            // Hide or show kick button based on whether this is the current user
+            kickButton.setVisibility(mPresenter.isCurrentUser(member) ? View.INVISIBLE : View.VISIBLE);
+
+            // Change source of image button based on leader status of member
+            if (mPresenter.getGroupLeader().equals(member)) {
+                ownershipButton.setImageResource(R.drawable.ic_crown);
+                ownershipButton.getBackground().setAlpha(0);
+            } else {
+                ownershipButton.setImageResource(R.drawable.ic_person);
+                ownershipButton.getBackground().setAlpha(0);
+            }
+
+            // Add onclick listeners for both buttons
+            kickButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Only kick if the user is not yourself (duh)
+                    if (!mPresenter.getGroupLeader().equals(member)) {
+                        mPresenter.kickUser(member);
+                    }
+                }
+            });
+
+            ownershipButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // You can't make yourself the owner when you already are!
+                    if (!mPresenter.getGroupLeader().equals(member)) {
+                        mPresenter.transferLeadership(member);
+                        showLeadershipTransferDialog(member);
+                    }
+                }
+            });
+            return convertView;
+        }
     }
 }

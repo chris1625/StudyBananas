@@ -54,5 +54,11 @@
     <string name="description">Description</string>
     <string name="members">Members</string>
     <string name="max_members_hint"><font size="8">Max Members</font></string>
-    <string name="time_seperator">" - "</string>
+    <string name="time_separator">" - "</string>
+    <string name="kick_member">Kick</string>
+    <string name="group_management">Group Management</string>
+    <string name="kicked_notification">You have been kicked from the study group.</string>
+    <string name="group_deleted_notification">Your study group has disbanded.</string>
+    <string name="changed_leadership">You have transferred leadership to %1$s.</string>
+    <string name="new_leader">You are now the leader of this study group!</string>
 </resources>

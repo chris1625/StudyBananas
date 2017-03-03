@@ -30,7 +30,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.settings.Settings"
+            android:name=".ui.settings.SettingsActivity"
             android:label="@string/title_activity_settings" >
         </activity>
     </application>

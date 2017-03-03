@@ -198,6 +198,10 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
 
     @Override
     public void showGroupInteractionView(String course, String groupID) {
+
+        // Add the user to the group
+        mPresenter.addUserToGroup(course, groupID);
+
         // Setup groupInteraction fragment and presenter
         GroupInteractionFragment groupInteractionFragment = new GroupInteractionFragment();
 
@@ -214,8 +218,6 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         mGroupInteractionPresenter = new GroupInteractionPresenter(groupInteractionFragment,
                                                                    course, groupID,
                                                                    mPresenter.getActivityCallback());
-
-        mPresenter.addUserToGroup(course, groupID);
     }
 
     @Override

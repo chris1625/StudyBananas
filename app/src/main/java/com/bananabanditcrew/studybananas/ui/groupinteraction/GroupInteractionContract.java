@@ -1,8 +1,12 @@
 package com.bananabanditcrew.studybananas.ui.groupinteraction;
 
+import android.app.Activity;
+
 import com.bananabanditcrew.studybananas.ui.BasePresenter;
 import com.bananabanditcrew.studybananas.ui.BaseView;
 import com.bananabanditcrew.studybananas.ui.home.HomeContract;
+
+import java.util.ArrayList;
 
 /**
  * Created by chris on 2/25/17.
@@ -11,6 +15,8 @@ import com.bananabanditcrew.studybananas.ui.home.HomeContract;
 public interface GroupInteractionContract {
 
     interface View extends BaseView<Presenter> {
+
+        Activity getActivity();
 
         void setActionBarTitle(String courseName);
 
@@ -46,6 +52,16 @@ public interface GroupInteractionContract {
 
         String getDescriptionEdited();
 
+        void createAdapter(ArrayList<String> members);
+
+        void notifyAdapter();
+
+        void showKickedMessage();
+
+        void showGroupDisbandedMessage();
+
+        void showNewLeaderDialog();
+
     }
 
     interface Presenter extends BasePresenter {
@@ -73,6 +89,14 @@ public interface GroupInteractionContract {
         int getEditedEndHour();
 
         int getEditedEndMinute();
+
+        boolean isCurrentUser(String user);
+
+        String getGroupLeader();
+
+        void kickUser(String user);
+
+        void transferLeadership(String user);
 
     }
 }

@@ -9,7 +9,7 @@ import android.widget.Switch;
 
 import com.bananabanditcrew.studybananas.R;
 
-public class Settings extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity {
     Switch switch1, switch2, switch3, switch4;
 
     protected void onCreate(Bundle savedInstanceState) {

@@ -15,6 +15,7 @@ import com.bananabanditcrew.studybananas.ui.home.HomePresenter;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -30,6 +31,7 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
     private Course mCourse;
     private String mGroupID;
     private User mUser;
+    private ArrayList<String> mMembers;
     private com.bananabanditcrew.studybananas.data.Group mGroup;
     private DatabaseHandler mDatabase;
     private HomeContract.HomeActivityCallback mActivityCallback;
@@ -76,14 +78,58 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
     @Override
     public void onCourseRetrieved(Course course) {
         synchronized (lock) {
+
             mCourse = course;
             com.bananabanditcrew.studybananas.data.Group group =
                     new com.bananabanditcrew.studybananas.data.Group(mGroupID);
             int groupIndex = course.getStudyGroups().indexOf(group);
+
+            // Initial check for a null group. If group is null, leave the group
+            if (groupIndex == -1) {
+                mGroupInteractionView.showGroupDisbandedMessage();
+                leaveGroup();
+                return;
+            }
+
+            String prevLeader = "";
+
+            if (mGroup != null) {
+                // Get previous leader
+                prevLeader = mGroup.getLeader();
+            }
+
+            // Get group
             mGroup = course.getGroupByIndex(groupIndex);
+
+            // Show message if ownership changed
+            if (mGroup.getLeader().equals(FirebaseAuth.getInstance().getCurrentUser().getEmail()) &&
+                    !prevLeader.equals(mGroup.getLeader()) && !prevLeader.equals("")) {
+                mGroupInteractionView.showNewLeaderDialog();
+            }
 
             Log.d("Interaction", "Course retrieved, updating info...");
             updateGroupInfo();
+
+            // Initialize members array list if null, and also create an adapter for it
+            if (mMembers == null) {
+                mMembers = mGroup.getGroupMembers();
+                mGroupInteractionView.createAdapter(mMembers);
+            } else {
+                mMembers.removeAll(mMembers);
+                mMembers.addAll(mGroup.getGroupMembers());
+            }
+
+            // If group exists but the current user is no longer part of the member list, leave the
+            // group
+            if (!mMembers.contains(FirebaseAuth.getInstance().getCurrentUser().getEmail()) && mUser != null) {
+                mGroupInteractionView.showKickedMessage();
+                leaveGroup();
+                return;
+            }
+
+
+            // Notify adapter of member change
+            mGroupInteractionView.notifyAdapter();
         }
     }
 
@@ -91,10 +137,21 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
     public void leaveGroup() {
         synchronized (lock) {
             int groupIndex = mCourse.getStudyGroups().indexOf(mGroup);
-            mCourse.getStudyGroups().get(groupIndex).removeGroupMember(mUser.getEmail());
 
-            // Update this course's info and push it to the database
-            mDatabase.updateCourse(mCourse);
+            // Only update the group if it still exists
+            if (groupIndex != -1) {
+
+                mCourse.getStudyGroups().get(groupIndex).removeGroupMember(mUser.getEmail());
+
+                // One further check: if we are group leader, this action should delete the group
+                if (mGroup.getLeader()
+                        .equals(FirebaseAuth.getInstance().getCurrentUser().getEmail())) {
+                    mCourse.removeStudyGroup(mGroup);
+                }
+
+                // Update this course's info and push it to the database
+                mDatabase.updateCourse(mCourse);
+            }
 
             // Update user info and push to database
             mUser.setGroupID(null);
@@ -208,6 +265,9 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
                 int timeDiff = endHour - startHour;
                 timeDiff = (timeDiff < 0) ? 24 + timeDiff : timeDiff;
 
+                int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+                int currentMinute = Calendar.getInstance().get(Calendar.MINUTE);
+
                 // Only update the fields if the user selected a valid time
                 if (timeDiff < 16 && !((startHour == endHour) && (endMinute < startMinute))) {
                     mGroupInteractionView.setEndTimeButtonText(parseEndTime(endHour, endMinute));
@@ -272,5 +332,45 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
     @Override
     public int getEditedEndMinute() {
         return mEditedEndMinute;
+    }
+
+    @Override
+    public boolean isCurrentUser(String user) {
+        synchronized (lock) {
+            return mUser != null && mUser.getEmail().equals(user);
+        }
+    }
+
+    @Override
+    public String getGroupLeader() {
+        synchronized (lock) {
+            return (mGroup == null) ? "" : mGroup.getLeader();
+        }
+    }
+
+    @Override
+    public void kickUser(String user) {
+        synchronized (lock) {
+            // Remove the user from the arraylist and update it
+            ArrayList<Group> studyGroups = mCourse.getStudyGroups();
+            int groupIndex = mCourse.getStudyGroups().indexOf(mGroup);
+            ArrayList<String> members = mGroup.getGroupMembers();
+            members.remove(user);
+            mGroup.setGroupMembers(members);
+            studyGroups.set(groupIndex, mGroup);
+            mDatabase.updateCourse(mCourse);
+        }
+    }
+
+    @Override
+    public void transferLeadership(String user) {
+        synchronized (lock) {
+            // Change the leader of the group and update the database
+            ArrayList<Group> studyGroups = mCourse.getStudyGroups();
+            int groupIndex = mCourse.getStudyGroups().indexOf(mGroup);
+            mGroup.setLeader(user);
+            studyGroups.set(groupIndex, mGroup);
+            mDatabase.updateCourse(mCourse);
+        }
     }
 }
