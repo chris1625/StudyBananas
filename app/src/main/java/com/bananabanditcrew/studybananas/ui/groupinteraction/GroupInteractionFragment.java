@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -113,7 +115,16 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
 
         mPresenter.getGroupFromDatabase();
         mPresenter.addGroupListener();
+
+        // Set the title to be the group name
+        mPresenter.setActionBarTitle();
+
         return view;
+    }
+
+    @Override
+    public void setActionBarTitle(String courseName) {
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(courseName);
     }
 
     @Override

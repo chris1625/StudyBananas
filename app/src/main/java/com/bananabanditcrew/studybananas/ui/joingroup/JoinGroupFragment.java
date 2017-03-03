@@ -8,7 +8,9 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -113,6 +115,9 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
 //        mPresenter.addGroupToCourse("CSE 110", testGroup);
         // END EXPERIMENTAL SECTION
 
+        // Set title of app to "join group"
+        ((AppCompatActivity)getActivity()).getSupportActionBar()
+                .setTitle(getString(R.string.join_group));
         return root;
     }
 
@@ -195,6 +200,12 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
     public void showGroupInteractionView(String course, String groupID) {
         // Setup groupInteraction fragment and presenter
         GroupInteractionFragment groupInteractionFragment = new GroupInteractionFragment();
+
+        getFragmentManager().beginTransaction().remove(this).commit();
+        getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        getFragmentManager().beginTransaction().remove(mPresenter.getHomeFragment()).commit();
+        getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.slide_from_right, R.anim.slide_to_left,
                 R.anim.slide_from_left, R.anim.slide_to_right);
@@ -203,13 +214,8 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         mGroupInteractionPresenter = new GroupInteractionPresenter(groupInteractionFragment,
                                                                    course, groupID,
                                                                    mPresenter.getActivityCallback());
-        getFragmentManager().beginTransaction().remove(this).commit();
-        getFragmentManager().popBackStack();
-        getFragmentManager().beginTransaction().remove(mPresenter.getHomeFragment()).commit();
-        getFragmentManager().popBackStack();
 
         mPresenter.addUserToGroup(course, groupID);
-
     }
 
     @Override

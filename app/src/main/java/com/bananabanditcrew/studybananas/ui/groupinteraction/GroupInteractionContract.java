@@ -12,6 +12,8 @@ public interface GroupInteractionContract {
 
     interface View extends BaseView<Presenter> {
 
+        void setActionBarTitle(String courseName);
+
         void showHomeView(HomeContract.HomeActivityCallback callback);
 
         void setLocation(String locationName);
@@ -47,6 +49,8 @@ public interface GroupInteractionContract {
     }
 
     interface Presenter extends BasePresenter {
+
+        void setActionBarTitle();
 
         void getGroupFromDatabase();
 

@@ -63,6 +63,12 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
     }
 
     @Override
+    public void setActionBarTitle() {
+        Log.d("Title", "Setting title in group interaction page to " + mCourseName);
+        mGroupInteractionView.setActionBarTitle(mCourseName);
+    }
+
+    @Override
     public void getGroupFromDatabase() {
         mDatabase.getCourse(mCourseName, this);
     }
