@@ -2,9 +2,13 @@ package com.bananabanditcrew.studybananas.ui.groupinteraction;
 
 
 import android.app.TimePickerDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -29,6 +33,8 @@ import android.widget.TimePicker;
 import android.widget.ViewSwitcher;
 
 import com.bananabanditcrew.studybananas.R;
+import com.bananabanditcrew.studybananas.services.GroupListenerService;
+import com.bananabanditcrew.studybananas.services.GroupListenerServiceCallbacks;
 import com.bananabanditcrew.studybananas.ui.home.HomeContract;
 import com.bananabanditcrew.studybananas.ui.home.HomeFragment;
 
@@ -39,7 +45,8 @@ import java.util.Calendar;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class GroupInteractionFragment extends Fragment implements GroupInteractionContract.View {
+public class GroupInteractionFragment extends Fragment implements GroupInteractionContract.View,
+                                                                  GroupListenerServiceCallbacks {
 
     private GroupInteractionContract.Presenter mPresenter;
 
@@ -58,16 +65,54 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
     private LinearLayout mMemberListViewLayout;
     private ListView mMemberListView;
 
+    // Service which will run in background
+    private GroupListenerService mListenerService;
+    private boolean mIsBound;
+
     // Adapter for the members of a group
     private MemberAdapter mMemberAdapter;
+
+    // Callbacks for service binding
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            GroupListenerService.LocalBinder binder = (GroupListenerService.LocalBinder) service;
+            mListenerService = binder.getService();
+            mIsBound = true;
+            mListenerService.setCallbacks(GroupInteractionFragment.this);
+
+            if (mPresenter != null) {
+                Log.d("Service", "Setting presenter");
+                mListenerService.setPresenter(mPresenter);
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mIsBound = false;
+        }
+    };
 
     public GroupInteractionFragment() {
         // Required empty public constructor
     }
 
     @Override
+    public GroupInteractionContract.Presenter getPresenter() {
+        return mPresenter;
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Bind to background service
+        Intent intent = new Intent(getContext(), GroupListenerService.class);
+        getActivity().bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -81,6 +126,13 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
     public void onStop() {
         super.onStop();
         mPresenter.removeGroupListener();
+
+        // Unbind from service
+        if (mIsBound) {
+            mListenerService.setCallbacks(null);
+            getActivity().unbindService(mServiceConnection);
+            mIsBound = false;
+        }
     }
 
     @Override
@@ -153,6 +205,9 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
 
         getFragmentManager().beginTransaction().remove(this).commit();
         getFragmentManager().popBackStack();
+
+        // Stop the background service
+        mListenerService.stopSelf();
     }
 
     @Override

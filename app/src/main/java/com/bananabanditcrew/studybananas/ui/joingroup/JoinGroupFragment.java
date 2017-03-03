@@ -1,6 +1,7 @@
 package com.bananabanditcrew.studybananas.ui.joingroup;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.location.Address;
 import android.location.Geocoder;
@@ -31,6 +32,7 @@ import android.widget.TextView;
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.data.Course;
 import com.bananabanditcrew.studybananas.data.Group;
+import com.bananabanditcrew.studybananas.services.GroupListenerService;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionFragment;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionPresenter;
 import com.bananabanditcrew.studybananas.ui.home.HomeContract;
@@ -92,27 +94,27 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
 
         mPresenter.getUserSavedCourses();
 
-        // PURELY EXPERIMENTAL SECTION, TO BE REMOVED
-//        ArrayList<Address> addresses = new ArrayList<>();
-//        Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
-//        String addressLines = "";
-//        String addressName = "";
-//        try {
-//            addresses = (ArrayList<Address>) geocoder.getFromLocationName("Canyon Vista La Jolla", 1);
-//            Address address = addresses.get(0);
-//            for (int i = 0; i < address.getMaxAddressLineIndex(); i++)
-//                addressLines += (" " + address.getAddressLine(i));
-//            addressName = address.getFeatureName();
-//
-//        } catch (Exception e) {
-//            Log.e("Location services", "IO Exception");
-//        }
-//
-//        String description = "The quick brown fox jumped over the lazy dogs";
-//
-//        Group testGroup = new Group("crh013@ucsd.edu", addressLines, addressName, 6, 13, 0,
-//                15, 30, description, Long.toString(System.currentTimeMillis()));
-//        mPresenter.addGroupToCourse("CSE 110", testGroup);
+//         PURELY EXPERIMENTAL SECTION, TO BE REMOVED
+        ArrayList<Address> addresses = new ArrayList<>();
+        Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+        String addressLines = "";
+        String addressName = "";
+        try {
+            addresses = (ArrayList<Address>) geocoder.getFromLocationName("Canyon Vista La Jolla", 1);
+            Address address = addresses.get(0);
+            for (int i = 0; i < address.getMaxAddressLineIndex(); i++)
+                addressLines += (" " + address.getAddressLine(i));
+            addressName = address.getFeatureName();
+
+        } catch (Exception e) {
+            Log.e("Location services", "IO Exception");
+        }
+
+        String description = "The quick brown fox jumped over the lazy dogs";
+
+        Group testGroup = new Group("crh013@ucsd.edu", addressLines, addressName, 6, 13, 0,
+                15, 30, description, Long.toString(System.currentTimeMillis()));
+        mPresenter.addGroupToCourse("CSE 110", testGroup);
         // END EXPERIMENTAL SECTION
 
         // Set title of app to "join group"
@@ -218,6 +220,10 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         mGroupInteractionPresenter = new GroupInteractionPresenter(groupInteractionFragment,
                                                                    course, groupID,
                                                                    mPresenter.getActivityCallback());
+
+        // Start background service
+        Intent intent = new Intent(getContext(), GroupListenerService.class);
+        getActivity().startService(intent);
     }
 
     @Override
