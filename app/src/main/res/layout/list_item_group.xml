@@ -34,14 +34,14 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Notification.Time"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/member_count"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginEnd="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:layout_marginEnd="5dp"
+        android:layout_marginRight="5dp"
         android:layout_marginLeft="5dp"
         android:layout_marginStart="5dp"
         android:gravity="center_horizontal|center_vertical"
@@ -50,7 +50,7 @@
         android:layout_height="fill_parent"
         android:drawableRight="@drawable/ic_people"
         android:drawableEnd="@drawable/ic_people"
-        android:textSize="18sp" />
+        android:textSize="16sp" />
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/group_view_join_button"

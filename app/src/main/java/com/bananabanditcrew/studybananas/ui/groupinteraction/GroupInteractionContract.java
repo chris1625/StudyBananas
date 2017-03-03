@@ -20,7 +20,11 @@ public interface GroupInteractionContract {
 
         void setMemberCountEdit(String memberCount);
 
-        void setTimeRange(String timeRange);
+        void setStartTime(String startTime);
+
+        void setEndTime(String endTime);
+
+        void setEndTimeButtonText(String endTimeButtonText);
 
         void setDescription(String description);
 
@@ -33,6 +37,12 @@ public interface GroupInteractionContract {
         void setFieldsEditable(boolean editable);
 
         String getStringByID(int string);
+
+        String getMemberCountEdited();
+
+        String getEndTimeEdited();
+
+        String getDescriptionEdited();
 
     }
 
@@ -51,6 +61,14 @@ public interface GroupInteractionContract {
         void updateGroupInfo();
 
         void updateEditFields();
+
+        void updateEndTime(int endHour, int endMinute);
+
+        void updateGroupInDataBase();
+
+        int getEditedEndHour();
+
+        int getEditedEndMinute();
 
     }
 }

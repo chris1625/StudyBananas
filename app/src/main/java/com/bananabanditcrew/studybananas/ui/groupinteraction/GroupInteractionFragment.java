@@ -1,26 +1,28 @@
 package com.bananabanditcrew.studybananas.ui.groupinteraction;
 
 
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.NumberPicker;
-import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.ViewSwitcher;
 
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.ui.home.HomeContract;
 import com.bananabanditcrew.studybananas.ui.home.HomeFragment;
 
-import org.w3c.dom.Text;
+import java.util.Calendar;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -33,7 +35,10 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
     private ViewSwitcher mGroupMemberCountSwitcher;
     private TextView mGroupMemberCount;
     private EditText mGroupMemberEdit;
-    private TextView mTimeView;
+    private TextView mStartTimeView;
+    private ViewSwitcher mEndTimeSwitcher;
+    private TextView mEndTimeView;
+    private Button mEndTimeButton;
     private ViewSwitcher mDescriptionSwitcher;
     private TextView mDescription;
     private EditText mEditDescription;
@@ -77,18 +82,34 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
         mGroupMemberCountSwitcher = (ViewSwitcher) view.findViewById(R.id.group_interaction_members_switcher);
         mGroupMemberCount = (TextView) view.findViewById(R.id.group_interaction_members);
         mGroupMemberEdit = (EditText) view.findViewById(R.id.group_interaction_members_edit);
-        mTimeView = (TextView) view.findViewById(R.id.group_interaction_time);
+        mStartTimeView = (TextView) view.findViewById(R.id.group_interaction_start_time);
+        mEndTimeSwitcher = (ViewSwitcher) view.findViewById(R.id.group_interaction_end_time_switcher);
+        mEndTimeView = (TextView) view.findViewById(R.id.group_interaction_end_time);
+        mEndTimeButton = (Button) view.findViewById(R.id.group_interaction_end_time_button);
         mDescriptionSwitcher = (ViewSwitcher) view.findViewById(R.id.group_interaction_description_switcher);
         mDescription = (TextView) view.findViewById(R.id.group_interaction_description);
         mEditDescription = (EditText) view.findViewById(R.id.group_interaction_description_edit);
         mMemberListViewLayout = (LinearLayout) view.findViewById(R.id.group_interaction_member_layout);
         mLeaveGroupButton = (Button) view.findViewById(R.id.leave_group_button);
+
+        // Listener for set end time button
+        mEndTimeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showTimePickerDialog();
+            }
+        });
+
+        // Listener for leave group button
         mLeaveGroupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mPresenter.leaveGroup();
             }
         });
+
+        // Allow scrolling through the description
+        mDescription.setMovementMethod(new ScrollingMovementMethod());
 
         mPresenter.getGroupFromDatabase();
         mPresenter.addGroupListener();
@@ -124,8 +145,18 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
     }
 
     @Override
-    public void setTimeRange(String timeRange) {
-        mTimeView.setText(timeRange);
+    public void setStartTime(String startTime) {
+        mStartTimeView.setText(startTime);
+    }
+
+    @Override
+    public void setEndTime(String endTime) {
+        mEndTimeView.setText(endTime);
+    }
+
+    @Override
+    public void setEndTimeButtonText(String endTimeButtonText) {
+        mEndTimeButton.setText(endTimeButtonText);
     }
 
     @Override
@@ -147,8 +178,14 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
     public void setFieldsEditable(boolean editable) {
         mGroupMemberCountSwitcher.showNext();
         mDescriptionSwitcher.showNext();
+        mEndTimeSwitcher.showNext();
 
-        mPresenter.updateEditFields();
+        if (editable) {
+            mPresenter.updateEditFields();
+        } else {
+            Log.d("Interaction update", "Calling presenter database update method");
+            mPresenter.updateGroupInDataBase();
+        }
     }
 
     @Override
@@ -158,5 +195,32 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
 
     public String getStringByID(int string) {
         return getString(string);
+    }
+
+    private void showTimePickerDialog() {
+        TimePickerDialog timePicker;
+        timePicker = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                mPresenter.updateEndTime(hourOfDay, minute);
+            }
+        }, mPresenter.getEditedEndHour(), mPresenter.getEditedEndMinute(), false);
+        timePicker.setTitle("Select end time");
+        timePicker.show();
+    }
+
+    @Override
+    public String getMemberCountEdited() {
+        return mGroupMemberEdit.getText().toString();
+    }
+
+    @Override
+    public String getEndTimeEdited() {
+        return mEndTimeButton.getText().toString();
+    }
+
+    @Override
+    public String getDescriptionEdited() {
+        return mEditDescription.getText().toString();
     }
 }
