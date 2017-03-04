@@ -57,6 +57,8 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
         mGroupID = groupID;
 
         mActivityCallback = callback;
+
+        Log.d("Presenter", "Creating new interaction presenter");
     }
 
     @Override
@@ -76,16 +78,17 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
     }
 
     @Override
-    public void onCourseRetrieved(Course course) {
+    public void onCourseRetrieved(Course course, boolean uiIsActive) {
         synchronized (lock) {
 
             mCourse = course;
             com.bananabanditcrew.studybananas.data.Group group =
                     new com.bananabanditcrew.studybananas.data.Group(mGroupID);
             int groupIndex = course.getStudyGroups().indexOf(group);
+            boolean groupExists = (groupIndex != -1);
 
             // Initial check for a null group. If group is null, leave the group
-            if (groupIndex == -1) {
+            if (!groupExists && uiIsActive && mUser != null) {
                 mGroupInteractionView.showGroupDisbandedMessage();
                 leaveGroup();
                 return;
@@ -103,17 +106,21 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
 
             // Show message if ownership changed
             if (mGroup.getLeader().equals(FirebaseAuth.getInstance().getCurrentUser().getEmail()) &&
-                    !prevLeader.equals(mGroup.getLeader()) && !prevLeader.equals("")) {
+                    !prevLeader.equals(mGroup.getLeader()) && !prevLeader.equals("") && uiIsActive) {
                 mGroupInteractionView.showNewLeaderDialog();
             }
 
             Log.d("Interaction", "Course retrieved, updating info...");
-            updateGroupInfo();
+            if (uiIsActive) {
+                updateGroupInfo();
+            }
 
             // Initialize members array list if null, and also create an adapter for it
             if (mMembers == null) {
                 mMembers = mGroup.getGroupMembers();
-                mGroupInteractionView.createAdapter(mMembers);
+                if (uiIsActive) {
+                    mGroupInteractionView.createAdapter(mMembers);
+                }
             } else {
                 mMembers.removeAll(mMembers);
                 mMembers.addAll(mGroup.getGroupMembers());
@@ -121,21 +128,24 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
 
             // If group exists but the current user is no longer part of the member list, leave the
             // group
-            if (!mMembers.contains(FirebaseAuth.getInstance().getCurrentUser().getEmail()) && mUser != null) {
+            if (!mMembers.contains(FirebaseAuth.getInstance().getCurrentUser().getEmail()) &&
+                    mUser != null && uiIsActive) {
                 mGroupInteractionView.showKickedMessage();
                 leaveGroup();
                 return;
             }
 
-
             // Notify adapter of member change
-            mGroupInteractionView.notifyAdapter();
+            if (uiIsActive) {
+                mGroupInteractionView.notifyAdapter();
+            }
         }
     }
 
     @Override
     public void leaveGroup() {
         synchronized (lock) {
+            Log.d("Presenter", "Leaving group");
             int groupIndex = mCourse.getStudyGroups().indexOf(mGroup);
 
             // Only update the group if it still exists
@@ -191,13 +201,15 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
 
     @Override
     public void updateGroupInfo() {
-        mGroupInteractionView.setLocation(mGroup.getLocationName());
-        mGroupInteractionView.setMemberCount(parseMemberCount());
-        mGroupInteractionView.setStartTime(parseStartTime(mGroup.getStartHour(), mGroup.getStartMinute()));
-        mGroupInteractionView.setEndTime(parseEndTime(mGroup.getEndHour(), mGroup.getEndMinute()));
-        mGroupInteractionView.setDescription((mGroup.getDescription() != null) ?
-                mGroup.getDescription() : "");
-        updateLeaderFunctions();
+        if (mGroup != null) {
+            mGroupInteractionView.setLocation(mGroup.getLocationName());
+            mGroupInteractionView.setMemberCount(parseMemberCount());
+            mGroupInteractionView.setStartTime(parseStartTime(mGroup.getStartHour(), mGroup.getStartMinute()));
+            mGroupInteractionView.setEndTime(parseEndTime(mGroup.getEndHour(), mGroup.getEndMinute()));
+            mGroupInteractionView.setDescription((mGroup.getDescription() != null) ?
+                    mGroup.getDescription() : "");
+            updateLeaderFunctions();
+        }
     }
 
     private void updateLeaderFunctions() {
@@ -335,9 +347,14 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
     }
 
     @Override
+    public String getCourseName() {
+        return mCourseName;
+    }
+
+    @Override
     public boolean isCurrentUser(String user) {
         synchronized (lock) {
-            return mUser != null && mUser.getEmail().equals(user);
+            return FirebaseAuth.getInstance().getCurrentUser().getEmail().equals(user);
         }
     }
 
@@ -372,5 +389,21 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
             studyGroups.set(groupIndex, mGroup);
             mDatabase.updateCourse(mCourse);
         }
+    }
+
+    @Override
+    public void onResume() {
+        // Force a refresh on the data
+        getGroupFromDatabase();
+    }
+
+    @Override
+    public String getGroupID() {
+        return mGroupID;
+    }
+
+    @Override
+    public User getUser() {
+        return mUser;
     }
 }

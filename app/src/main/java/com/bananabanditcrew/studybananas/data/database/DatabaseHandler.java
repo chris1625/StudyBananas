@@ -42,6 +42,9 @@ public class DatabaseHandler {
     // interaction page
     private ValueEventListener mGroupListener;
 
+    // Similar listener as above, except for the background service
+    private ValueEventListener mGroupServiceListener;
+
     public DatabaseHandler() {
         mDatabase = FirebaseDatabase.getInstance().getReference();
     }
@@ -213,7 +216,7 @@ public class DatabaseHandler {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                callback.onCourseRetrieved(dataSnapshot.getValue(Course.class));
+                callback.onCourseRetrieved(dataSnapshot.getValue(Course.class), true);
             }
 
             @Override
@@ -252,13 +255,14 @@ public class DatabaseHandler {
         }
     }
 
+    // Listener used by the presenter
     public void addGroupValueEventListener(String course,
                                            final DatabaseCallback.GetCourseCallback callback) {
         if (mGroupListener == null) {
             mGroupListener = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    callback.onCourseRetrieved(dataSnapshot.getValue(Course.class));
+                    callback.onCourseRetrieved(dataSnapshot.getValue(Course.class), true);
                 }
 
                 @Override
@@ -276,6 +280,31 @@ public class DatabaseHandler {
         }
     }
 
+    // Listener used by the service
+    public void addServiceValueEventListener(String course,
+                                           final DatabaseCallback.GetCourseCallback callback) {
+        if (mGroupServiceListener == null) {
+            mGroupServiceListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    callback.onCourseRetrieved(dataSnapshot.getValue(Course.class), false);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            };
+
+            Log.d("Service Listeners", "Adding service listener for group under course " + course);
+
+            // Listen to the root course of the child of interest
+            DatabaseReference databaseReference = mDatabase.child("courses")
+                    .child(Integer.toString(course.hashCode()));
+            databaseReference.addValueEventListener(mGroupServiceListener);
+        }
+    }
+
     public void removeGroupValueEventListener(String course) {
 
         DatabaseReference databaseReference = mDatabase.child("courses")
@@ -284,6 +313,17 @@ public class DatabaseHandler {
             databaseReference.removeEventListener(mGroupListener);
             Log.d("Group Listeners", "Removing listener for group under course " + course);
             mGroupListener = null;
+        }
+    }
+
+    public void removeServiceValueEventListener(String course) {
+
+        DatabaseReference databaseReference = mDatabase.child("courses")
+                .child(Integer.toString(course.hashCode()));
+        if (mGroupServiceListener != null) {
+            databaseReference.removeEventListener(mGroupServiceListener);
+            Log.d("Service Listeners", "Removing service listener for group under course " + course);
+            mGroupServiceListener = null;
         }
     }
 

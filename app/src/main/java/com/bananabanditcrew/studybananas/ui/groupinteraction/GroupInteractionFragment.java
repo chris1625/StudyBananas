@@ -119,7 +119,9 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
     public void onResume() {
         super.onResume();
         mPresenter.start();
+        mPresenter.onResume();
         mPresenter.addGroupListener();
+        mPresenter.updateGroupInfo();
     }
 
     @Override

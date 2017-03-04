@@ -2,6 +2,7 @@ package com.bananabanditcrew.studybananas.ui.groupinteraction;
 
 import android.app.Activity;
 
+import com.bananabanditcrew.studybananas.data.User;
 import com.bananabanditcrew.studybananas.ui.BasePresenter;
 import com.bananabanditcrew.studybananas.ui.BaseView;
 import com.bananabanditcrew.studybananas.ui.home.HomeContract;
@@ -90,6 +91,8 @@ public interface GroupInteractionContract {
 
         int getEditedEndMinute();
 
+        String getCourseName();
+
         boolean isCurrentUser(String user);
 
         String getGroupLeader();
@@ -97,6 +100,12 @@ public interface GroupInteractionContract {
         void kickUser(String user);
 
         void transferLeadership(String user);
+
+        void onResume();
+
+        String getGroupID();
+
+        User getUser();
 
     }
 }

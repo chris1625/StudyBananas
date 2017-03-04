@@ -1,13 +1,17 @@
 package com.bananabanditcrew.studybananas.ui.home;
 
+import android.app.ActivityManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.Menu;
 import android.util.Log;
 import android.view.MenuItem;
@@ -15,6 +19,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.bananabanditcrew.studybananas.R;
+import com.bananabanditcrew.studybananas.services.GroupListenerService;
 import com.bananabanditcrew.studybananas.ui.settings.SettingsActivity;
 import com.bananabanditcrew.studybananas.data.User;
 import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
@@ -32,6 +37,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
     private HomeFragment mHomeFragment;
     private HomePresenter mHomePresenter;
     private GroupInteractionPresenter mGroupInteractionPresenter;
+    private GroupInteractionFragment mGroupInteractionFragment;
     private DatabaseHandler mDatabase;
 
     // Variables to hide or show edit and save buttons
@@ -82,14 +88,37 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
                     .add(R.id.fragment_container, mHomeFragment).commit();
         } else {
             // Setup groupInteraction fragment and presenter
-            GroupInteractionFragment groupInteractionFragment = new GroupInteractionFragment();
+            if (mGroupInteractionFragment == null) {
+                mGroupInteractionFragment = new GroupInteractionFragment();
+            }
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, groupInteractionFragment).commit();
-            mGroupInteractionPresenter = new GroupInteractionPresenter(groupInteractionFragment,
-                                                                       user.getGroupCourse(),
-                                                                       user.getGroupID(),
-                                                                       this);
+                    .add(R.id.fragment_container, mGroupInteractionFragment).commit();
+
+            if (mGroupInteractionPresenter == null) {
+                mGroupInteractionPresenter = new GroupInteractionPresenter(mGroupInteractionFragment,
+                        user.getGroupCourse(),
+                        user.getGroupID(),
+                        this);
+            }
+
+            // Start background service if it is not already running
+            if (!isServiceRunning(GroupListenerService.class)) {
+                // Start background service
+                Intent intent = new Intent(this, GroupListenerService.class);
+                startService(intent);
+                Log.d("Service", "Starting background service from main activity");
+            }
         }
+    }
+
+    public boolean isServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -133,7 +162,11 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
                         // TODO
                         break;
                     case R.id.nav_logout:
-                        presenter.signOut();
+                        if (isServiceRunning(GroupListenerService.class)) {
+                            showSignOutError();
+                        } else {
+                            presenter.signOut();
+                        }
                         break;
                 }
                 return false;
@@ -204,5 +237,21 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    private void showSignOutError() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.sign_out_error).setTitle(R.string.group_management);
+        // Add ok button
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // User clicked ok button
+                dialog.dismiss();
+                mDrawerLayout.closeDrawer(Gravity.LEFT);
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

@@ -132,7 +132,7 @@ public class JoinGroupPresenter implements DatabaseCallback.UserCoursesCallback,
     }
 
     @Override
-    public void onCourseRetrieved(Course course) {
+    public void onCourseRetrieved(Course course, boolean isUIActive) {
         // We now have the course, and need the user so we can update the user
         mCourse = course;
 

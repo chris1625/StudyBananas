@@ -21,7 +21,7 @@ public interface DatabaseCallback {
 
     interface GetCourseCallback {
 
-        void onCourseRetrieved(Course course);
+        void onCourseRetrieved(Course course, boolean uiIsActive);
 
     }
 
