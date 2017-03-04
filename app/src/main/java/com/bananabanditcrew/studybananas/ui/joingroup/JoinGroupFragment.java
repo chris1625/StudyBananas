@@ -94,7 +94,21 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
 
         mPresenter.getUserSavedCourses();
 
-//         PURELY EXPERIMENTAL SECTION, TO BE REMOVED
+        Button testButton = (Button) root.findViewById(R.id.test_create_group_button);
+        testButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createNewGroup();
+            }
+        });
+
+        // Set title of app to "join group"
+        ((AppCompatActivity)getActivity()).getSupportActionBar()
+                .setTitle(getString(R.string.join_group));
+        return root;
+    }
+
+    public void createNewGroup() {
         ArrayList<Address> addresses = new ArrayList<>();
         Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
         String addressLines = "";
@@ -115,12 +129,6 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         Group testGroup = new Group("crh013@ucsd.edu", addressLines, addressName, 6, 13, 0,
                 15, 30, description, Long.toString(System.currentTimeMillis()));
         mPresenter.addGroupToCourse("CSE 110", testGroup);
-        // END EXPERIMENTAL SECTION
-
-        // Set title of app to "join group"
-        ((AppCompatActivity)getActivity()).getSupportActionBar()
-                .setTitle(getString(R.string.join_group));
-        return root;
     }
 
     public static void closeKeyboard(Context c, IBinder windowToken) {
@@ -201,9 +209,6 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
     @Override
     public void showGroupInteractionView(String course, String groupID) {
 
-        // Add the user to the group
-        mPresenter.addUserToGroup(course, groupID);
-
         // Setup groupInteraction fragment and presenter
         GroupInteractionFragment groupInteractionFragment = new GroupInteractionFragment();
 
@@ -283,10 +288,10 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
 
             // Time string
             final String timeFrame = Integer.toString(start12Hour) + ":" +
-                    (startMinute == 0 ? "00" : Integer.toString(startMinute)) +
+                    (startMinute < 10 ? "0" + Integer.toString(startMinute) : Integer.toString(startMinute)) +
                     (startIsPostMeridian ? " PM" : " AM") + " - " +
                     Integer.toString(end12Hour) + ":" +
-                    (endMinute == 0 ? "00" : Integer.toString(endMinute)) +
+                    (endMinute < 10 ? "0" + Integer.toString(endMinute) : Integer.toString(endMinute)) +
                     (endIsPostMeridian ? " PM" : " AM");
 
             final String members = Integer.toString(groupRef.getGroupMembers().size()) +
@@ -311,7 +316,7 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
             joinGroupButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mView.showGroupInteractionView(getGroup(listPosition).getCourseName(),
+                    mPresenter.addUserToGroup(getGroup(listPosition).getCourseName(),
                             groupRef.getGroupID());
                 }
             });

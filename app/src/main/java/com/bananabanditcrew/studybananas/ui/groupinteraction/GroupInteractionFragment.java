@@ -209,7 +209,9 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
         getFragmentManager().popBackStack();
 
         // Stop the background service
-        mListenerService.stopSelf();
+        if (mListenerService != null) {
+            mListenerService.stopSelf();
+        }
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.bananabanditcrew.studybananas.data.database;
 
+import android.os.SystemClock;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -57,7 +58,7 @@ public class DatabaseHandler {
         return mInstance;
     }
 
-    public void createNewUser(String first, String last, final String email,
+    public void createNewUser(final String first, final String last, final String email,
                               final DatabaseCallback.UserCreationCallback callback) {
         final User user = new User(first, last, email);
         mDatabase.child("users").child(uidFromEmail(email))
@@ -73,7 +74,9 @@ public class DatabaseHandler {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.d("Firebase Network", "Connection cancelled");
+                SystemClock.sleep(1000);
+                createNewUser(first, last, email, callback);
             }
         });
     }
@@ -84,7 +87,7 @@ public class DatabaseHandler {
         mDatabase.child("users").child(uidFromEmail(user.getEmail())).setValue(user);
     }
 
-    public void getUser(String email, final DatabaseCallback.GetUserCallback callback) {
+    public void getUser(final String email, final DatabaseCallback.GetUserCallback callback) {
         mDatabase.child("users").child(uidFromEmail(email))
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -94,7 +97,9 @@ public class DatabaseHandler {
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-
+                        Log.d("Firebase Network", "Connection cancelled");
+                        SystemClock.sleep(1000);
+                        getUser(email, callback);
                     }
                 });
     }
@@ -159,7 +164,9 @@ public class DatabaseHandler {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.d("Firebase Network", "Connection cancelled");
+                SystemClock.sleep(1000);
+                getClassesArray(callback);
             }
         });
     }
@@ -168,7 +175,7 @@ public class DatabaseHandler {
         return mCourses;
     }
 
-    public void getUserClassesArray(String email, final DatabaseCallback.UserCoursesCallback callback) {
+    public void getUserClassesArray(final String email, final DatabaseCallback.UserCoursesCallback callback) {
         mDatabase.child("users").child(uidFromEmail(email)).child("courses")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -185,12 +192,14 @@ public class DatabaseHandler {
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-
+                        Log.d("Firebase Network", "Connection cancelled");
+                        SystemClock.sleep(1000);
+                        getUserClassesArray(email, callback);
                     }
                 });
     }
 
-    private void getCourseByString(String course, final boolean isLast,
+    private void getCourseByString(final String course, final boolean isLast,
                                    final DatabaseCallback.UserCoursesCallback callback) {
         DatabaseReference databaseReference = mDatabase.child("courses")
                 .child(Integer.toString(course.hashCode()));
@@ -204,12 +213,14 @@ public class DatabaseHandler {
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-
+                        Log.d("Firebase Network", "Connection cancelled");
+                        SystemClock.sleep(1000);
+                        getCourseByString(course, isLast, callback);
                     }
                 });
     }
 
-    public void getCourse(String course, final DatabaseCallback.GetCourseCallback callback) {
+    public void getCourse(final String course, final DatabaseCallback.GetCourseCallback callback) {
 
         DatabaseReference databaseReference = mDatabase.child("courses")
                 .child(Integer.toString(course.hashCode()));
@@ -221,7 +232,9 @@ public class DatabaseHandler {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.d("Firebase Network", "Connection cancelled");
+                SystemClock.sleep(1000);
+                getCourse(course, callback);
             }
         });
     }
@@ -361,7 +374,7 @@ public class DatabaseHandler {
         mDatabase.child("users").child(uidFromEmail(email)).child("courses").setValue(courses);
     }
 
-    public void removeUserClass(String email, String course,
+    public void removeUserClass(final String email, final String course,
                                 final DatabaseCallback.UserCoursesCallback callback) {
         mUserCourseStrings.remove(course);
         updateUserClasses(email, mUserCourseStrings);
@@ -378,7 +391,9 @@ public class DatabaseHandler {
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-
+                        Log.d("Firebase Network", "Connection cancelled");
+                        SystemClock.sleep(1000);
+                        removeUserClass(email, course, callback);
                     }
                 });
 
@@ -386,7 +401,7 @@ public class DatabaseHandler {
         removeCourseValueEventListener(databaseReference, course.hashCode());
     }
 
-    public void addUserClass(String email, String course,
+    public void addUserClass(final String email, final String course,
                              final DatabaseCallback.UserCoursesCallback callback) {
         if (!mUserCourseStrings.contains(course)) {
             mUserCourseStrings.add(course);
@@ -403,7 +418,9 @@ public class DatabaseHandler {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Log.d("Firebase Network", "Connection cancelled");
+                    SystemClock.sleep(1000);
+                    addUserClass(email, course, callback);
                 }
             });
 
@@ -413,7 +430,7 @@ public class DatabaseHandler {
         updateUserClasses(email, mUserCourseStrings);
     }
 
-    public void addGroupToCourse(String course, final Group group) {
+    public void addGroupToCourse(final String course, final Group group) {
 
         // Get course first
         final DatabaseReference databaseReference = mDatabase.child("courses")
@@ -429,12 +446,14 @@ public class DatabaseHandler {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                SystemClock.sleep(1000);
+                addGroupToCourse(course, group);
+                Log.d("Firebase Network", "Connection cancelled");
             }
         });
     }
 
-    public void removeGroupFromCourse(String course, final Group group) {
+    public void removeGroupFromCourse(final String course, final Group group) {
 
         // Get course first
         final DatabaseReference databaseReference = mDatabase.child("courses")
@@ -450,7 +469,9 @@ public class DatabaseHandler {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.d("Firebase Network", "Connection cancelled");
+                SystemClock.sleep(1000);
+                removeGroupFromCourse(course, group);
             }
         });
     }

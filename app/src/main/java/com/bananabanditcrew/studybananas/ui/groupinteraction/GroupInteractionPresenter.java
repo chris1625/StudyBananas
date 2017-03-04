@@ -130,6 +130,7 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
             // group
             if (!mMembers.contains(FirebaseAuth.getInstance().getCurrentUser().getEmail()) &&
                     mUser != null && uiIsActive) {
+                Log.d("Group management", "User kicked from group");
                 mGroupInteractionView.showKickedMessage();
                 leaveGroup();
                 return;
@@ -246,7 +247,7 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
 
         // Time string
         return Integer.toString(start12Hour) + ":" +
-                (startMinute == 0 ? "00" : Integer.toString(startMinute)) +
+                (startMinute < 10 ? "0" + Integer.toString(startMinute) : Integer.toString(startMinute)) +
                 (startIsPostMeridian ? " PM" : " AM");
     }
 
@@ -260,7 +261,7 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
 
         // Time string
         return Integer.toString(end12Hour) + ":" +
-                (endMinute == 0 ? "00" : Integer.toString(endMinute)) +
+                (endMinute < 10 ? "0" + Integer.toString(endMinute) : Integer.toString(endMinute)) +
                 (endIsPostMeridian ? " PM" : " AM");
     }
 
@@ -318,7 +319,12 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
             mGroup.setEndMinute(mEditedEndMinute);
 
             // Parse the member count and ensure it is valid
-            int memberCount = Integer.parseInt(mGroupInteractionView.getMemberCountEdited());
+            int memberCount;
+            try {
+                memberCount = Integer.parseInt(mGroupInteractionView.getMemberCountEdited());
+            } catch (Exception e) {
+                memberCount = 0;
+            }
             Log.d("Interaction", "Got membercount: " + Integer.toString(memberCount));
             if (memberCount <= 20 && memberCount >= mGroup.getGroupMembers().size()) {
                 mGroup.setMaxMembers(memberCount);

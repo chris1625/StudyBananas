@@ -1,9 +1,13 @@
 package com.bananabanditcrew.studybananas.ui.home;
 
 import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -27,6 +31,10 @@ import com.bananabanditcrew.studybananas.data.database.DatabaseHandler;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionFragment;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionPresenter;
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class HomeActivity extends AppCompatActivity implements DatabaseCallback.GetUserCallback,
         HomeContract.HomeActivityCallback {

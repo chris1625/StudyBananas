@@ -19,6 +19,7 @@
         <service android:name=".services.GroupListenerService"/>
         <activity
             android:name=".ui.home.HomeActivity"
+            android:launchMode="singleInstance"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize"></activity>
         <activity

@@ -54,7 +54,9 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
         // Create persistent notification here if it does not exist
         Log.d("Service", "Creating service");
         Intent notificationIntent = new Intent(this, SignInActivity.class);
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         if (mNotification == null) {
             mNotification = new Notification.Builder(this)
@@ -96,12 +98,12 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
         int groupIndex = course.getStudyGroups().indexOf(group);
         boolean groupExists = (groupIndex != -1);
 
-        mNotifyMgr.notify(2, new Notification.Builder(this)
-                .setContentTitle("StudyBananas")
-                .setContentText("Your study group has changed.")
-                .setSmallIcon(R.drawable.ic_logobunches_solid)
-                .setContentIntent(pendingIntent)
-                .build());
+//        mNotifyMgr.notify(2, new Notification.Builder(this)
+//                .setContentTitle("StudyBananas")
+//                .setContentText("Your study group has changed.")
+//                .setSmallIcon(R.drawable.ic_logobunches_solid)
+//                .setContentIntent(pendingIntent)
+//                .build());
     }
 
     @Override
