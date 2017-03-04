@@ -28,9 +28,9 @@
 
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="175dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="24dp"
+                android:layout_height="125dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
                 app:srcCompat="@drawable/banana_logo"
                 android:id="@+id/imageView"/>
 

@@ -23,7 +23,7 @@
         <android.support.v7.widget.AppCompatButton
             android:text="@string/delete"
             android:layout_width="0dp"
-            android:layout_weight="0.3"
+            android:layout_weight="0.4"
             android:layout_height="wrap_content"
             android:id="@+id/delete_class_button"
             android:focusable="false"

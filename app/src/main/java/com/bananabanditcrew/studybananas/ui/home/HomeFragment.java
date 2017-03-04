@@ -6,10 +6,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 
 import com.bananabanditcrew.studybananas.ui.creategroup.CreateGroupPresenter;
@@ -79,6 +80,11 @@ public class HomeFragment extends Fragment implements HomeContract.View {
             }
         });
 
+        // Set the action bar title for the home fragment
+        Log.d("Title", "Setting title for home fragment");
+        ((AppCompatActivity)getActivity()).getSupportActionBar()
+                .setTitle(getString(R.string.main_activity_title));
+
         return view;
     }
 
@@ -101,22 +107,16 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.slide_from_right, R.anim.slide_to_left,
                 R.anim.slide_from_left, R.anim.slide_to_right);
-        transaction.replace(R.id.fragment_container, joinGroupFragment);
+        transaction.replace(R.id.fragment_container, joinGroupFragment, "join_group");
         transaction.addToBackStack(null);
 
         // Create presenter and link it to new fragment
         mJoinGroupPresenter = new JoinGroupPresenter(joinGroupFragment,
-                                                     mPresenter.getCoursesAdapter(), this);
+                                                     mPresenter.getCoursesAdapter(), this,
+                                                     mPresenter.getActivityCallback());
 
         // Commit the transaction
         transaction.commit();
-    }
-
-    @Override
-    public void showSignInView() {
-        Intent myIntent = new Intent(getActivity(), SignInActivity.class);
-        startActivity(myIntent);
-        getActivity().finish();
     }
 
     @Override

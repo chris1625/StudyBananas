@@ -1,6 +1,8 @@
 package com.bananabanditcrew.studybananas.ui.home;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -11,6 +13,7 @@ import com.bananabanditcrew.studybananas.data.Group;
 import com.bananabanditcrew.studybananas.data.User;
 import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
 import com.bananabanditcrew.studybananas.data.database.DatabaseHandler;
+import com.bananabanditcrew.studybananas.ui.signin.SignInActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
@@ -23,16 +26,22 @@ public class HomePresenter implements HomeContract.Presenter, DatabaseCallback.C
                                                               DatabaseCallback.ClassUpdateCallback {
 
     // Reference to view
-    private final HomeContract.View mHomeView;
+    private HomeContract.View mHomeView;
     private ArrayAdapter<String> mCourseList;
     private DatabaseHandler mDatabase;
+    private Activity mActivity;
 
-    HomePresenter(@NonNull HomeContract.View homeView) {
+    HomePresenter(@NonNull HomeContract.View homeView, Activity activity) {
         mHomeView = homeView;
         mHomeView.setPresenter(this);
-        mDatabase = new DatabaseHandler();
+        mDatabase = DatabaseHandler.getInstance();
+        mActivity = activity;
     }
 
+    @Override
+    public void setView(HomeContract.View view) {
+        mHomeView = view;
+    }
     @Override
     public void start() {
         // TODO fill in homepresenter's start method
@@ -41,7 +50,7 @@ public class HomePresenter implements HomeContract.Presenter, DatabaseCallback.C
     @Override
     public void signOut() {
         FirebaseAuth.getInstance().signOut();
-        mHomeView.showSignInView();
+        showSignInView();
     }
 
     @Override
@@ -76,5 +85,16 @@ public class HomePresenter implements HomeContract.Presenter, DatabaseCallback.C
     @Override
     public void updateClasses() {
         mDatabase.updateClasses(this);
+    }
+
+    public void showSignInView() {
+        Intent myIntent = new Intent(mActivity, SignInActivity.class);
+        mActivity.startActivity(myIntent);
+        mActivity.finish();
+    }
+
+    @Override
+    public HomeContract.HomeActivityCallback getActivityCallback() {
+        return (HomeContract.HomeActivityCallback)mActivity;
     }
 }

@@ -1,5 +1,7 @@
 package com.bananabanditcrew.studybananas.data.database;
 
+import android.os.SystemClock;
+import android.renderscript.Sampler;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -28,6 +30,8 @@ import java.util.HashMap;
 
 public class DatabaseHandler {
 
+    private static DatabaseHandler mInstance = null;
+
     private DatabaseReference mDatabase;
     private ArrayList<String> mCourses;
     private ArrayList<Course> mUserCourses;
@@ -36,11 +40,29 @@ public class DatabaseHandler {
     // Map of hashcodes to listener objects
     private SparseArray<ValueEventListener> mCourseListeners;
 
+    // Listener to the root course of our group, will be accessed and updated while in the group
+    // interaction page
+    private ValueEventListener mGroupListener;
+
+    // Similar listener as above, except for the background service
+    private ValueEventListener mGroupServiceListener;
+
+    // Listener for connection state
+    private ValueEventListener mConnectionStateListener;
+
     public DatabaseHandler() {
         mDatabase = FirebaseDatabase.getInstance().getReference();
     }
 
-    public void createNewUser(String first, String last, final String email,
+    public static DatabaseHandler getInstance() {
+        if (mInstance == null) {
+            Log.d("DatabaseHandler", "Creating instance of DatabaseHandler");
+            mInstance = new DatabaseHandler();
+        }
+        return mInstance;
+    }
+
+    public void createNewUser(final String first, final String last, final String email,
                               final DatabaseCallback.UserCreationCallback callback) {
         final User user = new User(first, last, email);
         mDatabase.child("users").child(uidFromEmail(email))
@@ -56,7 +78,9 @@ public class DatabaseHandler {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.d("Firebase Network", "Connection cancelled");
+                SystemClock.sleep(1000);
+                createNewUser(first, last, email, callback);
             }
         });
     }
@@ -67,7 +91,7 @@ public class DatabaseHandler {
         mDatabase.child("users").child(uidFromEmail(user.getEmail())).setValue(user);
     }
 
-    public void getUser(String email, final DatabaseCallback.GetUserCallback callback) {
+    public void getUser(final String email, final DatabaseCallback.GetUserCallback callback) {
         mDatabase.child("users").child(uidFromEmail(email))
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -77,7 +101,9 @@ public class DatabaseHandler {
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-
+                        Log.d("Firebase Network", "Connection cancelled");
+                        SystemClock.sleep(1000);
+                        getUser(email, callback);
                     }
                 });
     }
@@ -142,7 +168,9 @@ public class DatabaseHandler {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.d("Firebase Network", "Connection cancelled");
+                SystemClock.sleep(1000);
+                getClassesArray(callback);
             }
         });
     }
@@ -151,7 +179,7 @@ public class DatabaseHandler {
         return mCourses;
     }
 
-    public void getUserClassesArray(String email, final DatabaseCallback.UserCoursesCallback callback) {
+    public void getUserClassesArray(final String email, final DatabaseCallback.UserCoursesCallback callback) {
         mDatabase.child("users").child(uidFromEmail(email)).child("courses")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -168,12 +196,14 @@ public class DatabaseHandler {
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-
+                        Log.d("Firebase Network", "Connection cancelled");
+                        SystemClock.sleep(1000);
+                        getUserClassesArray(email, callback);
                     }
                 });
     }
 
-    private void getCourseByString(String course, final boolean isLast,
+    private void getCourseByString(final String course, final boolean isLast,
                                    final DatabaseCallback.UserCoursesCallback callback) {
         DatabaseReference databaseReference = mDatabase.child("courses")
                 .child(Integer.toString(course.hashCode()));
@@ -187,36 +217,136 @@ public class DatabaseHandler {
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-
+                        Log.d("Firebase Network", "Connection cancelled");
+                        SystemClock.sleep(1000);
+                        getCourseByString(course, isLast, callback);
                     }
                 });
-
-        // Add listener to this course
-        addValueEventListener(databaseReference, course.hashCode(), callback);
     }
 
-    private void addValueEventListener(DatabaseReference databaseReference, int hashCode,
-                                       final DatabaseCallback.UserCoursesCallback callback) {
-        // Create a listener for this course
-        mCourseListeners.append(hashCode, new ValueEventListener() {
+    public void getCourse(final String course, final DatabaseCallback.GetCourseCallback callback) {
+
+        DatabaseReference databaseReference = mDatabase.child("courses")
+                .child(Integer.toString(course.hashCode()));
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                callback.notifyOnCourseUpdated(dataSnapshot.getValue(Course.class));
+                callback.onCourseRetrieved(dataSnapshot.getValue(Course.class), true);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.d("Firebase Network", "Connection cancelled");
+                SystemClock.sleep(1000);
+                getCourse(course, callback);
             }
         });
-
-        // Add the listener
-        databaseReference.addValueEventListener(mCourseListeners.get(hashCode));
-        Log.d("EventListeners", "Added event listener for " + Integer.toString(hashCode));
     }
 
-    private void removeValueEventListener(DatabaseReference databaseReference, int hashCode) {
+    private void addCourseValueEventListener(DatabaseReference databaseReference, int hashCode,
+                                             final DatabaseCallback.UserCoursesCallback callback) {
+        // Create a listener for this course
+        // Note that this should only happen if a listener doesn't already exist
+        Log.d("EventListeners", "Size of the course listener array before add function: " +
+               mCourseListeners.size());
+        if (mCourseListeners.get(hashCode) == null) {
+            mCourseListeners.put(hashCode, new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    callback.notifyOnCourseUpdated(dataSnapshot.getValue(Course.class));
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+            // Add the listener
+            databaseReference.addValueEventListener(mCourseListeners.get(hashCode));
+            Log.d("EventListeners", "Value at this location isNull: " +
+                    Boolean.toString(mCourseListeners.get(hashCode) == null));
+            Log.d("EventListeners", "Added event listener for " + Integer.toString(hashCode));
+            Log.d("EventListeners", "The size of the course listeners array is " +
+                  Integer.toString(mCourseListeners.size()));
+        }
+    }
+
+    // Listener used by the presenter
+    public void addGroupValueEventListener(String course,
+                                           final DatabaseCallback.GetCourseCallback callback) {
+        if (mGroupListener == null) {
+            mGroupListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    callback.onCourseRetrieved(dataSnapshot.getValue(Course.class), true);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            };
+
+            Log.d("Group Listeners", "Adding listener for group under course " + course);
+
+            // Listen to the root course of the child of interest
+            DatabaseReference databaseReference = mDatabase.child("courses")
+                    .child(Integer.toString(course.hashCode()));
+            databaseReference.addValueEventListener(mGroupListener);
+        }
+    }
+
+    // Listener used by the service
+    public void addServiceValueEventListener(String course,
+                                           final DatabaseCallback.GetCourseCallback callback) {
+        if (mGroupServiceListener == null) {
+            mGroupServiceListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    callback.onCourseRetrieved(dataSnapshot.getValue(Course.class), false);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            };
+
+            Log.d("Service Listeners", "Adding service listener for group under course " + course);
+
+            // Listen to the root course of the child of interest
+            DatabaseReference databaseReference = mDatabase.child("courses")
+                    .child(Integer.toString(course.hashCode()));
+            databaseReference.addValueEventListener(mGroupServiceListener);
+        }
+    }
+
+    public void removeGroupValueEventListener(String course) {
+
+        DatabaseReference databaseReference = mDatabase.child("courses")
+                .child(Integer.toString(course.hashCode()));
+        if (mGroupListener != null) {
+            databaseReference.removeEventListener(mGroupListener);
+            Log.d("Group Listeners", "Removing listener for group under course " + course);
+            mGroupListener = null;
+        }
+    }
+
+    public void removeServiceValueEventListener(String course) {
+
+        DatabaseReference databaseReference = mDatabase.child("courses")
+                .child(Integer.toString(course.hashCode()));
+        if (mGroupServiceListener != null) {
+            databaseReference.removeEventListener(mGroupServiceListener);
+            Log.d("Service Listeners", "Removing service listener for group under course " + course);
+            mGroupServiceListener = null;
+        }
+    }
+
+    private void removeCourseValueEventListener(DatabaseReference databaseReference, int hashCode) {
         databaseReference.removeEventListener(mCourseListeners.get(hashCode));
+        mCourseListeners.remove(hashCode);
         Log.d("EventListeners", "Removed event listener for " + Integer.toString(hashCode));
     }
 
@@ -226,12 +356,17 @@ public class DatabaseHandler {
         int counter = 0;
 
         // Initialize map of listener objects
-        mCourseListeners = new SparseArray<>();
+        if (mCourseListeners == null) {
+            mCourseListeners = new SparseArray<>();
+        }
 
         for (String courseName: courseStrings) {
             counter++;
             getCourseByString(courseName, (counter == courseStrings.size()), callback);
         }
+
+        // Add listeners to each course
+        addCourseListeners(callback);
 
         if (counter == 0) {
             callback.notifyOnUserCoursesRetrieved(mUserCourses);
@@ -243,7 +378,7 @@ public class DatabaseHandler {
         mDatabase.child("users").child(uidFromEmail(email)).child("courses").setValue(courses);
     }
 
-    public void removeUserClass(String email, String course,
+    public void removeUserClass(final String email, final String course,
                                 final DatabaseCallback.UserCoursesCallback callback) {
         mUserCourseStrings.remove(course);
         updateUserClasses(email, mUserCourseStrings);
@@ -260,15 +395,17 @@ public class DatabaseHandler {
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-
+                        Log.d("Firebase Network", "Connection cancelled");
+                        SystemClock.sleep(1000);
+                        removeUserClass(email, course, callback);
                     }
                 });
 
         // Remove listener for course
-        removeValueEventListener(databaseReference, course.hashCode());
+        removeCourseValueEventListener(databaseReference, course.hashCode());
     }
 
-    public void addUserClass(String email, String course,
+    public void addUserClass(final String email, final String course,
                              final DatabaseCallback.UserCoursesCallback callback) {
         if (!mUserCourseStrings.contains(course)) {
             mUserCourseStrings.add(course);
@@ -285,17 +422,19 @@ public class DatabaseHandler {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Log.d("Firebase Network", "Connection cancelled");
+                    SystemClock.sleep(1000);
+                    addUserClass(email, course, callback);
                 }
             });
 
             // Add a data change listener
-            addValueEventListener(databaseReference, course.hashCode(), callback);
+            addCourseValueEventListener(databaseReference, course.hashCode(), callback);
         }
         updateUserClasses(email, mUserCourseStrings);
     }
 
-    public void addGroupToCourse(String course, final Group group) {
+    public void addGroupToCourse(final String course, final Group group) {
 
         // Get course first
         final DatabaseReference databaseReference = mDatabase.child("courses")
@@ -311,12 +450,14 @@ public class DatabaseHandler {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                SystemClock.sleep(1000);
+                addGroupToCourse(course, group);
+                Log.d("Firebase Network", "Connection cancelled");
             }
         });
     }
 
-    public void removeGroupFromCourse(String course, final Group group) {
+    public void removeGroupFromCourse(final String course, final Group group) {
 
         // Get course first
         final DatabaseReference databaseReference = mDatabase.child("courses")
@@ -332,13 +473,78 @@ public class DatabaseHandler {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.d("Firebase Network", "Connection cancelled");
+                SystemClock.sleep(1000);
+                removeGroupFromCourse(course, group);
             }
         });
+    }
+
+    public void updateCourse(Course course) {
+        Log.d("Database", "Updating course from handler via another layer");
+        DatabaseReference databaseReference = mDatabase.child("courses")
+                .child(Integer.toString(course.getCourseName().hashCode()));
+
+        updateCourse(databaseReference, course);
     }
 
     private void updateCourse(DatabaseReference databaseReference, Course course) {
         Log.d("Database", "Updating course from handler");
         databaseReference.setValue(course);
+    }
+
+    public void removeCourseListeners() {
+        if (mUserCourseStrings != null) {
+            for (String course : mUserCourseStrings) {
+                DatabaseReference databaseReference = mDatabase.child("courses")
+                        .child(Integer.toString(course.hashCode()));
+                removeCourseValueEventListener(databaseReference, course.hashCode());
+            }
+
+            Log.d("Event Listeners", "Removed all course listeners");
+        }
+    }
+
+    public void addCourseListeners(DatabaseCallback.UserCoursesCallback callback) {
+        if (mUserCourseStrings != null) {
+            for (String course : mUserCourseStrings) {
+                DatabaseReference databaseReference = mDatabase.child("courses")
+                        .child(Integer.toString(course.hashCode()));
+                addCourseValueEventListener(databaseReference, course.hashCode(), callback);
+            }
+        }
+    }
+
+    // Triggered every time state changes with firebase connection
+    public void addConnectionStateListener(final DatabaseCallback.ConnectionStateCallback callback) {
+        if (mConnectionStateListener == null) {
+            Log.d("Network", "Creating connection state listener");
+            DatabaseReference connectedRef = FirebaseDatabase.getInstance()
+                    .getReference(".info/connected");
+            mConnectionStateListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Log.d("Network", "Connection state changed");
+                    callback.onConnectionStateChanged(dataSnapshot.getValue(Boolean.class));
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            };
+
+            connectedRef.addValueEventListener(mConnectionStateListener);
+        }
+    }
+
+    public void removeConnectionStateListener() {
+        if (mConnectionStateListener != null) {
+            Log.d("Network", "Removing connection state listener");
+            DatabaseReference connectedRef = FirebaseDatabase.getInstance()
+                    .getReference(".info/connected");
+            connectedRef.removeEventListener(mConnectionStateListener);
+            mConnectionStateListener = null;
+        }
     }
 }

@@ -16,6 +16,12 @@
         android:focusableInTouchMode="true">
     </LinearLayout>
 
+    <Button
+        android:id="@+id/test_create_group_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create test group"/>
+
     <AutoCompleteTextView
         android:id="@+id/course_select"
         android:hint="@string/add_class"

@@ -3,11 +3,17 @@ package com.bananabanditcrew.studybananas.ui.joingroup;
 import android.content.Intent;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -29,11 +35,13 @@ import android.net.Uri;
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.data.Course;
 import com.bananabanditcrew.studybananas.data.Group;
+import com.bananabanditcrew.studybananas.services.GroupListenerService;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionFragment;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionPresenter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class JoinGroupFragment extends Fragment implements JoinGroupContract.View {
 
@@ -63,6 +71,10 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         if (mPresenter != null) {
             mPresenter.start();
         }
+
+        // Re-add listeners if they do not exist
+        if (mPresenter != null)
+            mPresenter.addCourseListeners();
     }
 
     @Override
@@ -83,28 +95,41 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
 
         mPresenter.getUserSavedCourses();
 
-        // PURELY EXPERIMENTAL SECTION, TO BE REMOVED
-//        ArrayList<Address> addresses = new ArrayList<>();
-//        Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
-//        String addressLines = "";
-//        String addressName = "";
-//        try {
-//            addresses = (ArrayList<Address>) geocoder.getFromLocationName("Canyon Vista La Jolla", 1);
-//            Address address = addresses.get(0);
-//            for (int i = 0; i < address.getMaxAddressLineIndex(); i++)
-//                addressLines += (" " + address.getAddressLine(i));
-//            addressName = address.getFeatureName();
-//
-//        } catch (Exception e) {
-//            Log.e("Location services", "IO Exception");
-//        }
-//
-//        Group testGroup = new Group("crh013@ucsd.edu", addressLines, addressName, 6, 13, 0,
-//                15, 30, System.currentTimeMillis());
-//        mPresenter.addGroupToCourse("CSE 110", testGroup);
-        // END EXPERIMENTAL SECTION
+        Button testButton = (Button) root.findViewById(R.id.test_create_group_button);
+        testButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createNewGroup();
+            }
+        });
 
+        // Set title of app to "join group"
+        ((AppCompatActivity)getActivity()).getSupportActionBar()
+                .setTitle(getString(R.string.join_group));
         return root;
+    }
+
+    public void createNewGroup() {
+        ArrayList<Address> addresses = new ArrayList<>();
+        Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+        String addressLines = "";
+        String addressName = "";
+        try {
+            addresses = (ArrayList<Address>) geocoder.getFromLocationName("Canyon Vista La Jolla", 1);
+            Address address = addresses.get(0);
+            for (int i = 0; i < address.getMaxAddressLineIndex(); i++)
+                addressLines += (" " + address.getAddressLine(i));
+            addressName = address.getFeatureName();
+
+        } catch (Exception e) {
+            Log.e("Location services", "IO Exception");
+        }
+
+        String description = "The quick brown fox jumped over the lazy dogs";
+
+        Group testGroup = new Group("crh013@ucsd.edu", addressLines, addressName, 6, 13, 0,
+                15, 30, description, Long.toString(System.currentTimeMillis()));
+        mPresenter.addGroupToCourse("CSE 110", testGroup);
     }
 
     public static void closeKeyboard(Context c, IBinder windowToken) {
@@ -117,7 +142,6 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         mUserCourseList.setAdapter(adapter);
         adapter.notifyDataSetChanged();
     }
-
 
     public void setupCoursesSelectView() {
 
@@ -184,20 +208,44 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
     }
 
     @Override
-    public void showGroupInteractionView(String groupID) {
+    public void showGroupInteractionView(String course, String groupID) {
+
         // Setup groupInteraction fragment and presenter
         GroupInteractionFragment groupInteractionFragment = new GroupInteractionFragment();
+
+        getFragmentManager().beginTransaction().remove(this).commit();
+        getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        getFragmentManager().beginTransaction().remove(mPresenter.getHomeFragment()).commit();
+        getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.slide_from_right, R.anim.slide_to_left,
                 R.anim.slide_from_left, R.anim.slide_to_right);
-        transaction.replace(R.id.fragment_container, groupInteractionFragment).commit();
+        transaction.replace(R.id.fragment_container, groupInteractionFragment,
+                            "group_interaction").commit();
 
-        mGroupInteractionPresenter = new GroupInteractionPresenter(groupInteractionFragment);
-        getFragmentManager().beginTransaction().remove(this).commit();
-        getFragmentManager().popBackStack();
-        getFragmentManager().beginTransaction().remove(mPresenter.getHomeFragment()).commit();
-        getFragmentManager().popBackStack();
+        mGroupInteractionPresenter = new GroupInteractionPresenter(groupInteractionFragment,
+                                                                   course, groupID,
+                                                                   mPresenter.getActivityCallback());
 
+        // Start background service
+        Intent intent = new Intent(getContext(), GroupListenerService.class);
+        getActivity().startService(intent);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // Remove event listeners for user courses
+        mPresenter.removeCourseListeners();
+    }
+
+
+    public void reloadGroups() {
+        if (mPresenter != null) {
+            mPresenter.getUserSavedCourses();
+        }
     }
 
     public static class CoursesAdapter extends BaseExpandableListAdapter {
@@ -207,13 +255,15 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         private JoinGroupPresenter mPresenter;
         private final JoinGroupContract.View mView;
 
+        // Click time recorder to prevent double clicks
+        private long mLastClickTime = 0;
+
         public CoursesAdapter(Context context, List<Course> courses, JoinGroupPresenter presenter,
                               JoinGroupContract.View view) {
             mContext = context;
             mCourses = courses;
             mPresenter = presenter;
             mView = view;
-
         }
 
         @Override
@@ -227,11 +277,10 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         }
 
         @Override
-        public View getChildView(int listPosition, final int expandedListPosition,
+        public View getChildView(final int listPosition, final int expandedListPosition,
                                  boolean isLastChild, View convertView, ViewGroup parent) {
             final Group groupRef = getChild(listPosition, expandedListPosition);
             final String locationName = groupRef.getLocationName();
-
 
             // Get time string
             int startHour = groupRef.getStartHour();
@@ -243,15 +292,17 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
             boolean startIsPostMeridian = (startHour >= 12);
             boolean endIsPostMeridian = (endHour >= 12);
 
-            int start12Hour = (startIsPostMeridian) ? (startHour - 12) : startHour;
-            int end12Hour = (endIsPostMeridian) ? (endHour - 12) : endHour;
+            int start12Hour = ((startIsPostMeridian) ? ((startHour == 12) ? 12 : (startHour - 12)) :
+                    ((startHour == 0) ? 12 : startHour));
+            int end12Hour = ((endIsPostMeridian) ? ((endHour == 12) ? 12 : (endHour - 12)) :
+                    ((endHour == 0) ? 12 : endHour));
 
             // Time string
             final String timeFrame = Integer.toString(start12Hour) + ":" +
-                    (startMinute == 0 ? "00" : Integer.toString(startMinute)) +
+                    (startMinute < 10 ? "0" + Integer.toString(startMinute) : Integer.toString(startMinute)) +
                     (startIsPostMeridian ? " PM" : " AM") + " - " +
                     Integer.toString(end12Hour) + ":" +
-                    (endMinute == 0 ? "00" : Integer.toString(endMinute)) +
+                    (endMinute < 10 ? "0" + Integer.toString(endMinute) : Integer.toString(endMinute)) +
                     (endIsPostMeridian ? " PM" : " AM");
 
             final String members = Integer.toString(groupRef.getGroupMembers().size()) +
@@ -273,7 +324,6 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
                 }
             });
 
-
             TextView timeView = (TextView) convertView.findViewById(R.id.group_time_view);
             timeView.setText(timeFrame);
 
@@ -284,23 +334,27 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
             joinGroupButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mView.showGroupInteractionView(groupRef.getGroupID());
+                    if (SystemClock.elapsedRealtime() - mLastClickTime < 1000) {
+                        return;
+                    }
+                    mLastClickTime = SystemClock.elapsedRealtime();
+                    mPresenter.addUserToGroup(getGroup(listPosition).getCourseName(),
+                            groupRef.getGroupID());
                 }
             });
 
             return convertView;
         }
 
-
         public void showGoogleMaps() {
 
+            // TODO update this later to point to unique location
             Uri gmmIntentUri = Uri.parse("geo:37.7749,-122.4194");
             Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
             mapIntent.setPackage("com.google.android.apps.maps");
             if (mapIntent.resolveActivity(mContext.getPackageManager()) != null) {
                 mContext.startActivity(mapIntent);
             }
-
         }
 
         @Override
@@ -338,7 +392,7 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
             listTitleTextView.setTypeface(null, Typeface.BOLD);
             listTitleTextView.setText(listTitle);
 
-            Button removeClassButton = (Button)convertView.findViewById(R.id.delete_class_button);
+            Button removeClassButton = (Button) convertView.findViewById(R.id.delete_class_button);
             removeClassButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -358,7 +412,5 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         public boolean isChildSelectable(int listPosition, int expandedListPosition) {
             return true;
         }
-
-
     }
 }

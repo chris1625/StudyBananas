@@ -19,6 +19,12 @@ public interface DatabaseCallback {
 
     }
 
+    interface GetCourseCallback {
+
+        void onCourseRetrieved(Course course, boolean uiIsActive);
+
+    }
+
     interface UserCoursesCallback {
 
         void notifyOnUserCoursesRetrieved(ArrayList<Course> userCoursesList);
@@ -46,6 +52,12 @@ public interface DatabaseCallback {
     interface GetUserCallback {
 
         void onUserRetrieved(User user);
+
+    }
+
+    interface ConnectionStateCallback {
+
+        void onConnectionStateChanged(boolean connected);
 
     }
 
