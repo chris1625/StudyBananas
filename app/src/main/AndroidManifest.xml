@@ -26,7 +26,7 @@
             android:value="AIzaSyBI10H4vdTWzkjLgMmH3XbD617zxdWUws0"/>
 
         <activity
-            android:name="com.bananabanditcrew.studybananas.ui.joingroup.MapsActivity"
+            android:name="com.bananabanditcrew.studybananas.ui.maps.MapsActivity"
             android:screenOrientation="portrait"
             android:label="@string/title_activity_maps">
 

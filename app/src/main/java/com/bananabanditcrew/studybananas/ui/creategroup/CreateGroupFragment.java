@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.format.DateFormat;
 import android.view.ActionMode;
@@ -32,6 +33,8 @@ import android.widget.TimePicker;
 
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.data.Course;
+import com.bananabanditcrew.studybananas.services.GroupListenerService;
+import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionContract;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionFragment;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionPresenter;
 import com.bananabanditcrew.studybananas.ui.home.HomeFragment;
@@ -50,12 +53,6 @@ import java.util.Calendar;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link CreateGroupFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class CreateGroupFragment extends Fragment implements CreateGroupContract.View, GoogleApiClient.OnConnectionFailedListener {
 
     private String DEFAULT_BUTTON_TEXT="Select";
@@ -78,6 +75,8 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
     private String course;
     private boolean course_selected;
     private boolean time_compatibility_error;
+
+    private GroupInteractionContract.Presenter mGroupInteractionPresenter;
 
     public CreateGroupFragment() {
         // Required empty public constructor
@@ -318,18 +317,28 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
     }
 
     @Override
-    public void showGroupInteractionView() {
-        GroupInteractionFragment groupInterationFragment = new GroupInteractionFragment();
+    public void showGroupInteractionView(String course, String groupID) {
+        // Setup groupInteraction fragment and presenter
+        GroupInteractionFragment groupInteractionFragment = new GroupInteractionFragment();
+
+        getFragmentManager().beginTransaction().remove(this).commit();
+        getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        getFragmentManager().beginTransaction().remove(mPresenter.getHomeFragment()).commit();
+        getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.slide_from_right, R.anim.slide_to_left,
                 R.anim.slide_from_left, R.anim.slide_to_right);
-        transaction.replace(R.id.fragment_container, groupInterationFragment);
-        transaction.addToBackStack(null);
-        GroupInteractionPresenter mGroupInteractionPresenter =
-                new GroupInteractionPresenter(groupInterationFragment);
-        groupInterationFragment.setPresenter(mGroupInteractionPresenter);
-        // Commit the transaction
-        transaction.commit();
+        transaction.replace(R.id.fragment_container, groupInteractionFragment,
+                "group_interaction").commit();
+
+        mGroupInteractionPresenter = new GroupInteractionPresenter(groupInteractionFragment,
+                course, groupID,
+                mPresenter.getHomeActivityCallback());
+
+        // Start background service
+        Intent intent = new Intent(getContext(), GroupListenerService.class);
+        getActivity().startService(intent);
     }
 
     @Override

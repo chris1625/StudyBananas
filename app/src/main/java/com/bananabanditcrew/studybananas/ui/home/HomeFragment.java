@@ -96,7 +96,9 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         transaction.replace(R.id.fragment_container, createGroupFragment);
         transaction.addToBackStack(null);
         // Create presenter and link it to new fragment
-        mCreateGroupPresenter = new CreateGroupPresenter(createGroupFragment,mPresenter.getCoursesAdapter());
+        mCreateGroupPresenter = new CreateGroupPresenter(createGroupFragment,
+                                                         mPresenter.getCoursesAdapter(),
+                                                         this, mPresenter.getActivityCallback());
         createGroupFragment.setPresenter(mCreateGroupPresenter);
         // Commit the transaction
         transaction.commit();

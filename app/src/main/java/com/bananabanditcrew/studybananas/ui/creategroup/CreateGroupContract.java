@@ -5,6 +5,8 @@ import android.widget.ArrayAdapter;
 
 import com.bananabanditcrew.studybananas.ui.BasePresenter;
 import com.bananabanditcrew.studybananas.ui.BaseView;
+import com.bananabanditcrew.studybananas.ui.home.HomeContract;
+import com.bananabanditcrew.studybananas.ui.home.HomeFragment;
 
 /**
  * Created by Ryan on 2/24/2017.
@@ -12,6 +14,7 @@ import com.bananabanditcrew.studybananas.ui.BaseView;
 
 public interface CreateGroupContract {
     interface View extends BaseView<Presenter> {
+
         Activity getActivity();
 
         void showIncorrectTimeError();
@@ -34,7 +37,7 @@ public interface CreateGroupContract {
 
         void resetErrors();
 
-        void showGroupInteractionView();
+        void showGroupInteractionView(String course, String groupID);
 
         void showSuccessIndicator();
 
@@ -59,12 +62,18 @@ public interface CreateGroupContract {
         String getAddress();
 
         boolean doValidations();
+
     }
 
     interface Presenter extends BasePresenter{
+
         ArrayAdapter<String> getCoursesAdapter();
 
         void attemptCreateGroup();
+
+        HomeFragment getHomeFragment();
+
+        HomeContract.HomeActivityCallback getHomeActivityCallback();
 
     }
 }
