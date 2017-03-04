@@ -24,7 +24,7 @@ public interface CreateGroupContract {
 
         void showNoLocationPickedError();
 
-        void showNoNaxPeoplePickedError();
+        void showNoMaxPeoplePickedError();
 
         void showEndTimePicker();
 
@@ -58,7 +58,7 @@ public interface CreateGroupContract {
 
         String getAddress();
 
-        void doValidations();
+        boolean doValidations();
     }
 
     interface Presenter extends BasePresenter{
