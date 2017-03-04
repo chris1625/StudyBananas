@@ -289,32 +289,35 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
 
     private void hideProgressView() {
         if (mProgressView != null) {
-            mProgressView.hide();
+            mProgressView.dismiss();
             mProgressView = null;
         }
     }
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         mDatabase.removeConnectionStateListener();
+        super.onDestroy();
     }
 
     @Override
     public void onPause() {
-        super.onPause();
         mDatabase.removeConnectionStateListener();
+        hideProgressView();
+        super.onPause();
     }
 
     @Override
     public void onStop() {
-        super.onStop();
         mDatabase.removeConnectionStateListener();
+        hideProgressView();
+        super.onStop();
     }
 
     @Override
     public void onResume() {
-        super.onResume();
+        hideProgressView();
         mDatabase.addConnectionStateListener(this);
+        super.onResume();
     }
 }

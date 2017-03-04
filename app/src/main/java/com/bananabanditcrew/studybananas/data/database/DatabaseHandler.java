@@ -524,6 +524,7 @@ public class DatabaseHandler {
             mConnectionStateListener = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
+                    Log.d("Network", "Connection state changed");
                     callback.onConnectionStateChanged(dataSnapshot.getValue(Boolean.class));
                 }
 
