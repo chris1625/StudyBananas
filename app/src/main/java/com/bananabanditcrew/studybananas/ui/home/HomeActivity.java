@@ -1,13 +1,17 @@
 package com.bananabanditcrew.studybananas.ui.home;
 
 import android.app.ActivityManager;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Paint;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.SystemClock;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -21,9 +25,11 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.services.GroupListenerService;
+import com.bananabanditcrew.studybananas.ui.joingroup.JoinGroupFragment;
 import com.bananabanditcrew.studybananas.ui.settings.SettingsActivity;
 import com.bananabanditcrew.studybananas.data.User;
 import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
@@ -37,7 +43,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class HomeActivity extends AppCompatActivity implements DatabaseCallback.GetUserCallback,
-        HomeContract.HomeActivityCallback {
+        DatabaseCallback.ConnectionStateCallback,HomeContract.HomeActivityCallback{
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
@@ -47,6 +53,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
     private GroupInteractionPresenter mGroupInteractionPresenter;
     private GroupInteractionFragment mGroupInteractionFragment;
     private DatabaseHandler mDatabase;
+    private ProgressDialog mProgressView;
 
     // Variables to hide or show edit and save buttons
     private boolean mSaveActionVisible = false;
@@ -78,10 +85,13 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
         createHomeFragment();
 
         // Initialize database handler
-        mDatabase = new DatabaseHandler();
+        mDatabase = DatabaseHandler.getInstance();
 
         // Get the user and hand off setup to onUserRetrieved
         mDatabase.getUser(FirebaseAuth.getInstance().getCurrentUser().getEmail(), this);
+
+        // Setup connection state listener
+        mDatabase.addConnectionStateListener(this);
     }
 
     @Override
@@ -100,7 +110,8 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
                 mGroupInteractionFragment = new GroupInteractionFragment();
             }
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, mGroupInteractionFragment).commit();
+                    .add(R.id.fragment_container, mGroupInteractionFragment,
+                            "group_interaction").commit();
 
             if (mGroupInteractionPresenter == null) {
                 mGroupInteractionPresenter = new GroupInteractionPresenter(mGroupInteractionFragment,
@@ -261,5 +272,49 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
         });
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    @Override
+    public void onConnectionStateChanged(boolean connected) {
+        if (connected) {
+            hideProgressView();
+        } else {
+            showProgressView("Network Status", "Disconnected from Firebase, please check your internet connection. Reconnecting...");
+        }
+    }
+
+    private void showProgressView(String title, String body) {
+        mProgressView = ProgressDialog.show(this, title, body);
+    }
+
+    private void hideProgressView() {
+        if (mProgressView != null) {
+            mProgressView.hide();
+            mProgressView = null;
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mDatabase.removeConnectionStateListener();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mDatabase.removeConnectionStateListener();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mDatabase.removeConnectionStateListener();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mDatabase.addConnectionStateListener(this);
     }
 }

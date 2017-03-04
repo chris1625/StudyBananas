@@ -55,4 +55,10 @@ public interface DatabaseCallback {
 
     }
 
+    interface ConnectionStateCallback {
+
+        void onConnectionStateChanged(boolean connected);
+
+    }
+
 }

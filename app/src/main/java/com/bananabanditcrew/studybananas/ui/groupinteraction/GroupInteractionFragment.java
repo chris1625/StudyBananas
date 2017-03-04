@@ -385,6 +385,12 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
         dialog.show();
     }
 
+    public void reloadFields() {
+        if (mPresenter != null) {
+            mPresenter.getGroupFromDatabase();
+        }
+    }
+
     // Custom array adapter to show the current members in the group to the group leader
     public class MemberAdapter extends ArrayAdapter<String> {
         public MemberAdapter(Context context, ArrayList<String> members) {

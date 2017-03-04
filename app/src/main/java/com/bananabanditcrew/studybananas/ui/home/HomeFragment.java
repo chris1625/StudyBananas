@@ -103,7 +103,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.slide_from_right, R.anim.slide_to_left,
                 R.anim.slide_from_left, R.anim.slide_to_right);
-        transaction.replace(R.id.fragment_container, joinGroupFragment);
+        transaction.replace(R.id.fragment_container, joinGroupFragment, "join_group");
         transaction.addToBackStack(null);
 
         // Create presenter and link it to new fragment

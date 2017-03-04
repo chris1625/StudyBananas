@@ -1,6 +1,7 @@
 package com.bananabanditcrew.studybananas.data.database;
 
 import android.os.SystemClock;
+import android.renderscript.Sampler;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -45,6 +46,9 @@ public class DatabaseHandler {
 
     // Similar listener as above, except for the background service
     private ValueEventListener mGroupServiceListener;
+
+    // Listener for connection state
+    private ValueEventListener mConnectionStateListener;
 
     public DatabaseHandler() {
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -508,6 +512,38 @@ public class DatabaseHandler {
                         .child(Integer.toString(course.hashCode()));
                 addCourseValueEventListener(databaseReference, course.hashCode(), callback);
             }
+        }
+    }
+
+    // Triggered every time state changes with firebase connection
+    public void addConnectionStateListener(final DatabaseCallback.ConnectionStateCallback callback) {
+        if (mConnectionStateListener == null) {
+            Log.d("Network", "Creating connection state listener");
+            DatabaseReference connectedRef = FirebaseDatabase.getInstance()
+                    .getReference(".info/connected");
+            mConnectionStateListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    callback.onConnectionStateChanged(dataSnapshot.getValue(Boolean.class));
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            };
+
+            connectedRef.addValueEventListener(mConnectionStateListener);
+        }
+    }
+
+    public void removeConnectionStateListener() {
+        if (mConnectionStateListener != null) {
+            Log.d("Network", "Removing connection state listener");
+            DatabaseReference connectedRef = FirebaseDatabase.getInstance()
+                    .getReference(".info/connected");
+            connectedRef.removeEventListener(mConnectionStateListener);
+            mConnectionStateListener = null;
         }
     }
 }

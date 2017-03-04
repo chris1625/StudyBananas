@@ -7,6 +7,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -35,8 +36,6 @@ import com.bananabanditcrew.studybananas.data.Group;
 import com.bananabanditcrew.studybananas.services.GroupListenerService;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionFragment;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionPresenter;
-import com.bananabanditcrew.studybananas.ui.home.HomeContract;
-import com.bananabanditcrew.studybananas.ui.home.HomePresenter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -220,7 +219,8 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.slide_from_right, R.anim.slide_to_left,
                 R.anim.slide_from_left, R.anim.slide_to_right);
-        transaction.replace(R.id.fragment_container, groupInteractionFragment).commit();
+        transaction.replace(R.id.fragment_container, groupInteractionFragment,
+                            "group_interaction").commit();
 
         mGroupInteractionPresenter = new GroupInteractionPresenter(groupInteractionFragment,
                                                                    course, groupID,
@@ -239,6 +239,13 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         mPresenter.removeCourseListeners();
     }
 
+
+    public void reloadGroups() {
+        if (mPresenter != null) {
+            mPresenter.getUserSavedCourses();
+        }
+    }
+
     public static class CoursesAdapter extends BaseExpandableListAdapter {
 
         private Context mContext;
@@ -246,13 +253,15 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         private JoinGroupPresenter mPresenter;
         private final JoinGroupContract.View mView;
 
+        // Click time recorder to prevent double clicks
+        private long mLastClickTime = 0;
+
         public CoursesAdapter(Context context, List<Course> courses, JoinGroupPresenter presenter,
                               JoinGroupContract.View view) {
             mContext = context;
             mCourses = courses;
             mPresenter = presenter;
             mView = view;
-
         }
 
         @Override
@@ -316,6 +325,10 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
             joinGroupButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (SystemClock.elapsedRealtime() - mLastClickTime < 1000) {
+                        return;
+                    }
+                    mLastClickTime = SystemClock.elapsedRealtime();
                     mPresenter.addUserToGroup(getGroup(listPosition).getCourseName(),
                             groupRef.getGroupID());
                 }

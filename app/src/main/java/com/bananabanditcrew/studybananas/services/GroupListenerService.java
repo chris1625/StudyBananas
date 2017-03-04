@@ -60,8 +60,8 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         if (mNotification == null) {
             mNotification = new Notification.Builder(this)
-                    .setContentTitle("StudyBananas")
-                    .setContentText("You are currently a member of a group")
+                    .setContentTitle("You are currently in a study group")
+                    .setContentText("Tap to re-open app")
                     .setSmallIcon(R.drawable.ic_logobunches_solid)
                     .setContentIntent(pendingIntent)
                     .build();
