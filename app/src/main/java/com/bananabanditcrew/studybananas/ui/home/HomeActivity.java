@@ -289,6 +289,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
     public void onRootRetrieved() {
         // This method does nothing; is intended to keep the activity linked to firebase with a
         // listener. Prevents firebase disconnect
+        Log.d("Root Listener", "onRootRetrieved in Home Activity");
     }
 
     @Override
