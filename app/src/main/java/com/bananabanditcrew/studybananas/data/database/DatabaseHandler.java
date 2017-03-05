@@ -577,7 +577,8 @@ public class DatabaseHandler {
         if (mRootListener != null) {
             Log.d("Root Listener", "Removing root listener");
             DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference()
-                    .child("users");
+                    .child("users").child(uidFromEmail(
+                            FirebaseAuth.getInstance().getCurrentUser().getEmail()));
             connectedRef.removeEventListener(mRootListener);
             mRootListener = null;
         }
