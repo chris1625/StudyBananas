@@ -61,4 +61,10 @@ public interface DatabaseCallback {
 
     }
 
+    interface RootCallback {
+
+        void onRootRetrieved();
+
+    }
+
 }

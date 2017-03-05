@@ -2,16 +2,9 @@ package com.bananabanditcrew.studybananas.ui.home;
 
 import android.app.ActivityManager;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.graphics.Paint;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.SystemClock;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -25,11 +18,9 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Toast;
 
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.services.GroupListenerService;
-import com.bananabanditcrew.studybananas.ui.joingroup.JoinGroupFragment;
 import com.bananabanditcrew.studybananas.ui.settings.SettingsActivity;
 import com.bananabanditcrew.studybananas.data.User;
 import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
@@ -38,12 +29,9 @@ import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionFra
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionPresenter;
 import com.google.firebase.auth.FirebaseAuth;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 public class HomeActivity extends AppCompatActivity implements DatabaseCallback.GetUserCallback,
-        DatabaseCallback.ConnectionStateCallback,HomeContract.HomeActivityCallback{
+        DatabaseCallback.ConnectionStateCallback, DatabaseCallback.RootCallback,
+        HomeContract.HomeActivityCallback{
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
@@ -92,6 +80,9 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
 
         // Setup connection state listener
         mDatabase.addConnectionStateListener(this);
+
+        // Setup root listener
+        mDatabase.addRootListener(this);
     }
 
     @Override
@@ -295,6 +286,12 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
     }
 
     @Override
+    public void onRootRetrieved() {
+        // This method does nothing; is intended to keep the activity linked to firebase with a
+        // listener. Prevents firebase disconnect
+    }
+
+    @Override
     public void onDestroy() {
         mDatabase.removeConnectionStateListener();
         super.onDestroy();
@@ -309,6 +306,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
 
     @Override
     public void onStop() {
+        mDatabase.removeRootListener();
         mDatabase.removeConnectionStateListener();
         hideProgressView();
         super.onStop();
@@ -316,6 +314,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
 
     @Override
     public void onResume() {
+        mDatabase.addRootListener(this);
         hideProgressView();
         mDatabase.addConnectionStateListener(this);
         super.onResume();
