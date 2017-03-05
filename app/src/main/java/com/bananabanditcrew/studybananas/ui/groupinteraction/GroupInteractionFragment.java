@@ -12,11 +12,9 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Layout;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -38,9 +36,7 @@ import com.bananabanditcrew.studybananas.services.GroupListenerServiceCallbacks;
 import com.bananabanditcrew.studybananas.ui.home.HomeContract;
 import com.bananabanditcrew.studybananas.ui.home.HomeFragment;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -422,11 +418,11 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
 
             // Change source of image button based on leader status of member
             if (mPresenter.getGroupLeader().equals(member)) {
-                ownershipButton.setImageResource(R.drawable.ic_crown);
+                ownershipButton.setImageResource(R.drawable.ic_crown_gold);
                 ownershipButton.getBackground().setAlpha(0);
             } else {
-                ownershipButton.setImageResource(R.drawable.ic_person);
-                ownershipButton.getBackground().setAlpha(0);
+                ownershipButton.setImageResource(R.drawable.ic_crown_white);
+                ownershipButton.getBackground().setAlpha(100);
             }
 
             // Add onclick listeners for both buttons
