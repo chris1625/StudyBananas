@@ -10,7 +10,6 @@ import com.bananabanditcrew.studybananas.data.Group;
 import com.bananabanditcrew.studybananas.data.User;
 import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
 import com.bananabanditcrew.studybananas.data.database.DatabaseHandler;
-import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionPresenter;
 import com.bananabanditcrew.studybananas.ui.home.HomeContract;
 import com.bananabanditcrew.studybananas.ui.home.HomeFragment;
 import com.google.firebase.auth.FirebaseAuth;
@@ -142,7 +141,7 @@ public class JoinGroupPresenter implements DatabaseCallback.UserCoursesCallback,
     }
 
     @Override
-    public void onCourseRetrieved(Course course, boolean isUIActive) {
+    public void onCourseRetrieved(Course course) {
         synchronized (lock) {
             // We now have the course, and need the user so we can update the user
             mCourse = course;

@@ -234,7 +234,7 @@ public class DatabaseHandler {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                callback.onCourseRetrieved(dataSnapshot.getValue(Course.class), true);
+                callback.onCourseRetrieved(dataSnapshot.getValue(Course.class));
             }
 
             @Override
@@ -282,7 +282,7 @@ public class DatabaseHandler {
             mGroupListener = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    callback.onCourseRetrieved(dataSnapshot.getValue(Course.class), true);
+                    callback.onCourseRetrieved(dataSnapshot.getValue(Course.class));
                 }
 
                 @Override
@@ -307,7 +307,7 @@ public class DatabaseHandler {
             mGroupServiceListener = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    callback.onCourseRetrieved(dataSnapshot.getValue(Course.class), false);
+                    callback.onCourseRetrieved(dataSnapshot.getValue(Course.class));
                 }
 
                 @Override

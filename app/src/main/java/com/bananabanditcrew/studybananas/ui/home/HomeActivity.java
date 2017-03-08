@@ -2,9 +2,11 @@ package com.bananabanditcrew.studybananas.ui.home;
 
 import android.app.ActivityManager;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -83,7 +85,17 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
 
         // Setup root listener
         mDatabase.addRootListener(this);
+
+        // Register shutdown receiver
+        registerReceiver(shutdownReceiver, new IntentFilter("shutdown"));
     }
+
+    private final BroadcastReceiver shutdownReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            finish();
+        }
+    };
 
     @Override
     public void onUserRetrieved(User user) {
@@ -295,6 +307,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
     @Override
     public void onDestroy() {
         mDatabase.removeConnectionStateListener();
+        unregisterReceiver(shutdownReceiver);
         super.onDestroy();
     }
 

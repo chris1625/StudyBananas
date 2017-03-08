@@ -1,6 +1,5 @@
 package com.bananabanditcrew.studybananas.ui.groupinteraction;
 
-import android.support.annotation.IntegerRes;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -10,13 +9,12 @@ import com.bananabanditcrew.studybananas.data.Group;
 import com.bananabanditcrew.studybananas.data.User;
 import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
 import com.bananabanditcrew.studybananas.data.database.DatabaseHandler;
+import com.bananabanditcrew.studybananas.ui.home.HomeActivity;
 import com.bananabanditcrew.studybananas.ui.home.HomeContract;
-import com.bananabanditcrew.studybananas.ui.home.HomePresenter;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Created by chris on 2/25/17.
@@ -78,8 +76,14 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
     }
 
     @Override
-    public void onCourseRetrieved(Course course, boolean uiIsActive) {
+    public void onCourseRetrieved(Course course) {
         synchronized (lock) {
+
+            GroupInteractionFragment fragment = (GroupInteractionFragment)
+                    ((HomeActivity)mActivityCallback).
+                    getSupportFragmentManager().findFragmentByTag("group_interaction");
+
+            boolean fragmentIsActive = (fragment != null && fragment.isVisible());
 
             mCourse = course;
             com.bananabanditcrew.studybananas.data.Group group =
@@ -88,39 +92,25 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
             boolean groupExists = (groupIndex != -1);
 
             // Initial check for a null group. If group is null, leave the group
-            if (!groupExists && uiIsActive && mUser != null) {
-                mGroupInteractionView.showGroupDisbandedMessage();
-                leaveGroup();
+            if (!groupExists) {
+                mDatabase.removeGroupValueEventListener(mCourseName);
+                if (fragmentIsActive) {
+                    fragment.showHomeView(mActivityCallback);
+                    mActivityCallback.hideActionButtons();
+                }
                 return;
-            }
-
-            String prevLeader = "";
-
-            if (mGroup != null) {
-                // Get previous leader
-                prevLeader = mGroup.getLeader();
             }
 
             // Get group
             mGroup = course.getGroupByIndex(groupIndex);
 
-            // Show message if ownership changed
-            if (mGroup.getLeader().equals(FirebaseAuth.getInstance().getCurrentUser().getEmail()) &&
-                    !prevLeader.equals(mGroup.getLeader()) && !prevLeader.equals("") && uiIsActive) {
-                mGroupInteractionView.showNewLeaderDialog();
-            }
-
             Log.d("Interaction", "Course retrieved, updating info...");
-            if (uiIsActive) {
-                updateGroupInfo();
-            }
+            updateGroupInfo();
 
             // Initialize members array list if null, and also create an adapter for it
             if (mMembers == null) {
                 mMembers = mGroup.getGroupMembers();
-                if (uiIsActive) {
-                    mGroupInteractionView.createAdapter(mMembers);
-                }
+                mGroupInteractionView.createAdapter(mMembers);
             } else {
                 mMembers.removeAll(mMembers);
                 mMembers.addAll(mGroup.getGroupMembers());
@@ -129,17 +119,18 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
             // If group exists but the current user is no longer part of the member list, leave the
             // group
             if (!mMembers.contains(FirebaseAuth.getInstance().getCurrentUser().getEmail()) &&
-                    mUser != null && uiIsActive) {
+                    mUser != null) {
                 Log.d("Group management", "User kicked from group");
-                mGroupInteractionView.showKickedMessage();
-                leaveGroup();
+                mDatabase.removeGroupValueEventListener(mCourseName);
+                if (fragmentIsActive) {
+                    mActivityCallback.hideActionButtons();
+                    fragment.showHomeView(mActivityCallback);
+                }
                 return;
             }
 
             // Notify adapter of member change
-            if (uiIsActive) {
-                mGroupInteractionView.notifyAdapter();
-            }
+            mGroupInteractionView.notifyAdapter();
         }
     }
 
@@ -148,6 +139,10 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
         synchronized (lock) {
             Log.d("Presenter", "Leaving group");
             int groupIndex = mCourse.getStudyGroups().indexOf(mGroup);
+
+            // Remove listeners
+            mDatabase.removeGroupValueEventListener(mCourse.getCourseName());
+            mDatabase.removeServiceValueEventListener(mCourse.getCourseName());
 
             // Only update the group if it still exists
             if (groupIndex != -1) {
@@ -168,9 +163,6 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
             mUser.setGroupID(null);
             mUser.setGroupCourse(null);
             mDatabase.updateUser(mUser);
-
-            // Remove the group listener
-            mDatabase.removeGroupValueEventListener(mCourse.getCourseName());
 
             mGroupInteractionView.showHomeView(mActivityCallback);
             mActivityCallback.hideActionButtons();

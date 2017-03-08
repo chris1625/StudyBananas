@@ -139,7 +139,14 @@ public class SignInPresenter implements SignInContract.Presenter {
 
                         // Login was successful
                         // First check for email verification
-                        if (!FirebaseAuth.getInstance().getCurrentUser().isEmailVerified()) {
+                        // Skip verification for test users
+                        String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+                        boolean isTester = (userEmail.equals("testuser1@ucsd.edu") ||
+                                            userEmail.equals("testuser2@ucsd.edu") ||
+                                            userEmail.equals("testuser3@ucsd.edu"));
+
+                        if (!isTester &&
+                                !FirebaseAuth.getInstance().getCurrentUser().isEmailVerified()) {
                             // Send the user a notification
                             mSignInView.showEmailNotVerified();
                             FirebaseAuth.getInstance().signOut();
