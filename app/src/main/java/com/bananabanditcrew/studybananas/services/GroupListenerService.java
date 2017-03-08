@@ -17,7 +17,7 @@ import com.bananabanditcrew.studybananas.data.User;
 import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
 import com.bananabanditcrew.studybananas.data.database.DatabaseHandler;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionContract;
-import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionFragment;
+import com.bananabanditcrew.studybananas.ui.home.HomeActivity;
 import com.bananabanditcrew.studybananas.ui.signin.SignInActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -36,6 +36,7 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
     private Notification mNotification;
     private String mCourseName;
     private String mGroupID;
+    private Course mCourse;
     private ArrayList<String> mMembers;
     private Group mGroup;
     private User mUser;
@@ -81,9 +82,13 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
         mUser = user;
     }
 
-    @Override
-    public void onCourseRetrieved(Course course, boolean uiIsActive) {
+    @Override @TargetApi(16)
+    public void onCourseRetrieved(Course course) {
         Log.d("Service", "Course updated in background service");
+
+        mCourse = course;
+
+        boolean fragmentIsActive = (mCallback != null);
 
         // Notification manager for all notifications
         NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -98,12 +103,99 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
         int groupIndex = course.getStudyGroups().indexOf(group);
         boolean groupExists = (groupIndex != -1);
 
-//        mNotifyMgr.notify(2, new Notification.Builder(this)
-//                .setContentTitle("StudyBananas")
-//                .setContentText("Your study group has changed.")
-//                .setSmallIcon(R.drawable.ic_logobunches_solid)
-//                .setContentIntent(pendingIntent)
-//                .build());
+        // If group doesn't exist, show a notification that the group has been disbanded, remove
+        // the user's data relating to that group and kill the service.
+        if (!groupExists && mUser != null) {
+
+            Log.d("Service", "Removing group from service");
+
+            // Update user info
+            mUser.setGroupID(null);
+            mUser.setGroupCourse(null);
+            mDatabase.updateUser(mUser);
+
+            // Remove group listener
+            mDatabase.removeServiceValueEventListener(mCourseName);
+
+            // Show notification
+            mNotifyMgr.notify(0, new Notification.Builder(this)
+                    .setContentTitle("Your study group has been disbanded")
+                    .setContentText("Tap to create or join another group")
+                    .setSmallIcon(R.drawable.ic_logobunches_solid)
+                    .setDefaults(Notification.DEFAULT_ALL)
+                    .setContentIntent(pendingIntent)
+                    .setPriority(Notification.PRIORITY_MAX)
+                    .setAutoCancel(true)
+                    .build());
+
+            // Kill activity and service if fragment not visible
+            if (!fragmentIsActive) {
+                sendBroadcast(new Intent("shutdown"));
+                stopSelf();
+            }
+
+            // Useless return but we're gonna do it anyways
+            return;
+        }
+
+        // Check for condition that leadership has changed
+        String prevLeader = "";
+
+        if (mGroup != null) {
+            // Get previous leader
+            prevLeader = mGroup.getLeader();
+        }
+
+        // Assign new group
+        mGroup = course.getGroupByIndex(groupIndex);
+
+        // Show notification if ownership changed
+        if (mGroup.getLeader().equals(FirebaseAuth.getInstance().getCurrentUser().getEmail()) &&
+                !prevLeader.equals(mGroup.getLeader()) && !prevLeader.equals("")) {
+
+            mNotifyMgr.notify(0, new Notification.Builder(this)
+                      .setContentTitle("You are now the leader of your study group")
+                      .setContentText("Tap to open group management")
+                      .setSmallIcon(R.drawable.ic_logobunches_solid)
+                      .setDefaults(Notification.DEFAULT_ALL)
+                      .setContentIntent(pendingIntent)
+                      .setPriority(Notification.PRIORITY_MAX)
+                      .setAutoCancel(true)
+                      .build());
+        }
+
+        // Get members arraylist
+        mMembers = mGroup.getGroupMembers();
+
+        // If group exists but the current user is no longer part of the member list, leave the group
+        if (!mMembers.contains(FirebaseAuth.getInstance().getCurrentUser().getEmail())) {
+            Log.d("Service", "User kicked from group in service");
+
+            // Update user info
+            mUser.setGroupID(null);
+            mUser.setGroupCourse(null);
+            mDatabase.updateUser(mUser);
+
+            // Remove group listener
+            mDatabase.removeServiceValueEventListener(mCourseName);
+
+            // Show a notification
+            mNotifyMgr.notify(0, new Notification.Builder(this)
+                      .setContentTitle("You have been kicked from the study group")
+                      .setContentText("Tap to join or create a new group")
+                      .setSmallIcon(R.drawable.ic_logobunches_solid)
+                      .setDefaults(Notification.DEFAULT_ALL)
+                      .setContentIntent(pendingIntent)
+                      .setPriority(Notification.PRIORITY_MAX)
+                      .setAutoCancel(true)
+                      .build());
+
+            // Kill activity and service if fragment not visible
+            if (!fragmentIsActive) {
+                sendBroadcast(new Intent("shutdown"));
+                stopSelf();
+            }
+        }
     }
 
     @Override

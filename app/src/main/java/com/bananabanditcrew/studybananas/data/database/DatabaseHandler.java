@@ -1,13 +1,13 @@
 package com.bananabanditcrew.studybananas.data.database;
 
 import android.os.SystemClock;
-import android.renderscript.Sampler;
 import android.util.Log;
 import android.util.SparseArray;
 
 import com.bananabanditcrew.studybananas.data.Course;
 import com.bananabanditcrew.studybananas.data.Group;
 import com.bananabanditcrew.studybananas.data.User;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -49,6 +49,9 @@ public class DatabaseHandler {
 
     // Listener for connection state
     private ValueEventListener mConnectionStateListener;
+
+    // Listener for root of database
+    private ValueEventListener mRootListener;
 
     public DatabaseHandler() {
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -231,7 +234,7 @@ public class DatabaseHandler {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                callback.onCourseRetrieved(dataSnapshot.getValue(Course.class), true);
+                callback.onCourseRetrieved(dataSnapshot.getValue(Course.class));
             }
 
             @Override
@@ -279,7 +282,7 @@ public class DatabaseHandler {
             mGroupListener = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    callback.onCourseRetrieved(dataSnapshot.getValue(Course.class), true);
+                    callback.onCourseRetrieved(dataSnapshot.getValue(Course.class));
                 }
 
                 @Override
@@ -304,7 +307,7 @@ public class DatabaseHandler {
             mGroupServiceListener = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    callback.onCourseRetrieved(dataSnapshot.getValue(Course.class), false);
+                    callback.onCourseRetrieved(dataSnapshot.getValue(Course.class));
                 }
 
                 @Override
@@ -545,6 +548,38 @@ public class DatabaseHandler {
                     .getReference(".info/connected");
             connectedRef.removeEventListener(mConnectionStateListener);
             mConnectionStateListener = null;
+        }
+    }
+
+    public void addRootListener(final DatabaseCallback.RootCallback callback) {
+        if (mRootListener == null) {
+            Log.d("Root Listener", "Adding root listener");
+            DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference()
+                    .child("users").child(uidFromEmail(
+                            FirebaseAuth.getInstance().getCurrentUser().getEmail()));
+            mRootListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    callback.onRootRetrieved();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            };
+
+            connectedRef.addValueEventListener(mRootListener);
+        }
+    }
+
+    public void removeRootListener() {
+        if (mRootListener != null) {
+            Log.d("Root Listener", "Removing root listener");
+            DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference()
+                    .child("users");
+            connectedRef.removeEventListener(mRootListener);
+            mRootListener = null;
         }
     }
 }
