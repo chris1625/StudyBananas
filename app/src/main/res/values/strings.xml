@@ -62,4 +62,5 @@
     <string name="changed_leadership">You have transferred leadership to %1$s.</string>
     <string name="new_leader">You are now the leader of this study group!</string>
     <string name="sign_out_error">Please leave or disband your group before signing out.</string>
+
 </resources>

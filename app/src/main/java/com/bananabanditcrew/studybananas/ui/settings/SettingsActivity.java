@@ -1,6 +1,7 @@
 package com.bananabanditcrew.studybananas.ui.settings;
 
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,13 +13,25 @@ import android.widget.ToggleButton;
 import android.view.View;
 import com.bananabanditcrew.studybananas.R;
 
+import java.io.IOException;
+
 public class SettingsActivity extends AppCompatActivity {
-    private static final int secret_threshold = 5;
+
+    public static final String SHARED_PREF_FILE = "MyPrefs";
+    public static final String ALL_SETTINGS_PREF = "allSettings";
+    public static final String JOIN_SETTINGS_PREF= "newJoinSettings";
+    public static final String LEAVE_SETTINGS_PREF= "leaveSettings";
+    public static final String MNG_SETTINGS_PREF = "managementChangeSettings";
+    public static final String SECRET_SONG_PREF = "secretSongPreference";
+
+    private static final int secret_threshold = 10;
     private Switch switch1, switch2, switch3, switch4;
     private Button secret_button;
     private ToggleButton secret_toggle_button;
 
-    private int timesClicked;
+    private static MediaPlayer songPlayer;
+
+    private static int timesClicked;
     private static boolean showSecret = false;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,11 +49,14 @@ public class SettingsActivity extends AppCompatActivity {
         secret_toggle_button = (ToggleButton) findViewById(R.id.secret_toggle_button);
 
         // Get Preferences
-        SharedPreferences settings = getSharedPreferences("MyPrefs", 0);
-        boolean allSettingState = settings.getBoolean("allSettings", true);
-        boolean newJoinSettingState = settings.getBoolean("newJoinSettings", true);
-        boolean leaveSettingState = settings.getBoolean("leaveSettings", true);
-        boolean managementSettingState = settings.getBoolean("managementChangeSettings", true);
+        SharedPreferences settings = getSharedPreferences(SHARED_PREF_FILE, 0);
+        boolean allSettingState = settings.getBoolean(ALL_SETTINGS_PREF, true);
+        boolean newJoinSettingState = settings.getBoolean(JOIN_SETTINGS_PREF, true);
+        boolean leaveSettingState = settings.getBoolean(LEAVE_SETTINGS_PREF, true);
+        boolean managementSettingState = settings.getBoolean(MNG_SETTINGS_PREF, true);
+
+        // Possibly move this into if (showSecret) statement
+        boolean secretSongState = settings.getBoolean(SECRET_SONG_PREF, false);
 
         // Update buttons based on preferences
         switch1.setChecked(allSettingState);
@@ -48,29 +64,35 @@ public class SettingsActivity extends AppCompatActivity {
         switch3.setChecked(leaveSettingState);
         switch4.setChecked(managementSettingState);
 
-        // Check to see if the secret button will be enabled.
-        if (showSecret) {
-            enableSecretButton();
+        // Create a media player to load the secret song, and have it ready to loop.
+        // Do this only upon the first creation of the activity, and the player is static.
+        if (songPlayer == null) {
+            songPlayer = MediaPlayer.create(SettingsActivity.this, R.raw.musume);
+            songPlayer.setLooping(true);
         }
 
+        // Check to see if the secret button will be enabled. If enabled, keep its
+        // preferences updated.
+        if (showSecret) {
+            enableSecretButton();
+            secret_toggle_button.setChecked(secretSongState);
+        }
+
+        // Switch1 controls the state of all three other switches
         switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    switch2.setChecked(true);
-                    switch3.setChecked(true);
-                    switch4.setChecked(true);
-                }
-                else{
-                    switch2.setChecked(false);
-                    switch3.setChecked(false);
-                    switch4.setChecked(false);
-                }
+
+                    switch2.setChecked(isChecked);
+                    switch3.setChecked(isChecked);
+                    switch4.setChecked(isChecked);
+
             }
 
         });
 
+        // Listen for enough secret button presses before enabling super secret button
         secret_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,21 +109,46 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
+        // Listen for enough secret button presses before enabling super secret button
+        secret_toggle_button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if(isChecked) {
+                    // Start song when button is enabled.
+                    songPlayer.start();
+                }
+                else {
+                    // Stop song when button is disabled.
+                    songPlayer.stop();
+                    try {
+                        songPlayer.prepare();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
     }
 
     @Override
-    protected void onStop(){
-        super.onStop();
+    protected void onDestroy(){
+        super.onDestroy();
 
-        SharedPreferences settings = getSharedPreferences("MyPrefs", 0);
+        // Update preferences
+        SharedPreferences settings = getSharedPreferences(SHARED_PREF_FILE, 0);
         SharedPreferences.Editor editor = settings.edit();
-        editor.putBoolean("allSettings", switch1.isChecked());
-        editor.putBoolean("newJoinSettings", switch2.isChecked());
-        editor.putBoolean("leaveSettings", switch3.isChecked());
-        editor.putBoolean("managementChangeSettings", switch4.isChecked());
-
+        editor.putBoolean(ALL_SETTINGS_PREF, switch1.isChecked());
+        editor.putBoolean(JOIN_SETTINGS_PREF, switch2.isChecked());
+        editor.putBoolean(LEAVE_SETTINGS_PREF, switch3.isChecked());
+        editor.putBoolean(MNG_SETTINGS_PREF, switch4.isChecked());
+        editor.putBoolean(SECRET_SONG_PREF, secret_toggle_button.isChecked());
+        // Apply preference updates * MUST DO THIS LINE AFTER EVERY UPDATE OF PREFERENCE *
         editor.apply();
     }
+
+    // Enable and show secret button
     public void enableSecretButton() {
         secret_toggle_button.setEnabled(true);
         secret_toggle_button.setVisibility(View.VISIBLE);
