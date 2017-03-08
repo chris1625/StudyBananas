@@ -61,8 +61,17 @@ public interface CreateGroupContract {
 
         String getAddress();
 
-        boolean doValidations();
+        public void setTime_compatibility_error(boolean time_compatibility_error);
 
+        public boolean isEnd_time_picked();
+
+        public boolean isStart_time_picked();
+
+        public boolean isCourse_selected();
+
+        public boolean isLocation_picked();
+
+        public boolean isMax_members_picked();
     }
 
     interface Presenter extends BasePresenter{
@@ -75,5 +84,6 @@ public interface CreateGroupContract {
 
         HomeContract.HomeActivityCallback getHomeActivityCallback();
 
+        boolean doValidations();
     }
 }

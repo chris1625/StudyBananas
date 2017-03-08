@@ -11,15 +11,8 @@ import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
 import com.bananabanditcrew.studybananas.data.database.DatabaseHandler;
 import com.bananabanditcrew.studybananas.ui.home.HomeContract;
 import com.bananabanditcrew.studybananas.ui.home.HomeFragment;
-import com.bananabanditcrew.studybananas.ui.joingroup.JoinGroupContract;
 import com.google.firebase.auth.FirebaseAuth;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-
-/**
- * Created by Ryan on 2/24/2017.
- */
 
 public class CreateGroupPresenter implements DatabaseCallback.GetUserCallback,
                                              DatabaseCallback.GetCourseCallback,
@@ -61,7 +54,6 @@ public class CreateGroupPresenter implements DatabaseCallback.GetUserCallback,
 
     @Override
     public void attemptCreateGroup() {
-        boolean cancel;
         int mStartHour = mCreateGroupView.getStartHour();
         int mStartMinute = mCreateGroupView.getStartMinute();
         int mEndHour = mCreateGroupView.getEndHour();
@@ -109,5 +101,43 @@ public class CreateGroupPresenter implements DatabaseCallback.GetUserCallback,
     @Override
     public HomeContract.HomeActivityCallback getHomeActivityCallback() {
         return mHomeActivityCallback;
+    }
+
+    @Override
+    public boolean doValidations() {
+        boolean correct_info_given=true;
+        boolean start_time_picked=true;
+        boolean end_time_picked=true;
+        if(!mCreateGroupView.isLocation_picked()){
+            mCreateGroupView.showNoLocationPickedError();
+            correct_info_given=false;
+        }
+        if(!mCreateGroupView.isStart_time_picked()){
+            mCreateGroupView.showNoStartTimePickedError();
+            correct_info_given=false;
+            start_time_picked=false;
+        }
+        if(!mCreateGroupView.isEnd_time_picked()){
+            mCreateGroupView.showNoEndTimePickedError();
+            correct_info_given=false;
+            end_time_picked=false;
+        }
+        if(!mCreateGroupView.isMax_members_picked()){
+            mCreateGroupView.showNoMaxPeoplePickedError();
+            correct_info_given=false;
+        }
+        if(!mCreateGroupView.isCourse_selected()){
+            mCreateGroupView.showNoCoursePickedError();
+            correct_info_given=false;
+        }
+        if(mCreateGroupView.isStart_time_picked() && mCreateGroupView.isEnd_time_picked()){
+            int numHours= mCreateGroupView.getEndHour()-mCreateGroupView.getStartHour();
+            if(numHours >12 || (numHours > -12 &&numHours<0)){
+                mCreateGroupView.setTime_compatibility_error(true);
+                mCreateGroupView.showIncorrectTimeError();
+                correct_info_given=false;
+            }
+        }
+        return correct_info_given;
     }
 }

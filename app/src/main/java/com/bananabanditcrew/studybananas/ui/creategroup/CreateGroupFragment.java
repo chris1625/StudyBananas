@@ -2,7 +2,6 @@ package com.bananabanditcrew.studybananas.ui.creategroup;
 
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,53 +11,37 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.format.DateFormat;
-import android.view.ActionMode;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ExpandableListView;
-import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.bananabanditcrew.studybananas.R;
-import com.bananabanditcrew.studybananas.data.Course;
 import com.bananabanditcrew.studybananas.services.GroupListenerService;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionContract;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionFragment;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionPresenter;
-import com.bananabanditcrew.studybananas.ui.home.HomeFragment;
-import com.bananabanditcrew.studybananas.ui.joingroup.JoinGroupContract;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 
-import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 public class CreateGroupFragment extends Fragment implements CreateGroupContract.View, GoogleApiClient.OnConnectionFailedListener {
 
-    private String DEFAULT_BUTTON_TEXT="Select";
     private CreateGroupContract.Presenter mPresenter;
     private AutoCompleteTextView mCoursesSelect;
-    private ArrayList<Course> mCourseArrayList;
     private Button mStartTimeButton;
     private Button mEndTimeButton;
     private Button mMaxGroupButton;
@@ -75,6 +58,11 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
     private String course;
     private boolean course_selected;
     private boolean time_compatibility_error;
+    private boolean start_time_picked;
+    private boolean end_time_picked;
+    private boolean location_picked;
+    private boolean max_members_picked;
+
 
     private GroupInteractionContract.Presenter mGroupInteractionPresenter;
 
@@ -82,7 +70,6 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
         // Required empty public constructor
     }
 
-    // TODO: Rename and change types and number of parameters
     public static CreateGroupFragment newInstance() { return new CreateGroupFragment(); }
 
     @Override
@@ -96,6 +83,10 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
         // Inflate the layout for this fragment
         course_selected=false;
         time_compatibility_error=false;
+        start_time_picked=false;
+        end_time_picked=false;
+        location_picked=false;
+        boolean max_members_picked=false;
         final Calendar c = Calendar.getInstance();
         startHour = c.get(Calendar.HOUR_OF_DAY);
         startMinute = c.get(Calendar.MINUTE);
@@ -150,7 +141,7 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
             @Override
             public void onClick(View v) {
                 resetErrors();
-                if(doValidations()) {
+                if(mPresenter.doValidations()) {
                     mPresenter.attemptCreateGroup();
                     showSuccessIndicator();
                 }
@@ -232,6 +223,7 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
                     min="0"+min;
                 }
                 mStartTimeButton.setText(hour + ":" + min+stub);
+                start_time_picked=true;
             }
         }, startHour, startMinute, DateFormat.is24HourFormat(getActivity()));
         tpd.show();
@@ -262,6 +254,7 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
                     min="0"+min;
                 }
                 mEndTimeButton.setText(hour + ":" + min+stub);
+                end_time_picked=true;
             }
         }, endHour, endMinute, DateFormat.is24HourFormat(getActivity()));
         tpd.show();
@@ -291,7 +284,9 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
                             public void onClick(DialogInterface dialog,
                                                 int id) {
                                 maxNum=aNumberPicker.getValue();
-                                mMaxGroupButton.setText(""+maxNum);
+                                String temp_text= ""+maxNum;
+                                mMaxGroupButton.setText(temp_text);
+                                max_members_picked=true;
                             }
                         })
                 .setNegativeButton("Cancel",
@@ -395,9 +390,15 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
             Place place = PlaceAutocomplete.getPlace(getActivity(),intent);
             //System.out.println(place.getName());
         } catch (GooglePlayServicesRepairableException e) {
-            // TODO: Handle the error.
+            AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
+            alertDialog.setTitle("Error");
+            alertDialog.setMessage("Google Play Services stopped working");
+            alertDialog.show();
         } catch (GooglePlayServicesNotAvailableException e) {
-            // TODO: Handle the error.
+            AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
+            alertDialog.setTitle("Error");
+            alertDialog.setMessage("Google Play Services stopped working");
+            alertDialog.show();
         }
     }
 
@@ -409,47 +410,13 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
     @Override
     public String getAddress() { return address;}
 
-    @Override
-    public boolean doValidations() {
-        boolean correct_info_given=true;
-        boolean start_time_picked=true;
-        boolean end_time_picked=true;
-        if(mLocationButton.getText().toString().equals(DEFAULT_BUTTON_TEXT)){
-            showNoLocationPickedError();
-            correct_info_given=false;
-        }
-        if(mStartTimeButton.getText().toString().equals(DEFAULT_BUTTON_TEXT)){
-            showNoStartTimePickedError();
-            correct_info_given=false;
-            start_time_picked=false;
-        }
-        if(mEndTimeButton.getText().toString().equals(DEFAULT_BUTTON_TEXT)){
-            showNoEndTimePickedError();
-            correct_info_given=false;
-            end_time_picked=false;
-        }
-        if(mMaxGroupButton.getText().toString().equals(DEFAULT_BUTTON_TEXT)){
-            showNoMaxPeoplePickedError();
-            correct_info_given=false;
-        }
-        if(!course_selected){
-            showNoCoursePickedError();
-            correct_info_given=false;
-        }
-        if(start_time_picked && end_time_picked){
-            int numHours= endHour-startHour;
-            if(numHours >12 || (numHours > -12 &&numHours<0)){
-                time_compatibility_error=true;
-                showIncorrectTimeError();
-                correct_info_given=false;
-            }
-        }
-        return correct_info_given;
-    }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        //TODO
+        AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
+        alertDialog.setTitle("Network Error");
+        alertDialog.setMessage("Unable to connect to the internet.");
+        alertDialog.show();
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -459,13 +426,12 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
                 location = place.getName().toString();
                 address = place.getAddress().toString();
                 mLocationButton.setText(place.getName().toString());
+                location_picked=true;
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                /*Status status = PlaceAutocomplete.getStatus(getActivity(), data);
-                // TODO: Handle the error.
-                Log.i(TAG, status.getStatusMessage());*/
-
-            } else if (resultCode == RESULT_CANCELED) {
-                // The user canceled the operation.
+                AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
+                alertDialog.setTitle("Error");
+                alertDialog.setMessage("Location could not be found");
+                alertDialog.show();
             }
         }
     }
@@ -481,5 +447,35 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
                 course_selected=true;
             }
         });
+    }
+
+    @Override
+    public void setTime_compatibility_error(boolean time_compatibility_error) {
+        this.time_compatibility_error = time_compatibility_error;
+    }
+
+    @Override
+    public boolean isEnd_time_picked() {
+        return end_time_picked;
+    }
+
+    @Override
+    public boolean isStart_time_picked() {
+        return start_time_picked;
+    }
+
+    @Override
+    public boolean isCourse_selected() {
+        return course_selected;
+    }
+
+    @Override
+    public boolean isLocation_picked() {
+        return location_picked;
+    }
+
+    @Override
+    public boolean isMax_members_picked() {
+        return max_members_picked;
     }
 }
