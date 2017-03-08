@@ -1,14 +1,19 @@
 package com.bananabanditcrew.studybananas.services;
 
 import android.annotation.TargetApi;
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.data.Course;
@@ -22,6 +27,8 @@ import com.bananabanditcrew.studybananas.ui.signin.SignInActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by chris on 3/3/17.
@@ -41,6 +48,8 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
     private Group mGroup;
     private User mUser;
     private DatabaseHandler mDatabase;
+    private Date mEndDate;
+    private PendingIntent mAlarmIntent;
 
     // Class used for the client Binder.
     public class LocalBinder extends Binder {
@@ -49,6 +58,16 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
             return GroupListenerService.this;
         }
     }
+
+    // Receiver for alarm manager to call once group time has expired
+    BroadcastReceiver timeExpiredReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("Service", "Alarm triggered");
+            // Disband the group
+            removeExpiredGroup();
+        }
+    };
 
     @Override @TargetApi(16)
     public void onCreate() {
@@ -75,11 +94,43 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
 
         // Get user
         mDatabase.getUser(FirebaseAuth.getInstance().getCurrentUser().getEmail(), this);
+
+        // Register receiver for group expiry
+        registerReceiver(timeExpiredReceiver, new IntentFilter("alarm_receiver"));
     }
 
     @Override
     public void onUserRetrieved(User user) {
         mUser = user;
+    }
+
+    private void removeExpiredGroup() {
+        if (mCourse != null && mGroup != null) {
+            // If is the leader, delete the group
+            if (mGroup.getLeader().equals(FirebaseAuth.getInstance().getCurrentUser().getEmail())) {
+                mDatabase.removeGroupFromCourse(mCourseName, mGroup);
+            }
+        }
+    }
+
+    @TargetApi(16)
+    private void showNotification(String title, String text) {
+        Intent notificationIntent = new Intent(this, SignInActivity.class);
+        NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        // Notification intent for all notifications
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        mNotifyMgr.notify(0, new Notification.Builder(this)
+                .setContentTitle(title)
+                .setContentText(text)
+                .setSmallIcon(R.drawable.ic_logobunches_solid)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setContentIntent(pendingIntent)
+                .setPriority(Notification.PRIORITY_MAX)
+                .setAutoCancel(true)
+                .build());
     }
 
     @Override @TargetApi(16)
@@ -89,14 +140,6 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
         mCourse = course;
 
         boolean fragmentIsActive = (mCallback != null);
-
-        // Notification manager for all notifications
-        NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-        // Notification intent for all notifications
-        Intent notificationIntent = new Intent(this, SignInActivity.class);
-        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
         com.bananabanditcrew.studybananas.data.Group group =
                 new com.bananabanditcrew.studybananas.data.Group(mPresenter.getGroupID());
@@ -118,15 +161,8 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
             mDatabase.removeServiceValueEventListener(mCourseName);
 
             // Show notification
-            mNotifyMgr.notify(0, new Notification.Builder(this)
-                    .setContentTitle("Your study group has been disbanded")
-                    .setContentText("Tap to create or join another group")
-                    .setSmallIcon(R.drawable.ic_logobunches_solid)
-                    .setDefaults(Notification.DEFAULT_ALL)
-                    .setContentIntent(pendingIntent)
-                    .setPriority(Notification.PRIORITY_MAX)
-                    .setAutoCancel(true)
-                    .build());
+            showNotification("Your study group has been disbanded",
+                    "Tap to create or join another group");
 
             // Kill activity and service if fragment not visible
             if (!fragmentIsActive) {
@@ -146,22 +182,42 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
             prevLeader = mGroup.getLeader();
         }
 
+        // Get previous date before update
+        Date previousDate = null;
+        if (mGroup != null) {
+            previousDate = parseDate(mGroup);
+        }
+
         // Assign new group
         mGroup = course.getGroupByIndex(groupIndex);
+
+        // Parse end time and convert it into a date
+        mEndDate = parseDate(mGroup);
+        Log.d("Service", "Parsed date is " + mEndDate);
+
+        // If user is group leader and the times are not the same create a new alarm
+        if (previousDate == null || mEndDate.equals(previousDate)) {
+            AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+            // Cancel current alarm if it exists
+            if (mAlarmIntent != null) {
+                mAlarmIntent.cancel();
+                manager.cancel(mAlarmIntent);
+                mAlarmIntent = null;
+            }
+
+            Log.d("Service", "Registering intent with alarm manager");
+            mAlarmIntent = PendingIntent.getBroadcast(this, 0,
+                    new Intent("alarm_receiver"), 0);
+            manager.set(AlarmManager.RTC_WAKEUP, mEndDate.getTime(), mAlarmIntent);
+        }
 
         // Show notification if ownership changed
         if (mGroup.getLeader().equals(FirebaseAuth.getInstance().getCurrentUser().getEmail()) &&
                 !prevLeader.equals(mGroup.getLeader()) && !prevLeader.equals("")) {
 
-            mNotifyMgr.notify(0, new Notification.Builder(this)
-                      .setContentTitle("You are now the leader of your study group")
-                      .setContentText("Tap to open group management")
-                      .setSmallIcon(R.drawable.ic_logobunches_solid)
-                      .setDefaults(Notification.DEFAULT_ALL)
-                      .setContentIntent(pendingIntent)
-                      .setPriority(Notification.PRIORITY_MAX)
-                      .setAutoCancel(true)
-                      .build());
+            showNotification("You are now the leader of your study group",
+                    "Tap to open group management");
         }
 
         // Get members arraylist
@@ -180,15 +236,8 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
             mDatabase.removeServiceValueEventListener(mCourseName);
 
             // Show a notification
-            mNotifyMgr.notify(0, new Notification.Builder(this)
-                      .setContentTitle("You have been kicked from the study group")
-                      .setContentText("Tap to join or create a new group")
-                      .setSmallIcon(R.drawable.ic_logobunches_solid)
-                      .setDefaults(Notification.DEFAULT_ALL)
-                      .setContentIntent(pendingIntent)
-                      .setPriority(Notification.PRIORITY_MAX)
-                      .setAutoCancel(true)
-                      .build());
+            showNotification("You have been kicked from the study group",
+                    "Tap to join to create a new group");
 
             // Kill activity and service if fragment not visible
             if (!fragmentIsActive) {
@@ -196,6 +245,25 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
                 stopSelf();
             }
         }
+    }
+
+    private Date parseDate(Group group) {
+        int startHour = group.getStartHour();
+        int startMinute = group.getStartMinute();
+        int endHour = group.getEndHour();
+        int endMinute = group.getEndMinute();
+
+        Calendar calendar = Calendar.getInstance();
+
+        // If the time is less than the current time, it is tomorrow
+        if (endHour < startHour || (endHour == startHour && startMinute > endMinute)) {
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        }
+
+        calendar.set(Calendar.HOUR_OF_DAY, endHour);
+        calendar.set(Calendar.MINUTE, endMinute);
+
+        return calendar.getTime();
     }
 
     @Override
@@ -221,6 +289,17 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
     public void onDestroy() {
         super.onDestroy();
         mDatabase.removeServiceValueEventListener(mCourseName);
+
+        // Unregister receiver and remove any existing alarm manager intent
+        unregisterReceiver(timeExpiredReceiver);
+        if (mAlarmIntent != null) {
+            Log.d("Service", "Removing alarm intent");
+            AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            mAlarmIntent.cancel();
+            manager.cancel(mAlarmIntent);
+            mAlarmIntent = null;
+        }
+
         Log.d("Service", "Destroying service");
     }
 }
