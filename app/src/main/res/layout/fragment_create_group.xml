@@ -7,6 +7,16 @@
     android:orientation="vertical"
     android:id="@+id/fragment_create_group">
 
+    <!--Dummy layout to grab focus -->
+    <LinearLayout
+        android:id="@+id/create_group_dummy_layout"
+        android:layout_width="0px"
+        android:layout_height="0px"
+        android:orientation="vertical"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+    </LinearLayout>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -18,7 +28,6 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:id="@+id/group_create_form">
-
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -55,12 +64,14 @@
                     android:layout_weight="1"
                     android:textAppearance="@style/TextAppearance.AppCompat.Button" />
 
-                <Button
+                <android.support.v7.widget.AppCompatButton
                     android:text="@string/select"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/start_time_button"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    app:backgroundTint="@color/colorPrimary"/>
 
             </LinearLayout>
 
@@ -78,12 +89,14 @@
                     android:layout_weight="1"
                     android:textAppearance="@style/TextAppearance.AppCompat.Button" />
 
-                <Button
+                <android.support.v7.widget.AppCompatButton
                     android:text="@string/select"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/end_time_button"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    app:backgroundTint="@color/colorPrimary" />
 
             </LinearLayout>
 
@@ -101,12 +114,14 @@
                     android:layout_weight="1"
                     android:textAppearance="@style/TextAppearance.AppCompat.Button" />
 
-                <Button
+                <android.support.v7.widget.AppCompatButton
                     android:text="@string/select"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/max_people_button"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    app:backgroundTint="@color/colorPrimary"/>
 
             </LinearLayout>
 
@@ -124,41 +139,39 @@
                     android:layout_weight="1"
                     android:textAppearance="@style/TextAppearance.AppCompat.Button" />
 
-                <Button
+                <android.support.v7.widget.AppCompatButton
                     android:text="@string/select"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/location_button"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    app:backgroundTint="@color/colorPrimary"/>
 
             </LinearLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <EditText
+                android:layout_marginTop="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lines="5"
+                android:minLines="5"
+                android:gravity="top|start"
+                android:maxLines="10"
+                android:layout_marginBottom="10dp"
+                android:inputType="textMultiLine|textCapSentences"
+                android:ems="10"
+                android:id="@+id/description_text"
+                android:hint="@string/description_hint"
+                android:background="@android:drawable/edit_text" />
+
+            <android.support.v7.widget.AppCompatButton
+                android:text="@string/create_group"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="15dp" >
-
-                <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:lines="5"
-                    android:minLines="5"
-                    android:gravity="top|start"
-                    android:maxLines="10"
-                    android:layout_marginBottom="10dp"
-                    android:inputType="textMultiLine"
-                    android:ems="10"
-                    android:id="@+id/description_text"
-                    android:hint="@string/description_hint"
-                    android:background="@android:drawable/edit_text" />
-
-                <Button
-                    android:text="@string/create_group"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/new_group_button"
-                    android:layout_weight="1" />
-            </android.support.design.widget.TextInputLayout>
+                android:id="@+id/new_group_button"
+                style="@style/Widget.AppCompat.Button.Colored"
+                app:backgroundTint="@color/colorPrimary"/>
 
         </LinearLayout>
     </ScrollView>

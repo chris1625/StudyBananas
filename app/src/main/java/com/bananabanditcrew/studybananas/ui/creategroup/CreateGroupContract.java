@@ -39,8 +39,6 @@ public interface CreateGroupContract {
 
         void showGroupInteractionView(String course, String groupID);
 
-        void showSuccessIndicator();
-
         String getDescription();
 
         int getStartHour();

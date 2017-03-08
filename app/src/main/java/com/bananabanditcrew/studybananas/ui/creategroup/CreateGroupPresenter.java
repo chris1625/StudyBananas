@@ -71,7 +71,7 @@ public class CreateGroupPresenter implements DatabaseCallback.GetUserCallback,
     }
 
     @Override
-    public void onCourseRetrieved(Course course, boolean isUIActive) {
+    public void onCourseRetrieved(Course course) {
         mCourse = course;
         mDatabase.getUser(FirebaseAuth.getInstance().getCurrentUser().getEmail(), this);
     }
@@ -106,8 +106,6 @@ public class CreateGroupPresenter implements DatabaseCallback.GetUserCallback,
     @Override
     public boolean doValidations() {
         boolean correct_info_given=true;
-        boolean start_time_picked=true;
-        boolean end_time_picked=true;
         if(!mCreateGroupView.isLocation_picked()){
             mCreateGroupView.showNoLocationPickedError();
             correct_info_given=false;
@@ -115,12 +113,10 @@ public class CreateGroupPresenter implements DatabaseCallback.GetUserCallback,
         if(!mCreateGroupView.isStart_time_picked()){
             mCreateGroupView.showNoStartTimePickedError();
             correct_info_given=false;
-            start_time_picked=false;
         }
         if(!mCreateGroupView.isEnd_time_picked()){
             mCreateGroupView.showNoEndTimePickedError();
             correct_info_given=false;
-            end_time_picked=false;
         }
         if(!mCreateGroupView.isMax_members_picked()){
             mCreateGroupView.showNoMaxPeoplePickedError();

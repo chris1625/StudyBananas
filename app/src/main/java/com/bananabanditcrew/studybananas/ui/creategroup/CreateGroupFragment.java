@@ -3,6 +3,7 @@ package com.bananabanditcrew.studybananas.ui.creategroup;
 
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,14 +11,17 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
 import android.widget.TimePicker;
@@ -37,11 +41,13 @@ import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import java.util.Calendar;
 
 import static android.app.Activity.RESULT_OK;
+import static com.bananabanditcrew.studybananas.ui.joingroup.JoinGroupFragment.closeKeyboard;
 
 public class CreateGroupFragment extends Fragment implements CreateGroupContract.View, GoogleApiClient.OnConnectionFailedListener {
 
     private CreateGroupContract.Presenter mPresenter;
     private AutoCompleteTextView mCoursesSelect;
+    private LinearLayout mDummyLayout;
     private Button mStartTimeButton;
     private Button mEndTimeButton;
     private Button mMaxGroupButton;
@@ -92,7 +98,7 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
         startMinute = c.get(Calendar.MINUTE);
         endHour = c.get(Calendar.HOUR_OF_DAY);
         endMinute = c.get(Calendar.MINUTE);
-        View root = inflater.inflate(R.layout.fragment_create_group, container, false);
+        final View root = inflater.inflate(R.layout.fragment_create_group, container, false);
         mCoursesSelect = (AutoCompleteTextView) root.findViewById(R.id.pick_class);
         setupCoursesSelectView();
         mStartTimeButton= (Button)root.findViewById(R.id.start_time_button);
@@ -100,6 +106,8 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
         mMaxGroupButton= (Button)root.findViewById(R.id.max_people_button);
         mDescritionText= (EditText)root.findViewById(R.id.description_text);
         mLocationButton=(Button)root.findViewById(R.id.location_button);
+
+        mDummyLayout = (LinearLayout)root.findViewById(R.id.create_group_dummy_layout);
         mStartTimeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -143,10 +151,13 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
                 resetErrors();
                 if(mPresenter.doValidations()) {
                     mPresenter.attemptCreateGroup();
-                    showSuccessIndicator();
                 }
             }
         });
+
+        // Set title of app to "create group"
+        ((AppCompatActivity)getActivity()).getSupportActionBar()
+                .setTitle(getString(R.string.create_group));
         return root;
     }
 
@@ -208,16 +219,16 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
                 startMinute = minute;
                 String min=""+minute;
                 int hour=hourOfDay;
-                String stub=" a.m.";
+                String stub=" am";
                 if(hour==0){
                     hour=12;
                 }
                 else if(hour>12) {
                     hour = hour - 12;
-                    stub = " p.m.";
+                    stub = " pm";
                 }
                 else if(hour==12){
-                    stub=" p.m.";
+                    stub=" pm";
                 }
                 if(minute<10){
                     min="0"+min;
@@ -239,16 +250,16 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
                 endMinute = minute;
                 String min=""+minute;
                 int hour=hourOfDay;
-                String stub=" a.m.";
+                String stub=" am";
                 if(hour==0){
                     hour=12;
                 }
                 else if(hour>12){
                     hour=hour-12;
-                    stub= " p.m.";
+                    stub= " pm";
                 }
                 else if(hour==12){
-                    stub=" p.m.";
+                    stub=" pm";
                 }
                 if(minute<10){
                     min="0"+min;
@@ -334,14 +345,6 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
         // Start background service
         Intent intent = new Intent(getContext(), GroupListenerService.class);
         getActivity().startService(intent);
-    }
-
-    @Override
-    public void showSuccessIndicator() {
-        AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-        alertDialog.setTitle("Creating Group");
-        alertDialog.setMessage("Success");
-        alertDialog.show();
     }
 
     @Override
@@ -435,6 +438,7 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
             }
         }
     }
+
     public void setupCoursesSelectView() {
         mCoursesSelect.setAdapter(mPresenter.getCoursesAdapter());
 
@@ -445,6 +449,8 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
                 course=mCoursesSelect.getText().toString();
                 mCoursesSelect.setError(null);
                 course_selected=true;
+                mDummyLayout.requestFocus();
+                closeKeyboard(getActivity(), mDummyLayout.getWindowToken());
             }
         });
     }

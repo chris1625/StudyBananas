@@ -54,7 +54,7 @@
     <string name="select">Select</string>
     <string name="max_members">Max Members: </string>
     <string name="location">"LOCATION: "</string>
-    <string name="description_hint">"Description (Optional)"</string>
+    <string name="description_hint">"Describe what you are studying and help people find you in this box"</string>
     <string name="title_activity_settings">Settings</string>
     <string name="leave_group">Leave Group</string>
     <string name="disband_group">Disband Group</string>
