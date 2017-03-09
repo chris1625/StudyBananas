@@ -3,7 +3,6 @@ package com.bananabanditcrew.studybananas.ui.creategroup;
 
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,7 +15,6 @@ import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -211,8 +209,8 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
 
     @Override
     public void showStartTimePicker() {
-        TimePickerDialog tpd = new TimePickerDialog(getActivity(), AlertDialog.THEME_DEVICE_DEFAULT_DARK
-                , new TimePickerDialog.OnTimeSetListener() {
+        TimePickerDialog tpd = new TimePickerDialog(getActivity(),
+                new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 startHour = hourOfDay;
@@ -242,8 +240,8 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
 
     @Override
     public void showEndTimePicker() {
-        TimePickerDialog tpd = new TimePickerDialog(getActivity(), AlertDialog.THEME_DEVICE_DEFAULT_DARK
-                , new TimePickerDialog.OnTimeSetListener() {
+        TimePickerDialog tpd = new TimePickerDialog(getActivity(),
+                new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 endHour = hourOfDay;
@@ -410,7 +408,6 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
         return location;
     }
 
-    @Override
     public String getAddress() { return address;}
 
 

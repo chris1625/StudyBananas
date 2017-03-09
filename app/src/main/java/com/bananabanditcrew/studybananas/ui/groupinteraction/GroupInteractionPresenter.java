@@ -404,4 +404,9 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
     public String getAddress() {
         return mGroup != null ? mGroup.getAddressLine() : "";
     }
+
+    @Override
+    public String getLocationName() {
+        return mGroup != null ? mGroup.getLocationName() : "";
+    }
 }

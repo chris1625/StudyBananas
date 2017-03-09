@@ -39,7 +39,6 @@ import com.bananabanditcrew.studybananas.services.GroupListenerService;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionFragment;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionPresenter;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -50,6 +49,7 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
     private LinearLayout mDummyLayout;
     private AutoCompleteTextView mCoursesSelect;
     private ExpandableListView mUserCourseList;
+    private TextView mEmptyView;
     private ArrayList<Course> mCourseArrayList;
     private GroupInteractionPresenter mGroupInteractionPresenter;
 
@@ -93,7 +93,8 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         mCoursesSelect = (AutoCompleteTextView) root.findViewById(R.id.course_select);
         setupCoursesSelectView();
         mUserCourseList = (ExpandableListView) root.findViewById(R.id.courses_list);
-
+        mEmptyView = (TextView) root.findViewById(R.id.courses_empty);
+        mUserCourseList.setEmptyView(mEmptyView);
         mPresenter.getUserSavedCourses();
 
         Button testButton = (Button) root.findViewById(R.id.test_create_group_button);
@@ -278,7 +279,8 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
                     expandedListPosition++;
                 }
             }
-            return studyGroups.get(expandedListPosition);
+            return (expandedListPosition < studyGroups.size()) ?
+                    studyGroups.get(expandedListPosition) : null;
         }
 
         @Override
@@ -291,6 +293,15 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
                                  boolean isLastChild, View convertView, ViewGroup parent) {
 
             final Group groupRef = getChild(listPosition, expandedListPosition);
+
+            // If the group is null, we know there are no groups, so show empty layout
+            if (groupRef == null) {
+                LayoutInflater layoutInflater =
+                        (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = layoutInflater.inflate(R.layout.empty_course, null);
+                return convertView;
+            }
+
             final String locationName = groupRef.getLocationName();
 
             // Get time string
@@ -319,7 +330,7 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
             final String members = Integer.toString(groupRef.getGroupMembers().size()) +
                     "/" + Integer.toString(groupRef.getMaxMembers());
 
-            if (convertView == null) {
+            if (convertView == null || convertView.findViewById(R.id.location_button) == null) {
                 LayoutInflater layoutInflater =
                         (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = layoutInflater.inflate(R.layout.list_item_group, null);
@@ -358,9 +369,8 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         }
 
         private void showGoogleMaps(Group group) {
-
-            // TODO update this later to point to unique location
-            String intentString = "http://maps.google.co.in/maps?q=" + group.getAddressLine();
+            String intentString = "http://maps.google.co.in/maps?q=" + group.getLocationName() +
+                    " " + group.getAddressLine();
             Uri gmmIntentUri = Uri.parse(intentString);
             Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
             mapIntent.setPackage("com.google.android.apps.maps");
@@ -377,7 +387,7 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
                     visibleCount++;
                 }
             }
-            return visibleCount;
+            return visibleCount == 0 ? 1 : visibleCount;
         }
 
         @Override

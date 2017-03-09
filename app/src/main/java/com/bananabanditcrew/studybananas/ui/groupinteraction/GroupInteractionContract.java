@@ -107,5 +107,6 @@ public interface GroupInteractionContract {
 
         String getAddress();
 
+        String getLocationName();
     }
 }

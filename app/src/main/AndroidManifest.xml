@@ -20,10 +20,10 @@
         android:theme="@style/AppTheme">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBA5ZNblCh-Wa9NQVAKRUrTBasNRn68ZBo"/>
+            android:value="AIzaSyAOhEMZniooyX_j2PZs2aDCGF8hj9XSxaw"/>
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyBI10H4vdTWzkjLgMmH3XbD617zxdWUws0"/>
+            android:value="AIzaSyAOhEMZniooyX_j2PZs2aDCGF8hj9XSxaw"/>
 
         <activity
             android:name="com.bananabanditcrew.studybananas.ui.maps.MapsActivity"

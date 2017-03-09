@@ -197,7 +197,8 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
     }
 
     private void showGoogleMaps() {
-        String intentString = "http://maps.google.co.in/maps?q=" + mPresenter.getAddress();
+        String intentString = "http://maps.google.co.in/maps?q=" + mPresenter.getLocationName() +
+                " " + mPresenter.getAddress();
         Uri gmmIntentUri = Uri.parse(intentString);
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
