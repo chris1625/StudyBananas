@@ -67,7 +67,7 @@ public class SettingsActivity extends AppCompatActivity {
         // Create a media player to load the secret song, and have it ready to loop.
         // Do this only upon the first creation of the activity, and the player is static.
         if (songPlayer == null) {
-            songPlayer = MediaPlayer.create(SettingsActivity.this, R.raw.chicknstu);
+            songPlayer = MediaPlayer.create(SettingsActivity.this, R.raw.secret_message);
             songPlayer.setLooping(true);
         }
 
