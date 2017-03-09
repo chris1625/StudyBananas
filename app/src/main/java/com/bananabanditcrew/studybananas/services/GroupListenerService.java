@@ -13,7 +13,6 @@ import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.data.Course;
@@ -22,13 +21,14 @@ import com.bananabanditcrew.studybananas.data.User;
 import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
 import com.bananabanditcrew.studybananas.data.database.DatabaseHandler;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionContract;
-import com.bananabanditcrew.studybananas.ui.home.HomeActivity;
 import com.bananabanditcrew.studybananas.ui.signin.SignInActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by chris on 3/3/17.
@@ -36,6 +36,17 @@ import java.util.Date;
 
 public class GroupListenerService extends Service implements DatabaseCallback.GetCourseCallback,
                                                              DatabaseCallback.GetUserCallback {
+
+    // Constants for notification IDs
+    private static final int NOTIFY_DISBANDED = 0;
+    private static final int NOTIFY_FOREGROUND = 1;
+    private static final int NOTIFY_NEW_LEADER = 2;
+    private static final int NOTIFY_NEW_ENDTIME = 3;
+    private static final int NOTIFY_NEW_CAPACITY = 4;
+    private static final int NOTIFY_KICKED = 5;
+    private static final int NOTIFY_MEMBER_JOIN = 6;
+    private static final int NOTIFY_MEMBER_LEAVE = 7;
+    private static final int NOTIFY_DESCRIPTION_CHANGE = 8;
 
     private final IBinder mBinder = new LocalBinder();
     private GroupListenerServiceCallbacks mCallback;
@@ -86,7 +97,7 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
                     .setContentIntent(pendingIntent)
                     .build();
 
-            startForeground(1, mNotification);
+            startForeground(NOTIFY_FOREGROUND, mNotification);
         }
 
         // Get instance of database
@@ -114,7 +125,7 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
     }
 
     @TargetApi(16)
-    private void showNotification(String title, String text) {
+    private void showNotification(String title, String text, int id) {
         Intent notificationIntent = new Intent(this, SignInActivity.class);
         NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
@@ -122,7 +133,7 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-        mNotifyMgr.notify(0, new Notification.Builder(this)
+        mNotifyMgr.notify(id, new Notification.Builder(this)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setSmallIcon(R.drawable.ic_logobunches_solid)
@@ -162,7 +173,7 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
 
             // Show notification
             showNotification("Your study group has been disbanded",
-                    "Tap to create or join another group");
+                    "Tap to create or join another group", NOTIFY_DISBANDED);
 
             // Kill activity and service if fragment not visible
             if (!fragmentIsActive) {
@@ -181,6 +192,10 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
             // Get previous leader
             prevLeader = mGroup.getLeader();
         }
+
+        // Get previous maxMembers and description
+        int prevCapacity = mGroup != null ? mGroup.getMaxMembers() : 0;
+        String prevDescription = mGroup != null ? mGroup.getDescription() : null;
 
         // Get previous date before update
         Date previousDate = null;
@@ -217,11 +232,45 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
                 !prevLeader.equals(mGroup.getLeader()) && !prevLeader.equals("")) {
 
             showNotification("You are now the leader of your study group",
-                    "Tap to open group management");
+                    "Tap to open group management", NOTIFY_NEW_LEADER);
         }
+
+        // If you aren't the leader, show messages that group info is updated
+        if (!mGroup.getLeader().equals(FirebaseAuth.getInstance().getCurrentUser().getEmail())) {
+            // Check for different end time
+            if (previousDate != null && !mEndDate.equals(previousDate)) {
+                String timeString = new SimpleDateFormat("h:mm aa", Locale.US).format(mEndDate);
+                showNotification("Your group's end time has been updated to " + timeString,
+                        "Tap to view group", NOTIFY_NEW_ENDTIME);
+            }
+
+            // Check for different maxSize
+            if (prevCapacity != 0 && prevCapacity != mGroup.getMaxMembers()) {
+                showNotification("Your group's member capacity has " +
+                        ((prevCapacity > mGroup.getMaxMembers()) ? "decreased" : "increased") +
+                        " to " + Integer.toString(mGroup.getMaxMembers()), "Tap to view group",
+                        NOTIFY_NEW_CAPACITY);
+            }
+
+            // Check for different description
+            if (prevDescription != null && !prevDescription.equals(mGroup.getDescription())) {
+                showNotification("Your group's description has been updated", "Tap to view",
+                        NOTIFY_DESCRIPTION_CHANGE);
+            }
+        }
+
+        // Get the previous size of the members arraylist
+        int prevSize = mMembers != null ? mMembers.size() : 0;
+        ArrayList<String> prevList = mMembers;
 
         // Get members arraylist
         mMembers = mGroup.getGroupMembers();
+
+        // Create copy of new list and store it
+        ArrayList<String> newList = new ArrayList<>(mMembers);
+
+        // Get the new size of the members arraylist
+        int newSize = mMembers != null ? mMembers.size() : 0;
 
         // If group exists but the current user is no longer part of the member list, leave the group
         if (!mMembers.contains(FirebaseAuth.getInstance().getCurrentUser().getEmail())) {
@@ -237,12 +286,33 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
 
             // Show a notification
             showNotification("You have been kicked from the study group",
-                    "Tap to join to create a new group");
+                    "Tap to join to create a new group", NOTIFY_KICKED);
 
             // Kill activity and service if fragment not visible
             if (!fragmentIsActive) {
                 sendBroadcast(new Intent("shutdown"));
                 stopSelf();
+            }
+            return;
+        }
+
+        // If the difference is negative, notify the user that someone has joined
+        if ((prevSize - newSize) < 0 && prevList != null) {
+            // Get the difference between the lists of members
+            newList.removeAll(prevList);
+
+            // Only show the notification if you weren't the person who joined
+            if (!newList.contains(FirebaseAuth.getInstance().getCurrentUser().getEmail())) {
+                showNotification("A banana has joined your study bunch", "Tap to view group",
+                        NOTIFY_MEMBER_JOIN);
+            }
+        } else if ((prevSize - newSize) > 0 && prevList != null) {
+            prevList.removeAll(newList);
+
+            // Only show the notification if you weren't the person who joined
+            if (!prevList.contains(FirebaseAuth.getInstance().getCurrentUser().getEmail())) {
+                showNotification("A banana has left your study bunch", "Tap to view group",
+                        NOTIFY_MEMBER_LEAVE);
             }
         }
     }
