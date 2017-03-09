@@ -319,7 +319,7 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
             locationButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                   showGoogleMaps();
+                   showGoogleMaps(groupRef);
 
                 }
             });
@@ -346,10 +346,11 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
             return convertView;
         }
 
-        public void showGoogleMaps() {
+        private void showGoogleMaps(Group group) {
 
             // TODO update this later to point to unique location
-            Uri gmmIntentUri = Uri.parse("geo:37.7749,-122.4194");
+            String intentString = "http://maps.google.co.in/maps?q=" + group.getAddressLine();
+            Uri gmmIntentUri = Uri.parse(intentString);
             Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
             mapIntent.setPackage("com.google.android.apps.maps");
             if (mapIntent.resolveActivity(mContext.getPackageManager()) != null) {

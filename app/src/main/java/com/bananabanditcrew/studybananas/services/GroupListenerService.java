@@ -196,7 +196,7 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
         Log.d("Service", "Parsed date is " + mEndDate);
 
         // If user is group leader and the times are not the same create a new alarm
-        if (previousDate == null || mEndDate.equals(previousDate)) {
+        if (previousDate == null || !mEndDate.equals(previousDate)) {
             AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
             // Cancel current alarm if it exists

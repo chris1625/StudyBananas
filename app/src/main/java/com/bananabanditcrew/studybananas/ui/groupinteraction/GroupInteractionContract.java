@@ -77,8 +77,6 @@ public interface GroupInteractionContract {
 
         void removeGroupListener();
 
-        void openMapView();
-
         void updateGroupInfo();
 
         void updateEditFields();
@@ -106,6 +104,8 @@ public interface GroupInteractionContract {
         String getGroupID();
 
         User getUser();
+
+        String getAddress();
 
     }
 }

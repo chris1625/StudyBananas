@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -159,6 +160,14 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
         mLeaveGroupButton = (Button) view.findViewById(R.id.leave_group_button);
         mMemberListView = (ListView) view.findViewById(R.id.group_interaction_member_list);
 
+        // Listener for location button
+        mLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showGoogleMaps();
+            }
+        });
+
         // Listener for set end time button
         mEndTimeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -185,6 +194,16 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
         mPresenter.setActionBarTitle();
 
         return view;
+    }
+
+    private void showGoogleMaps() {
+        String intentString = "http://maps.google.co.in/maps?q=" + mPresenter.getAddress();
+        Uri gmmIntentUri = Uri.parse(intentString);
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        if (mapIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            getActivity().startActivity(mapIntent);
+        }
     }
 
     @Override

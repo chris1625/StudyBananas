@@ -178,11 +178,6 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
     }
 
     @Override
-    public void openMapView() {
-
-    }
-
-    @Override
     public void addGroupListener() {
         mDatabase.addGroupValueEventListener(mCourseName, this);
     }
@@ -403,5 +398,10 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
     @Override
     public User getUser() {
         return mUser;
+    }
+
+    @Override
+    public String getAddress() {
+        return mGroup != null ? mGroup.getAddressLine() : "";
     }
 }

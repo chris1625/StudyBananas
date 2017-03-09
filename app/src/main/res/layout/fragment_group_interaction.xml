@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="10dp"
     android:orientation="vertical"
     android:id="@+id/fragment_group_interaction"
@@ -12,14 +13,17 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/group_interaction_location"
             android:layout_weight="0.7"
-            android:drawableRight="@drawable/ic_place"
-            android:drawableEnd="@drawable/ic_place"
-            android:textSize="20sp" />
+            android:drawableRight="@drawable/ic_place_grey"
+            android:drawableEnd="@drawable/ic_place_grey"
+            android:textSize="20sp"
+            android:textColor="#696969"
+            style="@style/Widget.AppCompat.Button.Colored"
+            app:backgroundTint="@color/colorPrimary"/>
 
         <ViewSwitcher
             android:id="@+id/group_interaction_members_switcher"
