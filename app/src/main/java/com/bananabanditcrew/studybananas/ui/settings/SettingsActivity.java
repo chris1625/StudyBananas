@@ -4,9 +4,7 @@ import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Switch;
 import android.widget.Button;
 import android.widget.ToggleButton;
@@ -21,7 +19,7 @@ public class SettingsActivity extends AppCompatActivity {
     public static final String ALL_SETTINGS_PREF = "allSettings";
     public static final String JOIN_SETTINGS_PREF= "newJoinSettings";
     public static final String LEAVE_SETTINGS_PREF= "leaveSettings";
-    public static final String MNG_SETTINGS_PREF = "managementChangeSettings";
+    public static final String INFO_SETTINGS_PREF = "infoChangeSettings";
     public static final String SECRET_SONG_PREF = "secretSongPreference";
 
     private static final int secret_threshold = 10;
@@ -53,7 +51,7 @@ public class SettingsActivity extends AppCompatActivity {
         boolean allSettingState = settings.getBoolean(ALL_SETTINGS_PREF, true);
         boolean newJoinSettingState = settings.getBoolean(JOIN_SETTINGS_PREF, true);
         boolean leaveSettingState = settings.getBoolean(LEAVE_SETTINGS_PREF, true);
-        boolean managementSettingState = settings.getBoolean(MNG_SETTINGS_PREF, true);
+        boolean infoSettingState = settings.getBoolean(INFO_SETTINGS_PREF, true);
 
         // Possibly move this into if (showSecret) statement
         boolean secretSongState = settings.getBoolean(SECRET_SONG_PREF, false);
@@ -62,7 +60,7 @@ public class SettingsActivity extends AppCompatActivity {
         switch1.setChecked(allSettingState);
         switch2.setChecked(newJoinSettingState);
         switch3.setChecked(leaveSettingState);
-        switch4.setChecked(managementSettingState);
+        switch4.setChecked(infoSettingState);
 
         // Create a media player to load the secret song, and have it ready to loop.
         // Do this only upon the first creation of the activity, and the player is static.
@@ -142,7 +140,7 @@ public class SettingsActivity extends AppCompatActivity {
         editor.putBoolean(ALL_SETTINGS_PREF, switch1.isChecked());
         editor.putBoolean(JOIN_SETTINGS_PREF, switch2.isChecked());
         editor.putBoolean(LEAVE_SETTINGS_PREF, switch3.isChecked());
-        editor.putBoolean(MNG_SETTINGS_PREF, switch4.isChecked());
+        editor.putBoolean(INFO_SETTINGS_PREF, switch4.isChecked());
         editor.putBoolean(SECRET_SONG_PREF, secret_toggle_button.isChecked());
         // Apply preference updates * MUST DO THIS LINE AFTER EVERY UPDATE OF PREFERENCE *
         editor.apply();

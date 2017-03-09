@@ -55,7 +55,7 @@
         android:text="     When member leaves group" />
 
     <Switch
-        android:text="     When manager changes"
+        android:text="     When group info changes"
         android:paddingRight = "10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -82,8 +82,8 @@
 
     <ToggleButton
         android:id="@+id/secret_toggle_button"
-        android:textOff="Enable Super Secret Music"
-        android:textOn="Disable Super Secret Music"
+        android:textOff="Enable Super Secret Message"
+        android:textOn="Disable Super Secret Message"
         android:paddingRight = "10dp"
         android:layout_marginBottom = "10sp"
         android:layout_width="300sp"

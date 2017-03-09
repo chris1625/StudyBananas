@@ -10,6 +10,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
@@ -21,6 +22,7 @@ import com.bananabanditcrew.studybananas.data.User;
 import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
 import com.bananabanditcrew.studybananas.data.database.DatabaseHandler;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionContract;
+import com.bananabanditcrew.studybananas.ui.settings.SettingsActivity;
 import com.bananabanditcrew.studybananas.ui.signin.SignInActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -146,6 +148,14 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
 
     @Override @TargetApi(16)
     public void onCourseRetrieved(Course course) {
+
+        // Get shared preferences for notifications
+        SharedPreferences settings = getSharedPreferences(SettingsActivity.SHARED_PREF_FILE, 0);
+        boolean allNotifications = settings.getBoolean(SettingsActivity.ALL_SETTINGS_PREF, true);
+        boolean joinNotifications = settings.getBoolean(SettingsActivity.JOIN_SETTINGS_PREF, true);
+        boolean leaveNotifications = settings.getBoolean(SettingsActivity.LEAVE_SETTINGS_PREF, true);
+        boolean infoNotifications = settings.getBoolean(SettingsActivity.INFO_SETTINGS_PREF, true);
+
         Log.d("Service", "Course updated in background service");
 
         mCourse = course;
@@ -172,8 +182,10 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
             mDatabase.removeServiceValueEventListener(mCourseName);
 
             // Show notification
-            showNotification("Your study group has been disbanded",
-                    "Tap to create or join another group", NOTIFY_DISBANDED);
+            if (allNotifications) {
+                showNotification("Your study group has been disbanded",
+                        "Tap to create or join another group", NOTIFY_DISBANDED);
+            }
 
             // Kill activity and service if fragment not visible
             if (!fragmentIsActive) {
@@ -231,12 +243,15 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
         if (mGroup.getLeader().equals(FirebaseAuth.getInstance().getCurrentUser().getEmail()) &&
                 !prevLeader.equals(mGroup.getLeader()) && !prevLeader.equals("")) {
 
-            showNotification("You are now the leader of your study group",
-                    "Tap to open group management", NOTIFY_NEW_LEADER);
+            if (allNotifications) {
+                showNotification("You are now the leader of your study group",
+                        "Tap to open group management", NOTIFY_NEW_LEADER);
+            }
         }
 
         // If you aren't the leader, show messages that group info is updated
-        if (!mGroup.getLeader().equals(FirebaseAuth.getInstance().getCurrentUser().getEmail())) {
+        if (!mGroup.getLeader().equals(FirebaseAuth.getInstance().getCurrentUser().getEmail()) &&
+                infoNotifications) {
             // Check for different end time
             if (previousDate != null && !mEndDate.equals(previousDate)) {
                 String timeString = new SimpleDateFormat("h:mm aa", Locale.US).format(mEndDate);
@@ -285,8 +300,10 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
             mDatabase.removeServiceValueEventListener(mCourseName);
 
             // Show a notification
-            showNotification("You have been kicked from the study group",
-                    "Tap to join to create a new group", NOTIFY_KICKED);
+            if (allNotifications) {
+                showNotification("You have been kicked from the study group",
+                        "Tap to join to create a new group", NOTIFY_KICKED);
+            }
 
             // Kill activity and service if fragment not visible
             if (!fragmentIsActive) {
@@ -302,7 +319,8 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
             newList.removeAll(prevList);
 
             // Only show the notification if you weren't the person who joined
-            if (!newList.contains(FirebaseAuth.getInstance().getCurrentUser().getEmail())) {
+            if (!newList.contains(FirebaseAuth.getInstance().getCurrentUser().getEmail()) &&
+                    joinNotifications) {
                 showNotification("A banana has joined your study bunch", "Tap to view group",
                         NOTIFY_MEMBER_JOIN);
             }
@@ -310,7 +328,8 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
             prevList.removeAll(newList);
 
             // Only show the notification if you weren't the person who joined
-            if (!prevList.contains(FirebaseAuth.getInstance().getCurrentUser().getEmail())) {
+            if (!prevList.contains(FirebaseAuth.getInstance().getCurrentUser().getEmail()) &&
+                    leaveNotifications) {
                 showNotification("A banana has left your study bunch", "Tap to view group",
                         NOTIFY_MEMBER_LEAVE);
             }

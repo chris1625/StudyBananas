@@ -97,41 +97,10 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         mUserCourseList.setEmptyView(mEmptyView);
         mPresenter.getUserSavedCourses();
 
-        Button testButton = (Button) root.findViewById(R.id.test_create_group_button);
-        testButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createNewGroup();
-            }
-        });
-
         // Set title of app to "join group"
         ((AppCompatActivity)getActivity()).getSupportActionBar()
                 .setTitle(getString(R.string.join_group));
         return root;
-    }
-
-    public void createNewGroup() {
-        ArrayList<Address> addresses = new ArrayList<>();
-        Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
-        String addressLines = "";
-        String addressName = "";
-        try {
-            addresses = (ArrayList<Address>) geocoder.getFromLocationName("Canyon Vista La Jolla", 1);
-            Address address = addresses.get(0);
-            for (int i = 0; i < address.getMaxAddressLineIndex(); i++)
-                addressLines += (" " + address.getAddressLine(i));
-            addressName = address.getFeatureName();
-
-        } catch (Exception e) {
-            Log.e("Location services", "IO Exception");
-        }
-
-        String description = "The quick brown fox jumped over the lazy dogs";
-
-        Group testGroup = new Group("crh013@ucsd.edu", addressLines, addressName, 6, 13, 0,
-                15, 30, description, Long.toString(System.currentTimeMillis()));
-        mPresenter.addGroupToCourse("CSE 110", testGroup);
     }
 
     public static void closeKeyboard(Context c, IBinder windowToken) {

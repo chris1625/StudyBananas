@@ -198,6 +198,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
 
     @Override
     public HomeFragment createHomeFragment() {
+        Log.d("HomeActivity", "Creating home fragment");
         mHomeFragment = new HomeFragment();
         mHomePresenter = new HomePresenter(mHomeFragment, this);
 
