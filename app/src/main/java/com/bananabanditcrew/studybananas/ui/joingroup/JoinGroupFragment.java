@@ -39,6 +39,7 @@ import com.bananabanditcrew.studybananas.services.GroupListenerService;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionFragment;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionPresenter;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -268,7 +269,16 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
 
         @Override
         public Group getChild(int listPosition, int expandedListPosition) {
-            return mCourses.get(listPosition).getGroupByIndex(expandedListPosition);
+            // Get the indices which are hidden
+            ArrayList<Group> studyGroups = mCourses.get(listPosition).getStudyGroups();
+            for (int i = 0; i < studyGroups.size(); i++) {
+                Group group = studyGroups.get(i);
+                if (group.getMaxMembers() == group.getGroupMembers().size() &&
+                        i <= expandedListPosition) {
+                    expandedListPosition++;
+                }
+            }
+            return studyGroups.get(expandedListPosition);
         }
 
         @Override
@@ -279,6 +289,7 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         @Override
         public View getChildView(final int listPosition, final int expandedListPosition,
                                  boolean isLastChild, View convertView, ViewGroup parent) {
+
             final Group groupRef = getChild(listPosition, expandedListPosition);
             final String locationName = groupRef.getLocationName();
 
@@ -360,7 +371,13 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
 
         @Override
         public int getChildrenCount(int listPosition) {
-            return mCourses.get(listPosition).getStudyGroups().size();
+            int visibleCount = 0;
+            for (Group group : mCourses.get(listPosition).getStudyGroups()) {
+                if (group.getMaxMembers() != group.getGroupMembers().size()) {
+                    visibleCount++;
+                }
+            }
+            return visibleCount;
         }
 
         @Override
