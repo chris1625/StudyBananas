@@ -35,12 +35,13 @@
         <service android:name=".services.GroupListenerService"/>
         <activity
             android:name=".ui.home.HomeActivity"
-            android:launchMode="singleInstance"
             android:screenOrientation="portrait"
+            android:launchMode="singleTop"
             android:windowSoftInputMode="stateHidden|adjustResize"></activity>
         <activity
             android:name=".ui.signin.SignInActivity"
             android:screenOrientation="portrait"
+            android:launchMode="singleTop"
             android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -50,6 +51,7 @@
         </activity>
         <activity
             android:name=".ui.settings.SettingsActivity"
+            android:launchMode="singleTop"
             android:label="@string/title_activity_settings" >
         </activity>
     </application>

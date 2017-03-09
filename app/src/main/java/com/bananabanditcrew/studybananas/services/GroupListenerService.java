@@ -87,9 +87,8 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
         // Create persistent notification here if it does not exist
         Log.d("Service", "Creating service");
         Intent notificationIntent = new Intent(this, SignInActivity.class);
-        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        notificationIntent.setAction(Intent.ACTION_MAIN);
+        notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         if (mNotification == null) {
             mNotification = new Notification.Builder(this)
@@ -131,10 +130,12 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
         Intent notificationIntent = new Intent(this, SignInActivity.class);
         NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-        // Notification intent for all notifications
-        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+        // We want the notification to reopen the app
+        notificationIntent.setAction(Intent.ACTION_MAIN);
+        notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
         mNotifyMgr.notify(id, new Notification.Builder(this)
                 .setContentTitle(title)
                 .setContentText(text)

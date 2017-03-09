@@ -51,7 +51,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(null);
         setContentView(R.layout.activity_home);
 
         // Set up the navigation drawer
@@ -70,6 +70,8 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
         if (savedInstanceState != null) {
             return;
         }
+
+        Log.d("homeactivity", "oncreate");
 
         // Create home fragment and presenter so we can setup our menu items
         createHomeFragment();
@@ -106,7 +108,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
         if (user.getGroupID() == null) {
             // Add the home fragment
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, mHomeFragment).commit();
+                    .replace(R.id.fragment_container, mHomeFragment).commit();
         } else {
             // Setup groupInteraction fragment and presenter
             if (mGroupInteractionFragment == null) {
