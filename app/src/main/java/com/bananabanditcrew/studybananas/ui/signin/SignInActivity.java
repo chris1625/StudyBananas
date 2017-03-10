@@ -3,6 +3,8 @@ package com.bananabanditcrew.studybananas.ui.signin;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.ui.home.HomeActivity;
 
@@ -11,9 +13,13 @@ import com.bananabanditcrew.studybananas.ui.home.HomeActivity;
  */
 public class SignInActivity extends AppCompatActivity {
 
+    private Toolbar mToolbar;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signin);
+        mToolbar = (Toolbar) findViewById(R.id.sign_in_toolbar);
+        setSupportActionBar(mToolbar);
 
         if (findViewById(R.id.fragment_container_signin) != null) {
             if (savedInstanceState != null) {

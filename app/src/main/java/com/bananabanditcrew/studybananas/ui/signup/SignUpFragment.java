@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +58,10 @@ public class SignUpFragment extends Fragment implements SignUpContract.View {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_sign_up, container, false);
+
+        // Set title of toolbar
+        ((AppCompatActivity)getActivity()).getSupportActionBar()
+                .setTitle(getString(R.string.action_create_account));
 
         // Set up fields in fragment
         mFirstName = (EditText) root.findViewById(R.id.first_name);

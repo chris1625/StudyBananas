@@ -42,7 +42,7 @@
     <string name="create_group">Create Group</string>
     <string name="join_group">Join Group</string>
     <string name="main_activity_title">Join or Create a Group</string>
-    <string name="profile">Profile</string>
+    <string name="about">About</string>
     <string name="sign_out">Sign Out</string>
     <string name="first_name">First Name</string>
     <string name="last_name">Last Name</string>
@@ -72,4 +72,19 @@
     <string name="title_activity_maps">Map</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="about_description">Study Bananas is an open source application, created with the
+        intention of bringing people together to study. It is a 10-week project designed and
+        implemented by a team of 10 students for the CSE 110 class at UCSD. We hope that it proves
+        useful in finding people to study with.</string>
+    <string name="about_members"><b>The Team</b>\nDavid Chang - Algorithm Specialist\n
+        Christopher Harris - Software Dev. Lead\n
+        John Murcko - Sr. System Analyst\n
+        Tarun Pasumarthi - 2nd Software Dev. Lead\n
+        Harley Saxton - UI Specialist\n
+        Ryan Shim - QA Lead\n
+        Gokul Suresh - Database Specialist\n
+        Andrew Yoo - Business Analyst\n
+        William Yu - Software Architect\n
+        Julia Li - Project Manager</string>
+    <string name="about_version">Version %1$s</string>
 </resources>

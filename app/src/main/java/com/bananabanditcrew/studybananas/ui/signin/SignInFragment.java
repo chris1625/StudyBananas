@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -69,6 +70,10 @@ public class SignInFragment extends Fragment implements SignInContract.View {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_sign_in, container, false);
+
+        // Set title of toolbar
+        ((AppCompatActivity)getActivity()).getSupportActionBar()
+                .setTitle(getString(R.string.action_sign_in));
 
         // Set up fields in fragment
         mEmailView = (AutoCompleteTextView) root.findViewById(R.id.email);

@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
 import android.widget.Switch;
@@ -27,6 +28,7 @@ public class SettingsActivity extends AppCompatActivity {
     private Switch switch1, switch2, switch3, switch4;
     private Button secret_button;
     private ToggleButton secret_toggle_button;
+    private Toolbar mToolbar;
 
     private static MediaPlayer songPlayer;
 
@@ -35,11 +37,13 @@ public class SettingsActivity extends AppCompatActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_settings);
+
+        mToolbar = (Toolbar) findViewById(R.id.settings_toolbar);
+        setSupportActionBar(mToolbar);
 
         // Back button for easy navigation
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        setContentView(R.layout.activity_settings);
 
         // Create all switches
         switch1 = (Switch) findViewById(R.id.switch6);

@@ -1,6 +1,19 @@
-<FrameLayout android:layout_width="match_parent"
-    android:background="@color/colorBackground"
-    android:layout_height="match_parent"
-    android:id="@+id/fragment_container_signin"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-</FrameLayout>
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/colorBackground">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/sign_in_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+    <FrameLayout android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/fragment_container_signin">
+    </FrameLayout>
+</LinearLayout>

@@ -7,20 +7,27 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.services.GroupListenerService;
@@ -38,6 +45,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
+    private Toolbar mToolbar;
     private NavigationView mNavigationView;
     private HomeFragment mHomeFragment;
     private HomePresenter mHomePresenter;
@@ -61,6 +69,8 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(null);
         setContentView(R.layout.activity_home);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
         mDrawerLayout  = (DrawerLayout) findViewById(R.id.drawer_layout);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -185,7 +195,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.action_settings){
-            startActivity(new Intent(this, SettingsActivity.class));
+            openSettings();
             return true;
         }
         if(item.getItemId() == R.id.action_edit){
@@ -206,14 +216,25 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
         }
     }
 
+    private void openSettings() {
+        startActivity(new Intent(this, SettingsActivity.class));
+    }
+
     public void setupDrawerContent(NavigationView navigationView, final HomePresenter presenter) {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
                 switch (id) {
-                    case R.id.nav_account:
-                        // TODO
+                    case R.id.nav_about:
+                        // Open about us dialog
+                        mDrawerLayout.closeDrawer(Gravity.START);
+                        showAboutDialog();
+                        break;
+                    case R.id.nav_settings:
+                        // Open settings activity
+                        mDrawerLayout.closeDrawer(Gravity.START);
+                        openSettings();
                         break;
                     case R.id.nav_logout:
                         if (isServiceRunning(GroupListenerService.class)) {
@@ -306,6 +327,26 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
                 mDrawerLayout.closeDrawer(Gravity.LEFT);
             }
         });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void showAboutDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.about_dialog, null);
+        // Get version textView
+        final TextView versionText = (TextView) dialogView.findViewById(R.id.about_version);
+        PackageInfo pInfo;
+        try {
+            pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            versionText.setText(getString(R.string.about_version, pInfo.versionName));
+        } catch (Exception e) {
+            Log.e("Version", "Could not find package");
+        }
+
+        builder.setView(dialogView);
+        builder.setCancelable(true);
         AlertDialog dialog = builder.create();
         dialog.show();
     }
