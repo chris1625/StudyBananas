@@ -50,6 +50,6 @@
             android:layout_margin="20dp"
             android:gravity="center_vertical|center_horizontal"
             android:textSize="18sp"
-            android:text="Add a class to view available groups"/>
+            android:text="Add a class to view available bunches"/>
     </LinearLayout>
 </LinearLayout>

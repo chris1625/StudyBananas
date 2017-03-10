@@ -163,6 +163,8 @@
                 android:ems="10"
                 android:id="@+id/description_text"
                 android:hint="@string/description_hint"
+                android:textStyle="italic"
+                android:textSize="6pt"
                 android:background="@android:drawable/edit_text" />
 
             <android.support.v7.widget.AppCompatButton
