@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -49,15 +50,35 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
     private boolean mSaveActionVisible = false;
     private boolean mEditActionVisible = false;
 
-    @Override
+    private FragmentManager.OnBackStackChangedListener mOnBackStackChangedListener =
+            new FragmentManager.OnBackStackChangedListener() {
+                @Override
+                public void onBackStackChanged() {
+                    syncActionBarArrowState();
+                }
+            };
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(null);
         setContentView(R.layout.activity_home);
+        mDrawerLayout  = (DrawerLayout) findViewById(R.id.drawer_layout);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close) {
+            @Override
+            public void onDrawerClosed(View view) {
+                syncActionBarArrowState();
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                mToggle.setDrawerIndicatorEnabled(true);
+            }
+        };
 
         // Set up the navigation drawer
-        mDrawerLayout  = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
         mDrawerLayout.addDrawerListener(mToggle);
+        getSupportFragmentManager().addOnBackStackChangedListener(mOnBackStackChangedListener);
         mToggle.syncState();
 
         // Setup menu button on drawer
@@ -90,6 +111,11 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
 
         // Register shutdown receiver
         registerReceiver(shutdownReceiver, new IntentFilter("shutdown"));
+    }
+
+    private void syncActionBarArrowState() {
+        int backStackEntryCount = getSupportFragmentManager().getBackStackEntryCount();
+        mToggle.setDrawerIndicatorEnabled(backStackEntryCount == 0);
     }
 
     private final BroadcastReceiver shutdownReceiver = new BroadcastReceiver() {
@@ -169,11 +195,15 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
             showEditActionButton();
             closeKeyboard();
         }
-        if (mToggle.onOptionsItemSelected(item)) {
+        if (mToggle.isDrawerIndicatorEnabled() && mToggle.onOptionsItemSelected(item)) {
             return true;
-        }
 
-        return super.onOptionsItemSelected(item);
+        } else if (item.getItemId() == android.R.id.home &&
+                getSupportFragmentManager().popBackStackImmediate()) {
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
     }
 
     public void setupDrawerContent(NavigationView navigationView, final HomePresenter presenter) {
@@ -311,6 +341,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
     public void onDestroy() {
         mDatabase.removeConnectionStateListener();
         unregisterReceiver(shutdownReceiver);
+        getSupportFragmentManager().removeOnBackStackChangedListener(mOnBackStackChangedListener);
         super.onDestroy();
     }
 
