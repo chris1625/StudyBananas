@@ -8,12 +8,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -231,6 +228,11 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
                         mDrawerLayout.closeDrawer(Gravity.START);
                         showAboutDialog();
                         break;
+                    case R.id.nav_support:
+                        // Open contact us dialog
+                        mDrawerLayout.closeDrawer(Gravity.START);
+                        showSupportDialog();
+                        break;
                     case R.id.nav_settings:
                         // Open settings activity
                         mDrawerLayout.closeDrawer(Gravity.START);
@@ -347,6 +349,15 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
 
         builder.setView(dialogView);
         builder.setCancelable(true);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void showSupportDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Support");
+        builder.setMessage("Contact Chris Harris at crh013@ucsd.edu if you have questions or " +
+                "would like to provide feedback. Questions and comments are both welcome.");
         AlertDialog dialog = builder.create();
         dialog.show();
     }
