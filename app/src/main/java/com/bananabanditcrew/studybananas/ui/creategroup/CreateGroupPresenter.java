@@ -127,8 +127,15 @@ public class CreateGroupPresenter implements DatabaseCallback.GetUserCallback,
             correct_info_given=false;
         }
         if(mCreateGroupView.isStart_time_picked() && mCreateGroupView.isEnd_time_picked()){
-            int numHours= mCreateGroupView.getEndHour()-mCreateGroupView.getStartHour();
-            if(numHours >12 || (numHours > -12 &&numHours<0)){
+            int startHour = mCreateGroupView.getStartHour();
+            int endHour = mCreateGroupView.getEndHour();
+            int startMinute = mCreateGroupView.getStartMinute();
+            int endMinute = mCreateGroupView.getEndMinute();
+
+            int timeDiff = endHour - startHour;
+            timeDiff = (timeDiff < 0) ? 24 + timeDiff : timeDiff;
+
+            if(timeDiff > 16 || ((startHour == endHour) && (endMinute <= startMinute))){
                 mCreateGroupView.setTime_compatibility_error(true);
                 mCreateGroupView.showIncorrectTimeError();
                 correct_info_given=false;

@@ -259,17 +259,16 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
             if (mGroup != null) {
 
                 // First grab the start hour so we can calculate the total time range
-                int startHour = mGroup.getStartHour();
-                int startMinute = mGroup.getStartMinute();
-
-                int timeDiff = endHour - startHour;
-                timeDiff = (timeDiff < 0) ? 24 + timeDiff : timeDiff;
-
+//                int startHour = mGroup.getStartHour();
+//                int startMinute = mGroup.getStartMinute();
                 int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
                 int currentMinute = Calendar.getInstance().get(Calendar.MINUTE);
 
+                int timeDiff = endHour - currentHour;
+                timeDiff = (timeDiff < 0) ? 24 + timeDiff : timeDiff;
+
                 // Only update the fields if the user selected a valid time
-                if (timeDiff < 16 && !((startHour == endHour) && (endMinute < startMinute))) {
+                if (timeDiff < 16 && !((currentHour == endHour) && (endMinute <= currentMinute))) {
                     mGroupInteractionView.setEndTimeButtonText(parseEndTime(endHour, endMinute));
                     mEditedEndHour = endHour;
                     mEditedEndMinute = endMinute;

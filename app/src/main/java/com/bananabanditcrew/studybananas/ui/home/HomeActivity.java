@@ -355,9 +355,8 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
 
     private void showSupportDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Support");
-        builder.setMessage("Contact Chris Harris at crh013@ucsd.edu if you have questions or " +
-                "would like to provide feedback. Questions and comments are both welcome.");
+        builder.setTitle(R.string.support);
+        builder.setMessage(R.string.support_info);
         AlertDialog dialog = builder.create();
         dialog.show();
     }

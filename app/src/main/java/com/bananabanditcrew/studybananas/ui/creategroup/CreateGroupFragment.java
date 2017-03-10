@@ -176,10 +176,10 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
     public void showIncorrectTimeError() {
         AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
         alertDialog.setTitle("Error");
-        alertDialog.setMessage("The group study time must be less than 12 hours");
+        alertDialog.setMessage("The group study time must be less than 16 hours");
         alertDialog.show();
-        mStartTimeButton.setError("Group study period needs to be under 12 hours");
-        mEndTimeButton.setError("Group study period needs to be under 12 hours");
+        mStartTimeButton.setError("Group study period needs to be under 16 hours");
+        mEndTimeButton.setError("Group study period needs to be under 16 hours");
     }
 
     @Override
