@@ -13,7 +13,6 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
@@ -338,73 +337,27 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
         }
     }
 
-    @Override
-    public void showKickedMessage() {
+    private void showLeadershipTransferDialog(final String user) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setMessage(R.string.kicked_notification).setTitle(R.string.group_management);
+        builder.setMessage(getString(R.string.change_leadership,user)).setTitle(R.string.group_management);
         // Add ok button
-        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // User clicked ok button
+                // User clicked yes button
+                dialog.dismiss();
+                mPresenter.transferLeadership(user);
+            }
+        });
+        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // User clicked no button
                 dialog.dismiss();
             }
         });
         AlertDialog dialog = builder.create();
         dialog.show();
-    }
-
-    @Override
-    public void showGroupDisbandedMessage() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setMessage(R.string.group_deleted_notification).setTitle(R.string.group_management);
-        // Add ok button
-        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // User clicked ok button
-                dialog.dismiss();
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-    private void showLeadershipTransferDialog(String user) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setMessage(getString(R.string.changed_leadership,user)).setTitle(R.string.group_management);
-        // Add ok button
-        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // User clicked ok button
-                dialog.dismiss();
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-    @Override
-    public void showNewLeaderDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setMessage(R.string.new_leader).setTitle(R.string.group_management);
-        // Add ok button
-        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // User clicked ok button
-                dialog.dismiss();
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-    public void reloadFields() {
-        if (mPresenter != null) {
-            mPresenter.getGroupFromDatabase();
-        }
     }
 
     // Custom array adapter to show the current members in the group to the group leader
@@ -461,7 +414,6 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
                 public void onClick(View v) {
                     // You can't make yourself the owner when you already are!
                     if (!mPresenter.getGroupLeader().equals(member)) {
-                        mPresenter.transferLeadership(member);
                         showLeadershipTransferDialog(member);
                     }
                 }

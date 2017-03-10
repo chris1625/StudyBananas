@@ -57,12 +57,6 @@ public interface GroupInteractionContract {
 
         void notifyAdapter();
 
-        void showKickedMessage();
-
-        void showGroupDisbandedMessage();
-
-        void showNewLeaderDialog();
-
     }
 
     interface Presenter extends BasePresenter {

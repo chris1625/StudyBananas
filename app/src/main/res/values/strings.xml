@@ -66,8 +66,10 @@
     <string name="group_management">Group Management</string>
     <string name="kicked_notification">You have been kicked from the study group.</string>
     <string name="group_deleted_notification">Your study group has disbanded.</string>
-    <string name="changed_leadership">You have transferred leadership to %1$s.</string>
+    <string name="change_leadership">Are you sure you want to transfer leadership to %1$s?</string>
     <string name="new_leader">You are now the leader of this study group!</string>
     <string name="sign_out_error">Please leave or disband your group before signing out.</string>
     <string name="title_activity_maps">Map</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>
