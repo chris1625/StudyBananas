@@ -53,6 +53,21 @@ public class Group {
         mGroupID = groupID;
     }
 
+    // Copy constructor
+    public Group(Group group) {
+        mGroupLeader = group.getLeader();
+        mMaxMembers = group.getMaxMembers();
+        mAddressLine = group.getAddressLine();
+        mLocationName = group.getLocationName();
+        mStartHour = group.getStartHour();
+        mStartMinute = group.getStartMinute();
+        mEndHour = group.getEndHour();
+        mEndMinute = group.getEndMinute();
+        mDescription = group.getDescription();
+        mGroupID = group.getGroupID();
+        mGroupMembers = group.getGroupMembers();
+    }
+
     public void addGroupMember(String groupMember) {
         if (mGroupMembers == null) {
             mGroupMembers = new ArrayList<>();
