@@ -18,11 +18,11 @@
         android:layout_marginTop="20dp"
         android:layout_gravity="center"
         android:id="@+id/join_group_button"
-        android:src="@drawable/joingroupbutton"
+        android:src="@drawable/join_group_button"
         android:background="@android:drawable/dialog_holo_light_frame"/>
 
     <ImageButton
-        android:src="@drawable/creategroupbutton"
+        android:src="@drawable/create_group_button"
         android:background="@android:drawable/dialog_holo_light_frame"
         android:scaleType="fitXY"
         android:padding="5dp"
