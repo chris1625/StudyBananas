@@ -153,8 +153,8 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy(){
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
 
         // Update preferences
         SharedPreferences settings = getSharedPreferences(SHARED_PREF_FILE, 0);
@@ -166,6 +166,11 @@ public class SettingsActivity extends AppCompatActivity {
         editor.putBoolean(SECRET_SONG_PREF, secret_toggle_button.isChecked());
         // Apply preference updates * MUST DO THIS LINE AFTER EVERY UPDATE OF PREFERENCE *
         editor.apply();
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
     }
 
     // Enable and show secret button
