@@ -50,7 +50,7 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
     private Button mEndTimeButton;
     private Button mMaxGroupButton;
     private Button mCreateGroupButton;
-    private EditText mDescritionText;
+    private EditText mDescriptionText;
     private Button mLocationButton;
     private int startHour;
     private int startMinute;
@@ -102,7 +102,7 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
         mStartTimeButton= (Button)root.findViewById(R.id.start_time_button);
         mEndTimeButton= (Button)root.findViewById(R.id.end_time_button);
         mMaxGroupButton= (Button)root.findViewById(R.id.max_people_button);
-        mDescritionText= (EditText)root.findViewById(R.id.description_text);
+        mDescriptionText = (EditText)root.findViewById(R.id.description_text);
         mLocationButton=(Button)root.findViewById(R.id.location_button);
 
         mDummyLayout = (LinearLayout)root.findViewById(R.id.create_group_dummy_layout);
@@ -154,8 +154,7 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
         });
 
         // Set title of app to "create group"
-        ((AppCompatActivity)getActivity()).getSupportActionBar()
-                .setTitle(getString(R.string.create_group));
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.create_group));
         return root;
     }
 
@@ -175,36 +174,36 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
     @Override
     public void showIncorrectTimeError() {
         AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-        alertDialog.setTitle("Error");
-        alertDialog.setMessage("The group study time must be less than 16 hours");
+        alertDialog.setTitle(getResources().getString(R.string.error));
+        alertDialog.setMessage(getResources().getString(R.string.group_length_error));
         alertDialog.show();
-        mStartTimeButton.setError("Group study period needs to be under 16 hours");
-        mEndTimeButton.setError("Group study period needs to be under 16 hours");
+        mStartTimeButton.setError(getResources().getString(R.string.group_length_error));
+        mEndTimeButton.setError(getResources().getString(R.string.group_length_error));
     }
 
     @Override
     public void showNoCoursePickedError() {
-        mCoursesSelect.setError("Please select a course");
+        mCoursesSelect.setError(getResources().getString(R.string.no_course_error));
     }
 
     @Override
     public void showNoStartTimePickedError() {
-        mStartTimeButton.setError("Please select a start time");
+        mStartTimeButton.setError(getResources().getString(R.string.no_start_time_error));
     }
 
     @Override
     public void showNoEndTimePickedError() {
-        mEndTimeButton.setError("Please select a start time");
+        mEndTimeButton.setError(getResources().getString(R.string.no_end_time_error));
     }
 
     @Override
     public void showNoLocationPickedError() {
-        mLocationButton.setError("Please select a location");
+        mLocationButton.setError(getResources().getString(R.string.no_location_error));
     }
 
     @Override
     public void showNoMaxPeoplePickedError() {
-        mMaxGroupButton.setError("Please select the maximum group occupancy");
+        mMaxGroupButton.setError(getResources().getString(R.string.no_max_members_error));
     }
 
     @Override
@@ -277,18 +276,20 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
         aNumberPicker.setMinValue(1);
 
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(50, 50);
-        RelativeLayout.LayoutParams numPicerParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        numPicerParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        RelativeLayout.LayoutParams numPickerParams =
+                new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
+                        RelativeLayout.LayoutParams.WRAP_CONTENT);
+        numPickerParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
 
         linearLayout.setLayoutParams(params);
-        linearLayout.addView(aNumberPicker,numPicerParams);
+        linearLayout.addView(aNumberPicker,numPickerParams);
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-        alertDialogBuilder.setTitle("Set Group Member Limit");
+        alertDialogBuilder.setTitle(getResources().getString(R.string.select_member_limit));
         alertDialogBuilder.setView(linearLayout);
         alertDialogBuilder
                 .setCancelable(false)
-                .setPositiveButton("Ok",
+                .setPositiveButton(R.string.ok,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog,
                                                 int id) {
@@ -298,7 +299,7 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
                                 max_members_picked=true;
                             }
                         })
-                .setNegativeButton("Cancel",
+                .setNegativeButton(R.string.cancel,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog,
                                                 int id) {
@@ -347,7 +348,7 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
 
     @Override
     public String getDescription() {
-        return mDescritionText.getText().toString();
+        return mDescriptionText.getText().toString();
     }
 
     @Override
@@ -392,13 +393,13 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
             //System.out.println(place.getName());
         } catch (GooglePlayServicesRepairableException e) {
             AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-            alertDialog.setTitle("Error");
-            alertDialog.setMessage("Google Play Services stopped working");
+            alertDialog.setTitle(getResources().getString(R.string.error));
+            alertDialog.setMessage(getResources().getString(R.string.gplay_stopped_error));
             alertDialog.show();
         } catch (GooglePlayServicesNotAvailableException e) {
             AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-            alertDialog.setTitle("Error");
-            alertDialog.setMessage("Google Play Services stopped working");
+            alertDialog.setTitle(getResources().getString(R.string.error));
+            alertDialog.setMessage(getResources().getString(R.string.gplay_not_available));
             alertDialog.show();
         }
     }
@@ -414,10 +415,11 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-        alertDialog.setTitle("Network Error");
-        alertDialog.setMessage("Unable to connect to the internet.");
+        alertDialog.setTitle(getResources().getString(R.string.network_failure_short));
+        alertDialog.setMessage(getResources().getString(R.string.network_failure));
         alertDialog.show();
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
@@ -429,8 +431,8 @@ public class CreateGroupFragment extends Fragment implements CreateGroupContract
                 location_picked=true;
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-                alertDialog.setTitle("Error");
-                alertDialog.setMessage("Location could not be found");
+                alertDialog.setTitle(getResources().getString(R.string.error));
+                alertDialog.setMessage(getResources().getString(R.string.location_not_found_error));
                 alertDialog.show();
             }
         }

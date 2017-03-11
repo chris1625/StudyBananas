@@ -92,4 +92,17 @@
         would like to provide feedback. Questions and comments are both welcome.</string>
     <string name="no_courses">Add a class to view available groups</string>
     <string name="no_groups">There are no active groups for this course</string>
+    <string name="group_length_error">Group study period needs to be under 16 hours</string>
+    <string name="error">Error</string>
+    <string name="no_course_error">"Please select a course"</string>
+    <string name="no_start_time_error">"Please select a start time"</string>
+    <string name="no_end_time_error">"Please select an end time"</string>
+    <string name="no_location_error">"Please select a location"</string>
+    <string name="no_max_members_error">"Please select the maximum group occupancy"</string>
+    <string name="select_member_limit">"Set Group Member Limit"</string>
+    <string name="gplay_stopped_error">"Google Play Services stopped working"</string>
+    <string name="gplay_not_available">"Google Play Services are not available"</string>
+    <string name="network_failure_short">"Network Error"</string>
+    <string name="network_failure">"Unable to connect to the internet"</string>
+    <string name="location_not_found_error">"Location could not be found"</string>
 </resources>
