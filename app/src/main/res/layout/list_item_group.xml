@@ -61,6 +61,6 @@
         android:drawableBottom="@drawable/ic_arrow_forward"
         android:focusable="false"
         style="@style/Widget.AppCompat.Button.Colored"
-        app:backgroundTint="#8FC480" />
+        app:backgroundTint="@color/colorPrimary" />
 
 </LinearLayout>

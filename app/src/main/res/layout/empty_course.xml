@@ -9,5 +9,5 @@
         android:layout_margin="20dp"
         android:gravity="center_horizontal|center_vertical"
         android:textSize="16sp"
-        android:text="There are no active groups for this course"/>
+        android:text="@string/no_groups"/>
 </LinearLayout>

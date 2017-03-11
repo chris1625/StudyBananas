@@ -54,7 +54,7 @@
     <string name="select">Select</string>
     <string name="max_members">Max Members: </string>
     <string name="location">"LOCATION: "</string>
-    <string name="description_hint">"Describe what you are studying and help people find you in this box"</string>
+    <string name="description_hint">"What are you studying? How can other people find you?"</string>
     <string name="title_activity_settings">Settings</string>
     <string name="leave_group">Leave Group</string>
     <string name="disband_group">Disband Group</string>
@@ -90,4 +90,6 @@
     <string name="support">Support</string>
     <string name="support_info">Contact Chris Harris at crh013@ucsd.edu if you have questions or
         would like to provide feedback. Questions and comments are both welcome.</string>
+    <string name="no_courses">Add a class to view available groups</string>
+    <string name="no_groups">There are no active groups for this course</string>
 </resources>

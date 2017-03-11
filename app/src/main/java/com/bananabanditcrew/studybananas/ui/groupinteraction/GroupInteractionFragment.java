@@ -33,6 +33,7 @@ import android.widget.ViewSwitcher;
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.services.GroupListenerService;
 import com.bananabanditcrew.studybananas.services.GroupListenerServiceCallbacks;
+import com.bananabanditcrew.studybananas.ui.home.HomeActivity;
 import com.bananabanditcrew.studybananas.ui.home.HomeContract;
 import com.bananabanditcrew.studybananas.ui.home.HomeFragment;
 
@@ -222,6 +223,9 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
 
         getFragmentManager().beginTransaction().remove(this).commit();
         getFragmentManager().popBackStack();
+
+        // Close the keyboard if it is open
+        ((HomeActivity)getActivity()).closeKeyboard();
 
         // Stop the background service
         if (mListenerService != null) {

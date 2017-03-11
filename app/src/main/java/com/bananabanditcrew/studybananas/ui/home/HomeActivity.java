@@ -60,6 +60,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
                 @Override
                 public void onBackStackChanged() {
                     syncActionBarArrowState();
+                    closeKeyboard();
                 }
             };
 
@@ -305,7 +306,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
         invalidateOptionsMenu();
     }
 
-    private void closeKeyboard() {
+    public void closeKeyboard() {
         View view = this.getCurrentFocus();
         if (view != null) {
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
