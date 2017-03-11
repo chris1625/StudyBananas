@@ -179,7 +179,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.settings_menu, menu);
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
 
         MenuItem saveItem = menu.findItem(R.id.action_save);
         saveItem.setVisible(mSaveActionVisible);
@@ -191,10 +191,6 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.action_settings){
-            openSettings();
-            return true;
-        }
         if(item.getItemId() == R.id.action_edit){
             showSaveActionButton();
         }
