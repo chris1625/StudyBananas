@@ -408,14 +408,14 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
                 if (prevCapacity != 0 && prevCapacity != mGroup.getMaxMembers()) {
                     showNotification(resources.getString(R.string.new_capacity_notification,
                             ((prevCapacity > mGroup.getMaxMembers()) ? "decreased" : "increased"),
-                            mGroup.getMaxMembers()),
+                            Integer.toString(mGroup.getMaxMembers())),
                             resources.getString(R.string.view_group_notification),
                             NOTIFY_NEW_CAPACITY);
                 }
 
                 // Check for different description
                 if (prevDescription != null && !prevDescription.equals(mGroup.getDescription())) {
-                    showNotification(resources.getString(R.string.new_capacity_notification),
+                    showNotification(resources.getString(R.string.new_description_notification),
                             resources.getString(R.string.view_group_notification),
                             NOTIFY_DESCRIPTION_CHANGE);
                 }
@@ -479,7 +479,7 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
                 if (!prevList.contains(FirebaseAuth.getInstance().getCurrentUser().getEmail()) &&
                         leaveNotifications) {
                     showNotification(resources.getString(R.string.member_leave_notification),
-                            resources.getString(R.string.member_leave_notification),
+                            resources.getString(R.string.view_group_notification),
                             NOTIFY_MEMBER_LEAVE);
                 }
             }

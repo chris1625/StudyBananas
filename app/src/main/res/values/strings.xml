@@ -125,7 +125,7 @@
     <string name="view_group_management_notification">Tap to open group management</string>
     <string name="new_time_notification">Your group\'s end time has been updated to %1$s</string>
     <string name="view_group_notification">Tap to view group</string>
-    <string name="new_capacity_notification">Your group\'s member capacity has %1$s to %2$i</string>
+    <string name="new_capacity_notification">Your group\'s member capacity has %1$s to %2$s</string>
     <string name="new_description_notification">Your group\'s description has been updated</string>
     <string name="kicked_notification">You have been kicked from the study group</string>
     <string name="create_join_notification">Tap to join or create a new group</string>
