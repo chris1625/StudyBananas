@@ -141,4 +141,11 @@
     <string name="fetching_courses_title">Courses</string>
     <string name="fetching_courses">Fetching list of courses&#8230;</string>
     <string name="select_end_time">Select end time</string>
+    <string name="settings_notifications">Notifications</string>
+    <string name="settings_notifications_all">Enable/disable all</string>
+    <string name="settings_notifications_join">When member joins group</string>
+    <string name="settings_notifications_leave">When member leaves group</string>
+    <string name="settings_notifications_info">When group info changes</string>
+    <string name="settings_secret_enable">Enable Super Secret Message</string>
+    <string name="settings_secret_disable">Disable Super Secret Message</string>
 </resources>
