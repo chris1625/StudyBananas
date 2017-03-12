@@ -6,11 +6,12 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
-import android.widget.Button;
 import android.widget.ToggleButton;
-import android.view.View;
+
 import com.bananabanditcrew.studybananas.R;
 
 import java.io.IOException;
@@ -19,8 +20,8 @@ public class SettingsActivity extends AppCompatActivity {
 
     public static final String SHARED_PREF_FILE = "MyPrefs";
     public static final String ALL_SETTINGS_PREF = "allSettings";
-    public static final String JOIN_SETTINGS_PREF= "newJoinSettings";
-    public static final String LEAVE_SETTINGS_PREF= "leaveSettings";
+    public static final String JOIN_SETTINGS_PREF = "newJoinSettings";
+    public static final String LEAVE_SETTINGS_PREF = "leaveSettings";
     public static final String INFO_SETTINGS_PREF = "infoChangeSettings";
     public static final String SECRET_SONG_PREF = "secretSongPreference";
 
@@ -91,9 +92,9 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                    switch2.setChecked(isChecked);
-                    switch3.setChecked(isChecked);
-                    switch4.setChecked(isChecked);
+                switch2.setChecked(isChecked);
+                switch3.setChecked(isChecked);
+                switch4.setChecked(isChecked);
 
             }
 
@@ -104,10 +105,9 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if(timesClicked < secret_threshold) {
+                if (timesClicked < secret_threshold) {
                     timesClicked++;
-                }
-                else {
+                } else {
                     // Disable secret button from being clickable, and show secret song button
                     secret_button.setEnabled(false);
                     showSecret = true;
@@ -121,11 +121,10 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                if(isChecked) {
+                if (isChecked) {
                     // Start song when button is enabled.
                     songPlayer.start();
-                }
-                else {
+                } else {
                     // Stop song when button is disabled.
                     songPlayer.stop();
                     try {
@@ -142,7 +141,7 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Go back when back is pressed
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 return true;
@@ -169,7 +168,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
     }
 

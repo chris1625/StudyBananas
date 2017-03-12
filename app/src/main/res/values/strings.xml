@@ -10,6 +10,9 @@
     <string name="action_sign_in_short">Sign in</string>
     <string name="action_sign_up_short">Sign up</string>
     <string name="action_create_account">Create Account</string>
+    <string name="create_account_progress">Creating account&#8230;</string>
+    <string name="sign_in_progress">Authenticating&#8230;</string>
+    <string name="email_suffix">"@ucsd.edu"</string>
     <string name="error_invalid_email">Please enter a UCSD email address</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
@@ -18,7 +21,8 @@
     <string name="logout_button">Logout</string>
     <string name="account_creation_button">"Create Account"</string>
     <string name="edit_name">"Full name"</string>
-    <string name="welcome_message">"Welcome! This appears to be your first time logging in. Please enter your full name and we'll get you started."</string>
+    <string name="welcome_message">"Welcome! This appears to be your first time logging in. Please
+        enter your full name and we'll get you started."</string>
     <string name="add_name_button">"Let's go!"</string>
     <string name="create_account">"<u>No account? Create one here</u>"</string>
     <string name="title_activity_signup">Create an account</string>
@@ -26,15 +30,22 @@
     <string name="error_mismatched_passwords">Passwords do not match</string>
     <string name="error_account_exists">An account already exists with this email</string>
     <string name="error_account_no_exist">This email is not associated with any accounts</string>
-    <string name="email_verification">Your account has successfully been created! Check your email for a verification link. Once you\'ve verified your account, you will be able to log in.</string>
+    <string name="email_verification">Your account has successfully been created! Check your email
+        for a verification link. Once you\'ve verified your account, you will be able to log
+        in.</string>
     <string name="email_verification_short">Email Verification</string>
     <string name="ok">OK</string>
-    <string name="email_verification_failure">Your account has not yet been verified. Please check your email for a verification link.</string>
-    <string name="password_reset_success">The password reset email was successfully sent! Please check your email.</string>
-    <string name="password_reset_failure">The password reset email could not be sent. Please ensure you are connected to the internet, or try again later.</string>
+    <string name="email_verification_failure">Your account has not yet been verified. Please check
+        your email for a verification link.</string>
+    <string name="password_reset_success">The password reset email was successfully sent! Please
+        check your email.</string>
+    <string name="password_reset_failure">The password reset email could not be sent. Please ensure
+        you are connected to the internet, or try again later.</string>
     <string name="password_reset"><u>Reset your password</u></string>
+    <string name="send_email_progress">Sending email&#8230;</string>
     <string name="password_reset_title">Reset Password</string>
-    <string name="password_reset_email">Please enter your email address so we can send you a password reset email.</string>
+    <string name="password_reset_email">Please enter your email address so we can send you a
+        password reset email.</string>
     <string name="send">Send</string>
     <string name="cancel">Cancel</string>
     <string name="open">Open</string>
@@ -64,10 +75,7 @@
     <string name="time_separator">" - "</string>
     <string name="kick_member">Kick</string>
     <string name="group_management">Group Management</string>
-    <string name="kicked_notification">You have been kicked from the study group.</string>
-    <string name="group_deleted_notification">Your study group has disbanded.</string>
     <string name="change_leadership">Are you sure you want to transfer leadership to %1$s?</string>
-    <string name="new_leader">You are now the leader of this study group!</string>
     <string name="sign_out_error">Please leave or disband your group before signing out.</string>
     <string name="title_activity_maps">Map</string>
     <string name="yes">Yes</string>
@@ -105,4 +113,32 @@
     <string name="network_failure_short">"Network Error"</string>
     <string name="network_failure">"Unable to connect to the internet"</string>
     <string name="location_not_found_error">"Location could not be found"</string>
+    <string name="network_status">Network Status</string>
+    <string name="firebase_disconnect">Disconnected from Firebase, please check your internet
+        connection. Reconnecting&#8230;</string>
+    <string name="alarm_receiver_filter">alarm_receiver</string>
+    <string name="time_warning_filter">time_warning</string>
+    <string name="do_extend_filter">do_extend</string>
+    <string name="no_extend_filter">no_extend</string>
+    <string name="shutdown_filter">shutdown</string>
+    <string name="new_leader_notification">You are now the leader of your study group</string>
+    <string name="view_group_management_notification">Tap to open group management</string>
+    <string name="new_time_notification">Your group\'s end time has been updated to %1$s</string>
+    <string name="view_group_notification">Tap to view group</string>
+    <string name="new_capacity_notification">Your group\'s member capacity has %1$s to %2$i</string>
+    <string name="new_description_notification">Your group\'s description has been updated</string>
+    <string name="kicked_notification">You have been kicked from the study group</string>
+    <string name="create_join_notification">Tap to join or create a new group</string>
+    <string name="group_deleted_notification">Your study group has disbanded</string>
+    <string name="member_join_notification">A banana has joined your study bunch</string>
+    <string name="member_leave_notification">A banana has left your study bunch</string>
+    <string name="expiring_soon_notification">Your group is expiring soon</string>
+    <string name="extend_time_prompt">Extend end time by 30 minutes?</string>
+    <string name="foreground_notification_title">You are currently in a study group</string>
+    <string name="join_group_fragment_tag">join_group</string>
+    <string name="group_interaction_fragment_tag">group_interaction</string>
+    <string name="google_maps_base_url">"http://maps.google.co.in/maps?q=%1$s %2$s"</string>
+    <string name="fetching_courses_title">Courses</string>
+    <string name="fetching_courses">Fetching list of courses&#8230;</string>
+    <string name="select_end_time">Select end time</string>
 </resources>

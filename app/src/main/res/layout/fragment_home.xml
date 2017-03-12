@@ -19,7 +19,7 @@
         android:layout_gravity="center"
         android:id="@+id/join_group_button"
         android:src="@drawable/joingroupbutton"
-        android:background="@android:drawable/dialog_holo_light_frame"/>
+        android:background="@android:drawable/dialog_holo_light_frame" />
 
     <ImageButton
         android:src="@drawable/creategroupbutton"

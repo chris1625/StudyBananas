@@ -13,10 +13,9 @@ import com.bananabanditcrew.studybananas.ui.home.HomeContract;
 import com.bananabanditcrew.studybananas.ui.home.HomeFragment;
 import com.google.firebase.auth.FirebaseAuth;
 
-
 public class CreateGroupPresenter implements DatabaseCallback.GetUserCallback,
-                                             DatabaseCallback.GetCourseCallback,
-                                             CreateGroupContract.Presenter {
+        DatabaseCallback.GetCourseCallback,
+        CreateGroupContract.Presenter {
 
     private final CreateGroupContract.View mCreateGroupView;
     private ArrayAdapter<String> mCourseList;
@@ -40,7 +39,6 @@ public class CreateGroupPresenter implements DatabaseCallback.GetUserCallback,
 
     @Override
     public void start() {
-        //// TODO: 2/24/2017
     }
 
     public Activity getActivity() {
@@ -105,28 +103,28 @@ public class CreateGroupPresenter implements DatabaseCallback.GetUserCallback,
 
     @Override
     public boolean doValidations() {
-        boolean correct_info_given=true;
-        if(!mCreateGroupView.isLocation_picked()){
+        boolean correct_info_given = true;
+        if (!mCreateGroupView.isLocation_picked()) {
             mCreateGroupView.showNoLocationPickedError();
-            correct_info_given=false;
+            correct_info_given = false;
         }
-        if(!mCreateGroupView.isStart_time_picked()){
+        if (!mCreateGroupView.isStart_time_picked()) {
             mCreateGroupView.showNoStartTimePickedError();
-            correct_info_given=false;
+            correct_info_given = false;
         }
-        if(!mCreateGroupView.isEnd_time_picked()){
+        if (!mCreateGroupView.isEnd_time_picked()) {
             mCreateGroupView.showNoEndTimePickedError();
-            correct_info_given=false;
+            correct_info_given = false;
         }
-        if(!mCreateGroupView.isMax_members_picked()){
+        if (!mCreateGroupView.isMax_members_picked()) {
             mCreateGroupView.showNoMaxPeoplePickedError();
-            correct_info_given=false;
+            correct_info_given = false;
         }
-        if(!mCreateGroupView.isCourse_selected()){
+        if (!mCreateGroupView.isCourse_selected()) {
             mCreateGroupView.showNoCoursePickedError();
-            correct_info_given=false;
+            correct_info_given = false;
         }
-        if(mCreateGroupView.isStart_time_picked() && mCreateGroupView.isEnd_time_picked()){
+        if (mCreateGroupView.isStart_time_picked() && mCreateGroupView.isEnd_time_picked()) {
             int startHour = mCreateGroupView.getStartHour();
             int endHour = mCreateGroupView.getEndHour();
             int startMinute = mCreateGroupView.getStartMinute();
@@ -135,10 +133,10 @@ public class CreateGroupPresenter implements DatabaseCallback.GetUserCallback,
             int timeDiff = endHour - startHour;
             timeDiff = (timeDiff < 0) ? 24 + timeDiff : timeDiff;
 
-            if(timeDiff > 16 || ((startHour == endHour) && (endMinute <= startMinute))){
+            if (timeDiff > 16 || ((startHour == endHour) && (endMinute <= startMinute))) {
                 mCreateGroupView.setTime_compatibility_error(true);
                 mCreateGroupView.showIncorrectTimeError();
-                correct_info_given=false;
+                correct_info_given = false;
             }
         }
         return correct_info_given;

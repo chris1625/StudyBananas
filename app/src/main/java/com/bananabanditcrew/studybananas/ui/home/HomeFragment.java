@@ -1,7 +1,6 @@
 package com.bananabanditcrew.studybananas.ui.home;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -13,12 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
-import com.bananabanditcrew.studybananas.ui.creategroup.CreateGroupPresenter;
-import com.bananabanditcrew.studybananas.ui.joingroup.JoinGroupFragment;
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.ui.creategroup.CreateGroupFragment;
+import com.bananabanditcrew.studybananas.ui.creategroup.CreateGroupPresenter;
+import com.bananabanditcrew.studybananas.ui.joingroup.JoinGroupFragment;
 import com.bananabanditcrew.studybananas.ui.joingroup.JoinGroupPresenter;
-import com.bananabanditcrew.studybananas.ui.signin.SignInActivity;
 
 public class HomeFragment extends Fragment implements HomeContract.View {
 
@@ -82,7 +80,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
 
         // Set the action bar title for the home fragment
         Log.d("Title", "Setting title for home fragment");
-        ((AppCompatActivity)getActivity()).getSupportActionBar()
+        ((AppCompatActivity) getActivity()).getSupportActionBar()
                 .setTitle(getString(R.string.main_activity_title));
 
         return view;
@@ -97,8 +95,8 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         transaction.addToBackStack(null);
         // Create presenter and link it to new fragment
         mCreateGroupPresenter = new CreateGroupPresenter(createGroupFragment,
-                                                         mPresenter.getCoursesAdapter(),
-                                                         this, mPresenter.getActivityCallback());
+                mPresenter.getCoursesAdapter(),
+                this, mPresenter.getActivityCallback());
         createGroupFragment.setPresenter(mCreateGroupPresenter);
         // Commit the transaction
         transaction.commit();
@@ -109,13 +107,14 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.slide_from_right, R.anim.slide_to_left,
                 R.anim.slide_from_left, R.anim.slide_to_right);
-        transaction.replace(R.id.fragment_container, joinGroupFragment, "join_group");
+        transaction.replace(R.id.fragment_container, joinGroupFragment,
+                getResources().getString(R.string.join_group_fragment_tag));
         transaction.addToBackStack(null);
 
         // Create presenter and link it to new fragment
         mJoinGroupPresenter = new JoinGroupPresenter(joinGroupFragment,
-                                                     mPresenter.getCoursesAdapter(), this,
-                                                     mPresenter.getActivityCallback());
+                mPresenter.getCoursesAdapter(), this,
+                mPresenter.getActivityCallback());
 
         // Commit the transaction
         transaction.commit();

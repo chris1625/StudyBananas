@@ -13,7 +13,7 @@
         android:textSize="32sp"
         android:gravity="center"
         android:layout_marginBottom="5dp"
-        android:textAppearance="@android:style/TextAppearance.DeviceDefault.WindowTitle"/>
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.WindowTitle" />
 
     <TextView
         android:id="@+id/about_version"
@@ -29,7 +29,7 @@
         android:layout_marginBottom="20dp"
         android:layout_gravity="center"
         android:adjustViewBounds="true"
-        android:src="@drawable/banana_logo"/>
+        android:src="@drawable/banana_logo" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -44,14 +44,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:text="@string/about_description"/>
+                android:text="@string/about_description" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:text="@string/about_members"/>
+                android:text="@string/about_members" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

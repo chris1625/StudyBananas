@@ -1,9 +1,11 @@
 package com.bananabanditcrew.studybananas.ui.signup;
 
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
 import com.bananabanditcrew.studybananas.data.database.DatabaseHandler;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -18,7 +20,8 @@ import com.google.firebase.auth.FirebaseUser;
  * Created by chris on 2/9/17.
  */
 
-public class SignUpPresenter implements SignUpContract.Presenter, DatabaseCallback.UserCreationCallback {
+public class SignUpPresenter implements SignUpContract.Presenter,
+        DatabaseCallback.UserCreationCallback {
 
     // Firebase auth listener stuff
     private FirebaseAuth mAuth;
@@ -30,7 +33,7 @@ public class SignUpPresenter implements SignUpContract.Presenter, DatabaseCallba
     // Database reference
     private DatabaseHandler mDatabase;
 
-    public SignUpPresenter (@NonNull SignUpContract.View signUpView) {
+    public SignUpPresenter(@NonNull SignUpContract.View signUpView) {
         mSignUpView = signUpView;
         mSignUpView.setPresenter(this);
         startFirebaseAuthListener();
@@ -39,7 +42,6 @@ public class SignUpPresenter implements SignUpContract.Presenter, DatabaseCallba
 
     @Override
     public void start() {
-        // TODO fill in SignUpPresenter's start method
     }
 
     @Override
@@ -54,6 +56,9 @@ public class SignUpPresenter implements SignUpContract.Presenter, DatabaseCallba
         String email = mSignUpView.getEmail();
         String password = mSignUpView.getPassword();
         String confirmPassword = mSignUpView.getConfirmPassword();
+
+        // Resources for strings
+        Resources resources = ((SignUpFragment) (mSignUpView)).getResources();
 
         boolean cancel = false;
 
@@ -98,7 +103,8 @@ public class SignUpPresenter implements SignUpContract.Presenter, DatabaseCallba
         }
 
         if (!cancel) {
-            mSignUpView.startProgressIndicator("Create Account", "Creating account...");
+            mSignUpView.startProgressIndicator(resources.getString(R.string.action_create_account),
+                    resources.getString(R.string.create_account_progress));
             firebaseCreateAccount(mSignUpView.getFirst(), mSignUpView.getLast(), email, password);
         }
     }
@@ -130,13 +136,10 @@ public class SignUpPresenter implements SignUpContract.Presenter, DatabaseCallba
             mAuth.removeAuthStateListener(mAuthListener);
     }
 
-    /**
-     * Helper method to parse emails and ensure they contain the UCSD domain
-     * @param email Email string to be parsed
-     * @return      Whether email is valid
-     */
     private boolean isEmailValid(String email) {
-        return (email.endsWith("@ucsd.edu") && !email.equals("@ucsd.edu"));
+        String emailSuffix = ((SignUpFragment) mSignUpView).getResources()
+                .getString(R.string.email_suffix);
+        return (email.endsWith(emailSuffix) && !email.equals(emailSuffix));
     }
 
     private void firebaseCreateAccount(final String first, final String last, final String email,
@@ -152,13 +155,13 @@ public class SignUpPresenter implements SignUpContract.Presenter, DatabaseCallba
                         if (!task.isSuccessful()) {
                             try {
                                 throw task.getException();
-                            } catch(FirebaseAuthInvalidCredentialsException e) {
+                            } catch (FirebaseAuthInvalidCredentialsException e) {
                                 mSignUpView.showInvalidEmailError();
                                 mSignUpView.setEmailFocus();
-                            } catch(FirebaseAuthUserCollisionException e) {
+                            } catch (FirebaseAuthUserCollisionException e) {
                                 mSignUpView.showAccountExistsError();
                                 mSignUpView.setEmailFocus();
-                            } catch(Exception e) {
+                            } catch (Exception e) {
                                 Log.e("Accounts", e.getMessage());
                             }
                             return;

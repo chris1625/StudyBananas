@@ -13,8 +13,7 @@
         android:layout_height="0px"
         android:orientation="vertical"
         android:focusable="true"
-        android:focusableInTouchMode="true">
-    </LinearLayout>
+        android:focusableInTouchMode="true"></LinearLayout>
 
     <AutoCompleteTextView
         android:id="@+id/course_select"
@@ -33,7 +32,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/class_view" >
+        android:id="@+id/class_view">
 
         <ExpandableListView
             android:id="@+id/courses_list"
@@ -41,7 +40,7 @@
             android:layout_width="match_parent"
             android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
             android:divider="@color/colorBackground"
-            android:dividerHeight="0.8dp"/>
+            android:dividerHeight="0.8dp" />
 
         <TextView
             android:id="@+id/courses_empty"
@@ -50,6 +49,6 @@
             android:layout_margin="20dp"
             android:gravity="center_vertical|center_horizontal"
             android:textSize="18sp"
-            android:text="@string/no_courses"/>
+            android:text="@string/no_courses" />
     </LinearLayout>
 </LinearLayout>

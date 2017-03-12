@@ -24,7 +24,7 @@
         android:layout_marginBottom="35dp"
         android:adjustViewBounds="true"
         app:srcCompat="@drawable/banana_logo"
-        android:id="@+id/imageView"/>
+        android:id="@+id/imageView" />
 
     <ScrollView
         android:id="@+id/create_account_form"
@@ -41,6 +41,7 @@
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="test_users">
+        <item>testuser1@ucsd.edu</item>
+        <item>testuser2@ucsd.edu</item>
+        <item>testuser3@ucsd.edu</item>
+    </string-array>
+</resources>

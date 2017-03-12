@@ -1,10 +1,9 @@
 package com.bananabanditcrew.studybananas.ui.joingroup;
 
-import android.content.Intent;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
-import android.location.Address;
-import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
@@ -13,7 +12,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,8 +28,6 @@ import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import android.net.Uri;
-
 import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.data.Course;
 import com.bananabanditcrew.studybananas.data.Group;
@@ -41,7 +37,6 @@ import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionPre
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class JoinGroupFragment extends Fragment implements JoinGroupContract.View {
 
@@ -98,7 +93,7 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         mPresenter.getUserSavedCourses();
 
         // Set title of app to "join group"
-        ((AppCompatActivity)getActivity()).getSupportActionBar()
+        ((AppCompatActivity) getActivity()).getSupportActionBar()
                 .setTitle(getString(R.string.join_group));
         return root;
     }
@@ -130,7 +125,7 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mDummyLayout.requestFocus();
                 closeKeyboard(getActivity(), mDummyLayout.getWindowToken());
-                mPresenter.addUserCourse((String)mCoursesSelect.getAdapter().getItem(position));
+                mPresenter.addUserCourse((String) mCoursesSelect.getAdapter().getItem(position));
                 mCoursesSelect.setText("");
             }
         });
@@ -193,11 +188,12 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         transaction.setCustomAnimations(R.anim.slide_from_right, R.anim.slide_to_left,
                 R.anim.slide_from_left, R.anim.slide_to_right);
         transaction.replace(R.id.fragment_container, groupInteractionFragment,
-                            "group_interaction").commit();
+                getResources().getString(R.string.group_interaction_fragment_tag))
+                .commit();
 
         mGroupInteractionPresenter = new GroupInteractionPresenter(groupInteractionFragment,
-                                                                   course, groupID,
-                                                                   mPresenter.getActivityCallback());
+                course, groupID,
+                mPresenter.getActivityCallback());
 
         // Start background service
         Intent intent = new Intent(getContext(), GroupListenerService.class);
@@ -210,13 +206,6 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
 
         // Remove event listeners for user courses
         mPresenter.removeCourseListeners();
-    }
-
-
-    public void reloadGroups() {
-        if (mPresenter != null) {
-            mPresenter.getUserSavedCourses();
-        }
     }
 
     public static class CoursesAdapter extends BaseExpandableListAdapter {
@@ -310,7 +299,7 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
             locationButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                   showGoogleMaps(groupRef);
+                    showGoogleMaps(groupRef);
 
                 }
             });
@@ -338,8 +327,8 @@ public class JoinGroupFragment extends Fragment implements JoinGroupContract.Vie
         }
 
         private void showGoogleMaps(Group group) {
-            String intentString = "http://maps.google.co.in/maps?q=" + group.getLocationName() +
-                    " " + group.getAddressLine();
+            String intentString = mContext.getResources().getString(R.string.google_maps_base_url,
+                    group.getLocationName(), group.getAddressLine());
             Uri gmmIntentUri = Uri.parse(intentString);
             Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
             mapIntent.setPackage("com.google.android.apps.maps");

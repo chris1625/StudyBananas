@@ -51,7 +51,7 @@ public interface CreateGroupContract {
 
         int getMaxNum();
 
-        String  getCourseName();
+        String getCourseName();
 
         void showLocationPicker();
 
@@ -59,20 +59,20 @@ public interface CreateGroupContract {
 
         String getAddress();
 
-        public void setTime_compatibility_error(boolean time_compatibility_error);
+        void setTime_compatibility_error(boolean time_compatibility_error);
 
-        public boolean isEnd_time_picked();
+        boolean isEnd_time_picked();
 
-        public boolean isStart_time_picked();
+        boolean isStart_time_picked();
 
-        public boolean isCourse_selected();
+        boolean isCourse_selected();
 
-        public boolean isLocation_picked();
+        boolean isLocation_picked();
 
-        public boolean isMax_members_picked();
+        boolean isMax_members_picked();
     }
 
-    interface Presenter extends BasePresenter{
+    interface Presenter extends BasePresenter {
 
         ArrayAdapter<String> getCoursesAdapter();
 

@@ -11,9 +11,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.bananabanditcrew.studybananas.R;
@@ -27,7 +27,6 @@ import com.bananabanditcrew.studybananas.ui.settings.SettingsActivity;
 import com.bananabanditcrew.studybananas.ui.signin.SignInActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
-import java.lang.annotation.Target;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -39,7 +38,7 @@ import java.util.Locale;
  */
 
 public class GroupListenerService extends Service implements DatabaseCallback.GetCourseCallback,
-                                                             DatabaseCallback.GetUserCallback {
+        DatabaseCallback.GetUserCallback {
 
     // Constants for notification IDs
     private static final int NOTIFY_DISBANDED = 0;
@@ -164,23 +163,26 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         // Intents for yes and no buttons
         PendingIntent doExtendIntent = PendingIntent.getBroadcast(this, 0,
-                new Intent("do_extend"), 0);
+                new Intent(getResources().getString(R.string.do_extend_filter)), 0);
         PendingIntent noExtendIntent = PendingIntent.getBroadcast(this, 0,
-                new Intent("no_extend"), 0);
+                new Intent(getResources().getString(R.string.no_extend_filter)), 0);
         mNotifyMgr.notify(NOTIFY_TIME_WARNING, new Notification.Builder(this)
-                .setContentTitle("Your group is expiring soon")
-                .setContentText("Extend end time by 30 minutes?")
+                .setContentTitle(getResources().getString(R.string.expiring_soon_notification))
+                .setContentText(getResources().getString(R.string.extend_time_prompt))
                 .setSmallIcon(R.drawable.ic_logobunches_solid)
                 .setDefaults(Notification.DEFAULT_ALL)
-                .addAction(R.drawable.ic_logobunches_solid, "Yes", doExtendIntent)
-                .addAction(R.drawable.ic_logobunches_solid, "No", noExtendIntent)
+                .addAction(R.drawable.ic_logobunches_solid, getResources().getString(R.string.yes),
+                        doExtendIntent)
+                .addAction(R.drawable.ic_logobunches_solid, getResources().getString(R.string.no),
+                        noExtendIntent)
                 .setContentIntent(pendingIntent)
                 .setPriority(Notification.PRIORITY_MAX)
                 .setAutoCancel(true)
                 .build());
     }
 
-    @Override @TargetApi(16)
+    @Override
+    @TargetApi(16)
     public void onCreate() {
         // Create persistent notification here if it does not exist
         Log.d("Service", "Creating service");
@@ -190,8 +192,9 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         if (mNotification == null) {
             mNotification = new Notification.Builder(this)
-                    .setContentTitle("You are currently in a study group")
-                    .setContentText("Tap to re-open app")
+                    .setContentTitle(getResources()
+                            .getString(R.string.foreground_notification_title))
+                    .setContentText(getResources().getString(R.string.view_group_notification))
                     .setSmallIcon(R.drawable.ic_logobunches_solid)
                     .setContentIntent(pendingIntent)
                     .build();
@@ -206,16 +209,20 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
         mDatabase.getUser(FirebaseAuth.getInstance().getCurrentUser().getEmail(), this);
 
         // Register receiver for group expiry
-        registerReceiver(timeExpiredReceiver, new IntentFilter("alarm_receiver"));
+        registerReceiver(timeExpiredReceiver, new IntentFilter(getResources()
+                .getString(R.string.alarm_receiver_filter)));
 
         // Register time warning receiver
-        registerReceiver(timeWarningReceiver, new IntentFilter("time_warning"));
+        registerReceiver(timeWarningReceiver, new IntentFilter(getResources()
+                .getString(R.string.time_warning_filter)));
 
         // Register yes button for time warning
-        registerReceiver(doExtendReceiver, new IntentFilter("do_extend"));
+        registerReceiver(doExtendReceiver, new IntentFilter(getResources()
+                .getString(R.string.do_extend_filter)));
 
         // Register no button for time warning
-        registerReceiver(noExtendReceiver, new IntentFilter("no_extend"));
+        registerReceiver(noExtendReceiver, new IntentFilter(getResources()
+                .getString(R.string.no_extend_filter)));
     }
 
     @Override
@@ -258,7 +265,8 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
                 .build());
     }
 
-    @Override @TargetApi(16)
+    @Override
+    @TargetApi(16)
     public void onCourseRetrieved(Course course) {
         synchronized (lock) {
             // Get shared preferences for notifications
@@ -273,6 +281,9 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
             mCourse = course;
 
             boolean fragmentIsActive = (mCallback != null);
+
+            // Get resources so we can easily grab strings
+            Resources resources = getResources();
 
             com.bananabanditcrew.studybananas.data.Group group =
                     new com.bananabanditcrew.studybananas.data.Group(mPresenter.getGroupID());
@@ -295,13 +306,14 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
 
                 // Show notification
                 if (allNotifications) {
-                    showNotification("Your study group has been disbanded",
-                            "Tap to create or join another group", NOTIFY_DISBANDED);
+                    showNotification(resources.getString(R.string.group_deleted_notification),
+                            resources.getString(R.string.create_join_notification),
+                            NOTIFY_DISBANDED);
                 }
 
                 // Kill activity and service if fragment not visible
                 if (!fragmentIsActive) {
-                    sendBroadcast(new Intent("shutdown"));
+                    sendBroadcast(new Intent(resources.getString(R.string.shutdown_filter)));
                     stopSelf();
                 }
 
@@ -348,7 +360,7 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
 
                 Log.d("Service", "Registering intent with alarm manager");
                 mAlarmIntent = PendingIntent.getBroadcast(this, 0,
-                        new Intent("alarm_receiver"), 0);
+                        new Intent(resources.getString(R.string.alarm_receiver_filter)), 0);
                 manager.set(AlarmManager.RTC_WAKEUP, mEndDate.getTime(), mAlarmIntent);
 
                 // Cancel warning alarm if it exists
@@ -358,13 +370,14 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
                     mWarningIntent = null;
 
                     // Also cancel notification
-                    NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                    NotificationManager mNotifyMgr = (NotificationManager)
+                            getSystemService(NOTIFICATION_SERVICE);
                     mNotifyMgr.cancel(NOTIFY_TIME_WARNING);
                 }
 
                 Log.d("Service", "Registering warning intent with alarm manager");
                 mWarningIntent = PendingIntent.getBroadcast(this, 0,
-                        new Intent("time_warning"), 0);
+                        new Intent(resources.getString(R.string.time_warning_filter)), 0);
                 manager.set(AlarmManager.RTC_WAKEUP, parseFiveMinBefore(mEndDate).getTime(),
                         mWarningIntent);
             }
@@ -374,8 +387,9 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
                     !prevLeader.equals(mGroup.getLeader()) && !prevLeader.equals("")) {
 
                 if (allNotifications) {
-                    showNotification("You are now the leader of your study group",
-                            "Tap to open group management", NOTIFY_NEW_LEADER);
+                    showNotification(resources.getString(R.string.new_leader_notification),
+                            resources.getString(R.string.view_group_management_notification),
+                            NOTIFY_NEW_LEADER);
                 }
             }
 
@@ -385,21 +399,24 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
                 // Check for different end time
                 if (previousDate != null && !mEndDate.equals(previousDate)) {
                     String timeString = new SimpleDateFormat("h:mm aa", Locale.US).format(mEndDate);
-                    showNotification("Your group's end time has been updated to " + timeString,
-                            "Tap to view group", NOTIFY_NEW_ENDTIME);
+                    showNotification(resources.getString(R.string.new_time_notification,
+                            timeString), resources.getString(R.string.view_group_notification),
+                            NOTIFY_NEW_ENDTIME);
                 }
 
                 // Check for different maxSize
                 if (prevCapacity != 0 && prevCapacity != mGroup.getMaxMembers()) {
-                    showNotification("Your group's member capacity has " +
-                                    ((prevCapacity > mGroup.getMaxMembers()) ? "decreased" : "increased") +
-                                    " to " + Integer.toString(mGroup.getMaxMembers()), "Tap to view group",
+                    showNotification(resources.getString(R.string.new_capacity_notification,
+                            ((prevCapacity > mGroup.getMaxMembers()) ? "decreased" : "increased"),
+                            mGroup.getMaxMembers()),
+                            resources.getString(R.string.view_group_notification),
                             NOTIFY_NEW_CAPACITY);
                 }
 
                 // Check for different description
                 if (prevDescription != null && !prevDescription.equals(mGroup.getDescription())) {
-                    showNotification("Your group's description has been updated", "Tap to view",
+                    showNotification(resources.getString(R.string.new_capacity_notification),
+                            resources.getString(R.string.view_group_notification),
                             NOTIFY_DESCRIPTION_CHANGE);
                 }
             }
@@ -431,13 +448,13 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
 
                 // Show a notification
                 if (allNotifications) {
-                    showNotification("You have been kicked from the study group",
-                            "Tap to join to create a new group", NOTIFY_KICKED);
+                    showNotification(resources.getString(R.string.kicked_notification),
+                            resources.getString(R.string.create_join_notification), NOTIFY_KICKED);
                 }
 
                 // Kill activity and service if fragment not visible
                 if (!fragmentIsActive) {
-                    sendBroadcast(new Intent("shutdown"));
+                    sendBroadcast(new Intent(resources.getString(R.string.shutdown_filter)));
                     stopSelf();
                 }
                 return;
@@ -451,7 +468,8 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
                 // Only show the notification if you weren't the person who joined
                 if (!newList.contains(FirebaseAuth.getInstance().getCurrentUser().getEmail()) &&
                         joinNotifications) {
-                    showNotification("A banana has joined your study bunch", "Tap to view group",
+                    showNotification(resources.getString(R.string.member_join_notification),
+                            resources.getString(R.string.view_group_notification),
                             NOTIFY_MEMBER_JOIN);
                 }
             } else if ((prevSize - newSize) > 0 && prevList != null) {
@@ -460,7 +478,8 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
                 // Only show the notification if you weren't the person who joined
                 if (!prevList.contains(FirebaseAuth.getInstance().getCurrentUser().getEmail()) &&
                         leaveNotifications) {
-                    showNotification("A banana has left your study bunch", "Tap to view group",
+                    showNotification(resources.getString(R.string.member_leave_notification),
+                            resources.getString(R.string.member_leave_notification),
                             NOTIFY_MEMBER_LEAVE);
                 }
             }
@@ -501,7 +520,7 @@ public class GroupListenerService extends Service implements DatabaseCallback.Ge
     }
 
     @Override
-    public IBinder onBind (Intent intent) {
+    public IBinder onBind(Intent intent) {
         return mBinder;
     }
 

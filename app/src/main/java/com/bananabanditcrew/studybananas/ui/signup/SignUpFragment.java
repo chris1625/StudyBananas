@@ -60,7 +60,7 @@ public class SignUpFragment extends Fragment implements SignUpContract.View {
         View root = inflater.inflate(R.layout.fragment_sign_up, container, false);
 
         // Set title of toolbar
-        ((AppCompatActivity)getActivity()).getSupportActionBar()
+        ((AppCompatActivity) getActivity()).getSupportActionBar()
                 .setTitle(getString(R.string.action_create_account));
 
         // Set up fields in fragment

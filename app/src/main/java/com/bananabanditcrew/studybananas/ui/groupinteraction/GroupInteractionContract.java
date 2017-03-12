@@ -49,8 +49,6 @@ public interface GroupInteractionContract {
 
         String getMemberCountEdited();
 
-        String getEndTimeEdited();
-
         String getDescriptionEdited();
 
         void createAdapter(ArrayList<String> members);

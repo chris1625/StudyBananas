@@ -20,10 +20,10 @@
         android:theme="@style/AppTheme">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAOhEMZniooyX_j2PZs2aDCGF8hj9XSxaw"/>
+            android:value="AIzaSyAOhEMZniooyX_j2PZs2aDCGF8hj9XSxaw" />
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyAOhEMZniooyX_j2PZs2aDCGF8hj9XSxaw"/>
+            android:value="AIzaSyAOhEMZniooyX_j2PZs2aDCGF8hj9XSxaw" />
 
         <activity
             android:name="com.bananabanditcrew.studybananas.ui.maps.MapsActivity"
@@ -32,7 +32,8 @@
 
         </activity>
 
-        <service android:name=".services.GroupListenerService"/>
+        <service android:name=".services.GroupListenerService" />
+
         <activity
             android:name=".ui.home.HomeActivity"
             android:screenOrientation="portrait"
@@ -52,8 +53,7 @@
         <activity
             android:name=".ui.settings.SettingsActivity"
             android:launchMode="singleTop"
-            android:label="@string/title_activity_settings" >
-        </activity>
+            android:label="@string/title_activity_settings"></activity>
     </application>
 
 </manifest>

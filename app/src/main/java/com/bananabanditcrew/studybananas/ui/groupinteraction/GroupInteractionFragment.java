@@ -43,7 +43,7 @@ import java.util.ArrayList;
  * A simple {@link Fragment} subclass.
  */
 public class GroupInteractionFragment extends Fragment implements GroupInteractionContract.View,
-                                                                  GroupListenerServiceCallbacks {
+        GroupListenerServiceCallbacks {
 
     private GroupInteractionContract.Presenter mPresenter;
 
@@ -197,8 +197,8 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
     }
 
     private void showGoogleMaps() {
-        String intentString = "http://maps.google.co.in/maps?q=" + mPresenter.getLocationName() +
-                " " + mPresenter.getAddress();
+        String intentString = getResources().getString(R.string.google_maps_base_url,
+                mPresenter.getLocationName(), mPresenter.getAddress());
         Uri gmmIntentUri = Uri.parse(intentString);
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
@@ -209,7 +209,7 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
 
     @Override
     public void setActionBarTitle(String courseName) {
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(courseName);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(courseName);
     }
 
     @Override
@@ -225,7 +225,7 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
         getFragmentManager().popBackStack();
 
         // Close the keyboard if it is open
-        ((HomeActivity)getActivity()).closeKeyboard();
+        ((HomeActivity) getActivity()).closeKeyboard();
 
         // Stop the background service
         if (mListenerService != null) {
@@ -309,18 +309,13 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
                 mPresenter.updateEndTime(hourOfDay, minute);
             }
         }, mPresenter.getEditedEndHour(), mPresenter.getEditedEndMinute(), false);
-        timePicker.setTitle("Select end time");
+        timePicker.setTitle(getResources().getString(R.string.select_end_time));
         timePicker.show();
     }
 
     @Override
     public String getMemberCountEdited() {
         return mGroupMemberEdit.getText().toString();
-    }
-
-    @Override
-    public String getEndTimeEdited() {
-        return mEndTimeButton.getText().toString();
     }
 
     @Override
@@ -343,7 +338,8 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
 
     private void showLeadershipTransferDialog(final String user) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setMessage(getString(R.string.change_leadership,user)).setTitle(R.string.group_management);
+        builder.setMessage(getString(R.string.change_leadership, user))
+                .setTitle(R.string.group_management);
         // Add ok button
         builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             @Override
@@ -366,11 +362,12 @@ public class GroupInteractionFragment extends Fragment implements GroupInteracti
 
     // Custom array adapter to show the current members in the group to the group leader
     public class MemberAdapter extends ArrayAdapter<String> {
-        public MemberAdapter(Context context, ArrayList<String> members) {
+        private MemberAdapter(Context context, ArrayList<String> members) {
             super(context, 0, members);
         }
 
-        @Override @NonNull
+        @Override
+        @NonNull
         public View getView(int position, View convertView, @NonNull ViewGroup parent) {
             // Get the member data for this position
             final String member = getItem(position);

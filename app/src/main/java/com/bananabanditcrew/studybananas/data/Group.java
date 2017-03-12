@@ -1,7 +1,5 @@
 package com.bananabanditcrew.studybananas.data;
 
-import android.location.Address;
-
 import java.util.ArrayList;
 
 /**
@@ -88,7 +86,7 @@ public class Group {
         return mGroupLeader;
     }
 
-    public void setLeader (String user) {
+    public void setLeader(String user) {
         mGroupLeader = user;
     }
 

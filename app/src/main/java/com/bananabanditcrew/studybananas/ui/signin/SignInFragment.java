@@ -25,11 +25,6 @@ import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.ui.home.HomeActivity;
 import com.bananabanditcrew.studybananas.ui.signup.SignUpFragment;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SignInFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class SignInFragment extends Fragment implements SignInContract.View {
 
     private SignInContract.Presenter mPresenter;
@@ -72,7 +67,7 @@ public class SignInFragment extends Fragment implements SignInContract.View {
         View root = inflater.inflate(R.layout.fragment_sign_in, container, false);
 
         // Set title of toolbar
-        ((AppCompatActivity)getActivity()).getSupportActionBar()
+        ((AppCompatActivity) getActivity()).getSupportActionBar()
                 .setTitle(getString(R.string.action_sign_in));
 
         // Set up fields in fragment

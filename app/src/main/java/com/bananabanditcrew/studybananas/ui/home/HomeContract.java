@@ -5,9 +5,6 @@ import android.widget.ArrayAdapter;
 
 import com.bananabanditcrew.studybananas.ui.BasePresenter;
 import com.bananabanditcrew.studybananas.ui.BaseView;
-import com.bananabanditcrew.studybananas.ui.joingroup.JoinGroupContract;
-
-import java.util.ArrayList;
 
 /**
  * Created by chris on 2/9/17.

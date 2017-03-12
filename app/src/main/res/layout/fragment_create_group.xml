@@ -14,8 +14,7 @@
         android:layout_height="0px"
         android:orientation="vertical"
         android:focusable="true"
-        android:focusableInTouchMode="true">
-    </LinearLayout>
+        android:focusableInTouchMode="true"></LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -71,7 +70,7 @@
                     android:id="@+id/start_time_button"
                     android:layout_weight="1"
                     style="@style/Widget.AppCompat.Button.Colored"
-                    app:backgroundTint="@color/colorPrimary"/>
+                    app:backgroundTint="@color/colorPrimary" />
 
             </LinearLayout>
 
@@ -121,7 +120,7 @@
                     android:id="@+id/max_people_button"
                     android:layout_weight="1"
                     style="@style/Widget.AppCompat.Button.Colored"
-                    app:backgroundTint="@color/colorPrimary"/>
+                    app:backgroundTint="@color/colorPrimary" />
 
             </LinearLayout>
 
@@ -146,7 +145,7 @@
                     android:id="@+id/location_button"
                     android:layout_weight="1"
                     style="@style/Widget.AppCompat.Button.Colored"
-                    app:backgroundTint="@color/colorPrimary"/>
+                    app:backgroundTint="@color/colorPrimary" />
 
             </LinearLayout>
 
@@ -173,7 +172,7 @@
                 android:layout_height="match_parent"
                 android:id="@+id/new_group_button"
                 style="@style/Widget.AppCompat.Button.Colored"
-                app:backgroundTint="@color/colorPrimary"/>
+                app:backgroundTint="@color/colorPrimary" />
 
         </LinearLayout>
     </ScrollView>

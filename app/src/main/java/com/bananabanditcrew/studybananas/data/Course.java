@@ -14,7 +14,7 @@ public class Course {
         mStudyGroups = new ArrayList<>();
     }
 
-    public Course(String courseName){
+    public Course(String courseName) {
         mCourseName = courseName;
         mStudyGroups = new ArrayList<>();
     }

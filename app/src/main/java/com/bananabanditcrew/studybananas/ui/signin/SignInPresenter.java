@@ -1,10 +1,12 @@
 package com.bananabanditcrew.studybananas.ui.signin;
 
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.bananabanditcrew.studybananas.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -14,6 +16,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.util.Arrays;
 
 /**
  * Created by chris on 2/8/17.
@@ -36,7 +40,6 @@ public class SignInPresenter implements SignInContract.Presenter {
 
     @Override
     public void start() {
-        // TODO fill in SignInPresenter's start method
     }
 
     @Override
@@ -70,18 +73,17 @@ public class SignInPresenter implements SignInContract.Presenter {
         }
 
         if (!cancel) {
-            mSignInView.startProgressIndicator("Login", "Authenticating...");
+            Resources resources = ((SignInFragment) mSignInView).getResources();
+            mSignInView.startProgressIndicator(resources.getString(R.string.action_sign_in),
+                    resources.getString(R.string.sign_in_progress));
             firebaseSignIn(email, password);
         }
     }
 
-    /**
-     * Helper method to parse emails and ensure they contain the UCSD domain.
-     * @param email Email string to be parsed
-     * @return      Whether email is valid
-     */
     private boolean isEmailValid(String email) {
-       return (email.endsWith("@ucsd.edu") && !email.equals("@ucsd.edu"));
+        String emailSuffix = ((SignInFragment) mSignInView).getResources()
+                .getString(R.string.email_suffix);
+        return (email.endsWith(emailSuffix) && !email.equals(emailSuffix));
     }
 
     @Override
@@ -95,7 +97,9 @@ public class SignInPresenter implements SignInContract.Presenter {
         // Dismiss dialog
         dialog.dismiss();
 
-        mSignInView.startProgressIndicator("Reset Password", "Sending email...");
+        Resources resources = ((SignInFragment) mSignInView).getResources();
+        mSignInView.startProgressIndicator(resources.getString(R.string.password_reset_title),
+                resources.getString(R.string.send_email_progress));
 
         mAuth.sendPasswordResetEmail(email).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
@@ -125,13 +129,13 @@ public class SignInPresenter implements SignInContract.Presenter {
                         if (!task.isSuccessful()) {
                             try {
                                 throw task.getException();
-                            } catch(FirebaseAuthInvalidUserException e) {
+                            } catch (FirebaseAuthInvalidUserException e) {
                                 mSignInView.showEmailNotFoundError();
                                 mSignInView.setEmailFocus();
-                            } catch(FirebaseAuthInvalidCredentialsException e) {
+                            } catch (FirebaseAuthInvalidCredentialsException e) {
                                 mSignInView.showInvalidPasswordError();
                                 mSignInView.setPasswordFocus();
-                            } catch(Exception e) {
+                            } catch (Exception e) {
                                 Log.e("Accounts", e.getMessage());
                             }
                             return;
@@ -141,9 +145,11 @@ public class SignInPresenter implements SignInContract.Presenter {
                         // First check for email verification
                         // Skip verification for test users
                         String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-                        boolean isTester = (userEmail.equals("testuser1@ucsd.edu") ||
-                                            userEmail.equals("testuser2@ucsd.edu") ||
-                                            userEmail.equals("testuser3@ucsd.edu"));
+
+                        // Get array of users who are exempt from the email verification
+                        String[] testUsers = ((SignInFragment) mSignInView).getResources()
+                                .getStringArray(R.array.test_users);
+                        boolean isTester = (Arrays.asList(testUsers).contains(userEmail));
 
                         if (!isTester &&
                                 !FirebaseAuth.getInstance().getCurrentUser().isEmailVerified()) {

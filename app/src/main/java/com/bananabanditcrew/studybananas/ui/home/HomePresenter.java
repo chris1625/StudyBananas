@@ -1,16 +1,12 @@
 package com.bananabanditcrew.studybananas.ui.home;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.widget.ArrayAdapter;
 
-import com.bananabanditcrew.studybananas.data.Course;
-import com.bananabanditcrew.studybananas.data.Group;
-import com.bananabanditcrew.studybananas.data.User;
+import com.bananabanditcrew.studybananas.R;
 import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
 import com.bananabanditcrew.studybananas.data.database.DatabaseHandler;
 import com.bananabanditcrew.studybananas.ui.signin.SignInActivity;
@@ -23,7 +19,7 @@ import java.util.ArrayList;
  */
 
 public class HomePresenter implements HomeContract.Presenter, DatabaseCallback.CoursesCallback,
-                                                              DatabaseCallback.ClassUpdateCallback {
+        DatabaseCallback.ClassUpdateCallback {
 
     // Reference to view
     private HomeContract.View mHomeView;
@@ -42,9 +38,9 @@ public class HomePresenter implements HomeContract.Presenter, DatabaseCallback.C
     public void setView(HomeContract.View view) {
         mHomeView = view;
     }
+
     @Override
     public void start() {
-        // TODO fill in homepresenter's start method
     }
 
     @Override
@@ -67,7 +63,10 @@ public class HomePresenter implements HomeContract.Presenter, DatabaseCallback.C
     @Override
     public void addCoursesToAutoComplete() {
         if (mCourseList == null) {
-            mHomeView.showProgressView("Courses", "Fetching list of courses...");
+
+            Resources resources = getActivity().getResources();
+            mHomeView.showProgressView(resources.getString(R.string.fetching_courses_title),
+                    resources.getString(R.string.fetching_courses));
             mDatabase.getClassesArray(this);
         }
     }
@@ -95,6 +94,6 @@ public class HomePresenter implements HomeContract.Presenter, DatabaseCallback.C
 
     @Override
     public HomeContract.HomeActivityCallback getActivityCallback() {
-        return (HomeContract.HomeActivityCallback)mActivity;
+        return (HomeContract.HomeActivityCallback) mActivity;
     }
 }

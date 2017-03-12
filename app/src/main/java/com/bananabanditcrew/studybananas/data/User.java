@@ -14,9 +14,12 @@ public class User {
     private String mGroupCourse;
     private String mGroupID;
 
-    public User() {};
+    public User() {
+    }
 
-    public User (String first, String last, String email) {
+    ;
+
+    public User(String first, String last, String email) {
         mFirstName = first;
         mLastName = last;
         mEmail = email;
@@ -54,21 +57,27 @@ public class User {
     public String getFirstName() {
         return mFirstName;
     }
+
     public String getLastName() {
         return mLastName;
     }
+
     public String getEmail() {
         return mEmail;
     }
+
     public String getGroupCourse() {
         return mGroupCourse;
     }
+
     public String getGroupID() {
         return mGroupID;
     }
+
     public ArrayList<String> getCourses() {
         return mCourses;
     }
+
     public void setCourses(ArrayList<String> courses) {
         mCourses = courses;
     }
@@ -80,6 +89,6 @@ public class User {
 
     @Override
     public boolean equals(Object user) {
-        return mEmail.equals(((User)user).getEmail());
+        return mEmail.equals(((User) user).getEmail());
     }
 }

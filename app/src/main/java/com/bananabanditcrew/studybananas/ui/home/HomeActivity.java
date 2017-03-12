@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
@@ -16,30 +17,28 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import com.bananabanditcrew.studybananas.R;
-import com.bananabanditcrew.studybananas.services.GroupListenerService;
-import com.bananabanditcrew.studybananas.ui.settings.SettingsActivity;
 import com.bananabanditcrew.studybananas.data.User;
 import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
 import com.bananabanditcrew.studybananas.data.database.DatabaseHandler;
+import com.bananabanditcrew.studybananas.services.GroupListenerService;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionFragment;
 import com.bananabanditcrew.studybananas.ui.groupinteraction.GroupInteractionPresenter;
+import com.bananabanditcrew.studybananas.ui.settings.SettingsActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class HomeActivity extends AppCompatActivity implements DatabaseCallback.GetUserCallback,
         DatabaseCallback.ConnectionStateCallback, DatabaseCallback.RootCallback,
-        HomeContract.HomeActivityCallback{
+        HomeContract.HomeActivityCallback {
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
@@ -71,7 +70,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
         setContentView(R.layout.activity_home);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        mDrawerLayout  = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close) {
@@ -81,6 +80,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
 
                 // Now that the drawer is closed, open the selected item
                 openSelectedMenuItem(mClickedNavigationItem);
+                mClickedNavigationItem = null;
             }
 
             @Override
@@ -105,8 +105,6 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
             return;
         }
 
-        Log.d("homeactivity", "oncreate");
-
         // Create home fragment and presenter so we can setup our menu items
         createHomeFragment();
 
@@ -123,7 +121,8 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
         mDatabase.addRootListener(this);
 
         // Register shutdown receiver
-        registerReceiver(shutdownReceiver, new IntentFilter("shutdown"));
+        registerReceiver(shutdownReceiver, new IntentFilter(getResources()
+                .getString(R.string.shutdown_filter)));
     }
 
     private void syncActionBarArrowState() {
@@ -182,7 +181,8 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
             }
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, mGroupInteractionFragment,
-                            "group_interaction").commit();
+                            getResources().getString(R.string.group_interaction_fragment_tag))
+                    .commit();
 
             if (mGroupInteractionPresenter == null) {
                 mGroupInteractionPresenter = new GroupInteractionPresenter(mGroupInteractionFragment,
@@ -224,10 +224,10 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.action_edit){
+        if (item.getItemId() == R.id.action_edit) {
             showSaveActionButton();
         }
-        if(item.getItemId() == R.id.action_save){
+        if (item.getItemId() == R.id.action_save) {
             showEditActionButton();
             closeKeyboard();
         }
@@ -237,6 +237,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
         } else if (item.getItemId() == android.R.id.home &&
                 getSupportFragmentManager().popBackStackImmediate()) {
             return true;
+
         } else {
             return super.onOptionsItemSelected(item);
         }
@@ -318,7 +319,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
     public void closeKeyboard() {
         View view = this.getCurrentFocus();
         if (view != null) {
-            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
@@ -332,7 +333,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
             public void onClick(DialogInterface dialog, int which) {
                 // User clicked ok button
                 dialog.dismiss();
-                mDrawerLayout.closeDrawer(Gravity.LEFT);
+                mDrawerLayout.closeDrawer(GravityCompat.START);
             }
         });
         AlertDialog dialog = builder.create();
@@ -372,7 +373,8 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
         if (connected) {
             hideProgressView();
         } else {
-            showProgressView("Network Status", "Disconnected from Firebase, please check your internet connection. Reconnecting...");
+            showProgressView(getResources().getString(R.string.network_status),
+                    getResources().getString(R.string.firebase_disconnect));
         }
     }
 

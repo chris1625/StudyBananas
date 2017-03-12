@@ -9,7 +9,6 @@ import com.bananabanditcrew.studybananas.data.Group;
 import com.bananabanditcrew.studybananas.data.User;
 import com.bananabanditcrew.studybananas.data.database.DatabaseCallback;
 import com.bananabanditcrew.studybananas.data.database.DatabaseHandler;
-import com.bananabanditcrew.studybananas.ui.home.HomeActivity;
 import com.bananabanditcrew.studybananas.ui.home.HomeContract;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -21,8 +20,8 @@ import java.util.Calendar;
  */
 
 public class GroupInteractionPresenter implements GroupInteractionContract.Presenter,
-                                                  DatabaseCallback.GetCourseCallback,
-                                                  DatabaseCallback.GetUserCallback {
+        DatabaseCallback.GetCourseCallback,
+        DatabaseCallback.GetUserCallback {
 
     private final GroupInteractionContract.View mGroupInteractionView;
     private String mCourseName;
@@ -79,9 +78,7 @@ public class GroupInteractionPresenter implements GroupInteractionContract.Prese
     public void onCourseRetrieved(Course course) {
         synchronized (lock) {
 
-            GroupInteractionFragment fragment = (GroupInteractionFragment)
-                    ((HomeActivity)mActivityCallback).
-                    getSupportFragmentManager().findFragmentByTag("group_interaction");
+            GroupInteractionFragment fragment = ((GroupInteractionFragment) mGroupInteractionView);
 
             boolean fragmentIsActive = (fragment != null && fragment.isVisible());
 

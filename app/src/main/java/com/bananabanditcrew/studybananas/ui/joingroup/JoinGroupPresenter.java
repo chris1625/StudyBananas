@@ -21,7 +21,7 @@ import java.util.ArrayList;
  */
 
 public class JoinGroupPresenter implements DatabaseCallback.UserCoursesCallback, JoinGroupContract.Presenter,
-                                           DatabaseCallback.GetUserCallback, DatabaseCallback.GetCourseCallback {
+        DatabaseCallback.GetUserCallback, DatabaseCallback.GetCourseCallback {
 
     private final JoinGroupContract.View mJoinGroupView;
     private ArrayAdapter<String> mCourseList;
@@ -49,7 +49,6 @@ public class JoinGroupPresenter implements DatabaseCallback.UserCoursesCallback,
 
     @Override
     public void start() {
-        // TODO fill in JoinGroup presenter's start method
     }
 
     @Override
@@ -170,7 +169,8 @@ public class JoinGroupPresenter implements DatabaseCallback.UserCoursesCallback,
             mCourse.setStudyGroups(groups);
 
             Log.d("Group", "Number of members in group is " +
-                    Integer.toString(mCourse.getStudyGroups().get(groupIndex).getGroupMembers().size()));
+                    Integer.toString(mCourse.getStudyGroups().get(groupIndex).getGroupMembers()
+                            .size()));
             // Update the user and course through the database
             mDatabase.updateUser(user);
             mDatabase.updateCourse(mCourse);
