@@ -11,6 +11,7 @@ import android.content.pm.PackageInfo;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -50,6 +51,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
     private GroupInteractionFragment mGroupInteractionFragment;
     private DatabaseHandler mDatabase;
     private ProgressDialog mProgressView;
+    private MenuItem mClickedNavigationItem;
 
     // Variables to hide or show edit and save buttons
     private boolean mSaveActionVisible = false;
@@ -76,6 +78,9 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
             @Override
             public void onDrawerClosed(View view) {
                 syncActionBarArrowState();
+
+                // Now that the drawer is closed, open the selected item
+                openSelectedMenuItem(mClickedNavigationItem);
             }
 
             @Override
@@ -124,6 +129,33 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
     private void syncActionBarArrowState() {
         int backStackEntryCount = getSupportFragmentManager().getBackStackEntryCount();
         mToggle.setDrawerIndicatorEnabled(backStackEntryCount == 0);
+    }
+
+    private void openSelectedMenuItem(MenuItem item) {
+        if (item != null) {
+            int id = item.getItemId();
+            switch (id) {
+                case R.id.nav_about:
+                    // Open about us dialog
+                    showAboutDialog();
+                    break;
+                case R.id.nav_support:
+                    // Open contact us dialog
+                    showSupportDialog();
+                    break;
+                case R.id.nav_settings:
+                    // Open settings activity
+                    openSettings();
+                    break;
+                case R.id.nav_logout:
+                    if (isServiceRunning(GroupListenerService.class)) {
+                        showSignOutError();
+                    } else {
+                        mHomePresenter.signOut();
+                    }
+                    break;
+            }
+        }
     }
 
     private final BroadcastReceiver shutdownReceiver = new BroadcastReceiver() {
@@ -214,36 +246,13 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
         startActivity(new Intent(this, SettingsActivity.class));
     }
 
-    public void setupDrawerContent(NavigationView navigationView, final HomePresenter presenter) {
+    public void setupDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
-                switch (id) {
-                    case R.id.nav_about:
-                        // Open about us dialog
-                        mDrawerLayout.closeDrawer(Gravity.START);
-                        showAboutDialog();
-                        break;
-                    case R.id.nav_support:
-                        // Open contact us dialog
-                        mDrawerLayout.closeDrawer(Gravity.START);
-                        showSupportDialog();
-                        break;
-                    case R.id.nav_settings:
-                        // Open settings activity
-                        mDrawerLayout.closeDrawer(Gravity.START);
-                        openSettings();
-                        break;
-                    case R.id.nav_logout:
-                        if (isServiceRunning(GroupListenerService.class)) {
-                            showSignOutError();
-                        } else {
-                            presenter.signOut();
-                        }
-                        break;
-                }
-                return false;
+                mClickedNavigationItem = item;
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+                return true;
             }
         });
     }
@@ -257,7 +266,7 @@ public class HomeActivity extends AppCompatActivity implements DatabaseCallback.
         // Create onClick listeners for menu items
         mNavigationView = (NavigationView) findViewById(R.id.nav_drawer);
         if (mNavigationView != null)
-            setupDrawerContent(mNavigationView, mHomePresenter);
+            setupDrawerContent(mNavigationView);
 
         return mHomeFragment;
     }
